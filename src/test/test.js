@@ -5,7 +5,7 @@ import {
 } from "@material-ui/core";
 import common from "../common/styles";
 import colors from "../common/colors";
-import CustomForm from "../CustomForm";
+import CustomForm from "../components/CustomForm";
 import { ToRuDate } from "../utils/utils";
 import { withStyles } from "@material-ui/core/styles";
 
