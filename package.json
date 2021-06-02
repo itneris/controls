@@ -1,6 +1,6 @@
 {
   "name": "@itneris/controls",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Custom ItNeris organization web-form and controls based on MaterialUI",
   "devDependencies": {
     "@babel/cli": "^7.14.3",
@@ -37,8 +37,8 @@
     "eject": "react-scripts eject",
     "publish:npm": "(if exist dist rmdir /s /q dist) && mkdir dist && babel ./src/components -d dist --copy-files"
   },
-  "main": "dist/CustomForm.js",
-  "module": "dist/CustomForm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "files": [
     "dist",
     "README.md"
