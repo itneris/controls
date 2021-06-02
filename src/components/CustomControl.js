@@ -57,18 +57,16 @@ export class CustomControl extends Component {
                             fullWidth
                             disabled={disabled}
                             value={controlValue || ""}
-                            onChange={event => { setField(name, event.target.value); }}
+                            onChange={event => setField(name, event.target.value)}
                             displayEmpty
                         >
                             <MenuItem disabled value="">
                                 <Typography variant='body2'>{label}</Typography>
                             </MenuItem>
                             {
-                                options.items.map(i =>
-                                    <MenuItem value={i.label}>
-                                        <Typography variant='body2'>{i.value}</Typography>
-                                    </MenuItem>
-                                )
+                                options.items.map(i => <MenuItem value={i.label}>
+                                    <Typography variant='body2'>{i.value}</Typography>
+                                </MenuItem>)
                             }
                         </Select>
                         <FormHelperText>{options.items.find(i => i.value === controlValue && i.blocked)}</FormHelperText>
@@ -152,7 +150,7 @@ export class CustomControl extends Component {
     }
 }
 
-CustomControl.protoTypes = {
+CustomControl.propTypes = {
     type: PropTypes.string,
     entity: PropTypes.array,
     name: PropTypes.string,

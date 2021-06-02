@@ -21,17 +21,17 @@ const CustomForm = props => {
                 <Typography variant="h6">{props.header}</Typography>
             </Box>
             {
-                controls.map((controls, i) => {
-                    if (controls.isShown) {
+                controls.map((control, i) => {
+                    if (control.isShown) {
                         return <CustomControl
                             key={"fc-" + i}
                             formStyles={formStyles}
-                            {...controls}
+                            {...control}
                             entity={entity}
-                            value={controls}
+                            value={control}
                             setField={setField}
                             generatePassword={generatePassword}
-                        ></CustomControl>
+                        />
                     } else {
                         return null;
                     }
