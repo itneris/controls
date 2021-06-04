@@ -29,7 +29,6 @@ class TestComnonent extends Component {
             entity: null,
             user: initialUser,
             roles: [],
-            check: false,
             blockOpen: false,
         };
     }
@@ -64,7 +63,7 @@ class TestComnonent extends Component {
         let role = name === "role" ? value : this.state.role;
         this.setState({
             role,
-            check: false,
+            highlightErrors: false,
             blocking: true
         });
 
@@ -108,7 +107,7 @@ class TestComnonent extends Component {
 
         this.setState({
             user,
-            check: false,
+            highlightErrors: false,
             blocking: true
         }, () => callback && callback())
 
@@ -135,19 +134,20 @@ class TestComnonent extends Component {
                 entity={this.state.entity}
                 classes={classes}
                 header="New entity"
+                highlightErrors={false}
                 formStyles={{ paddingLeft: '16px' }}
                 controls={[
                     {
                         label: 'Группа',
                         req: true,
                         type: 'select',
+                        value: this.state.role,
+                        name: 'role',
                         options: {
                             items: this.state.roles.map(r => ({
                                 label: r.name,
                                 value: r.ruName
-                            })),
-                            value: this.state.role,
-                            name: "role"
+                            }))
                         },
                         isShown: true
                     },
@@ -155,119 +155,109 @@ class TestComnonent extends Component {
                         label: 'Фамилия',
                         req: true,
                         type: 'text',
-                        options: {
-                            value: this.state.user.surname,
-                            name: "surname",
-                        },
+                        value: this.state.user.surname,
+                        name: "surname",
                         isShown: true
                     },
                     {
                         label: 'Имя',
                         req: true,
                         type: 'text',
-                        options: {
-                            value: this.state.user.name,
-                            name: "name",
-                        },
+                        value: this.state.user.name,
+                        name: "name",
                         isShown: true
                     },
                     {
                         label: 'Отчество',
-                        type: 'text',
-                        options: {
-                            value: this.state.user.middleName,
-                            name: "middleName",
-                        },
+                        type: 'chip-input',
+                        value: this.state.user.middleName,
+                        name: "middleName",
                         isShown: true
                     },
                     {
                         label: 'Логин',
                         req: true,
                         type: 'text',
+                        value: this.state.user.userName,
+                        name: "userName",
                         disabled: true,
                         tooltip: 'Первоначально формируется системой автоматически на основании заполненного ФИО, однако может быть изменен по усмотрению администратора с учетом следующих требований: уникальность в системе, не менее 3 символов, использование латиницы',
-                        options: {
-                            value: this.state.user.userName,
-                            name: "userName",
-                        },
                         isShown: true
                     },
                     {
                         label: 'Пароль',
                         req: true,
                         type: 'password',
+                        value: this.state.user.password,
+                        name: "password",
                         tooltip: 'Может быть сформирован системой автоматически (по нажатию на кнопку генерации пароля правее) либо задан по усмотрению администратора с учетом следующих требований: не менее 9 символов, наличие не менее 1 цифры, наличие не менее 1 символа высокого регистра, наличие не менее 1 символа низкого регистра, наличие не менее 1 специального символа',
-                        options: {
-                            value: this.state.user.password,
-                            name: "password",
-                        },
                         isShown: true
                     },
                     {
                         label: 'Контактный телефон',
                         type: 'text',
+                        value: this.state.user.phoneNumber,
+                        name: "phoneNumber",
                         placeholder: '+7 (123) 456 78 90',
-                        options: {
-                            value: this.state.user.phoneNumber,
-                            name: "phoneNumber",
-                        },
                         isShown: true
                     },
                     {
                         label: 'E-mail',
                         req: true,
                         type: 'text',
-                        options: {
-                            value: this.state.user.email,
-                            name: "email"
-                        },
+                        value: this.state.user.email,
+                        name: "email",
                         isShown: true
                     },
                     {
                         label: 'ИД физлица для ЭП',
                         type: 'text',
+                        value: this.state.user.personHash,
+                        name: "personHash",
                         tooltip: 'Идентификатор физического лица, полученный от лиц, отвечающих за ASPMailer. Используется внутрисистемной логикой в рамках предоставления отчетности, требующей ЭП ответственного сотрудника, а именно: указание в составе *.INFO.XML заданного у пользователя "ИД физлица для ЭП"',
-                        options: {
-                            value: this.state.user.personHash,
-                            name: "personHash"
-                        },
                         isShown: true
                     },
                     {
                         label: 'Статус',
                         type: 'text',
+                        value: this.state.user.blocked ? "Блокирован" : "Активен",
                         disabled: true,
                         tooltip: 'При блокировке пользователя (перевод из статуса "Активен" в статус "Блокирован") дальнейший вход в систему для данного пользователя будет недоступен',
-                        options: {
-                            value: this.state.user.blocked ? "Блокирован" : "Активен",
-                        },
                         isShown: true
                     },
                     {
                         label: 'Дата создания',
                         type: 'text',
+                        value: ToRuDate(this.state.user.createdDate, true),
                         disabled: true,
-                        options: {
-                            value: ToRuDate(this.state.user.createdDate, true),
-                        },
-                        isShown: false
+                        isShown: true
                     },
                     {
                         label: 'Дата изменения',
                         type: 'text',
+                        value: ToRuDate(this.state.user.modified, true),
                         disabled: true,
-                        options: {
-                            value: ToRuDate(this.state.user.modified, true),
-                        },
-                        isShown: false
+                        isShown: true
                     },
                     {
                         label: 'Уведомить по E-mail?',
                         type: 'bool',
-                        options: {
-                            value: this.state.sendMail,
-                            name: "sendMail"
-                        },
+                        value: this.state.sendMail,
+                        name: "sendMail",
+                        isShown: true
+                    },
+                    {
+                        label: 'Период автоматической проверки (мин.)',
+                        type: 'number',
+                        value: 360,
+                        name: "availabilityPeriod",
+                        isShown: true
+                    },
+                    {
+                        label: 'Ручная проверка',
+                        type: 'button',
+                        value: 'Отправить тест',
+                        name: 'sendButton',
                         isShown: true
                     }
                 ]}

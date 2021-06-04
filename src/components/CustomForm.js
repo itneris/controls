@@ -5,16 +5,17 @@ import {
     Paper,
     Typography
 } from "@material-ui/core";
+import CustomControl from "../components/CustomControl";
 
 const CustomForm = props => {
-    const { controls, setField, formStyles, entity, generatePassword } = props;
+    const { controls, setField, formStyles, entity, generatePassword, noPadding, highlightErrors, mt, mb } = props;
 
     return (
         <Paper
             style={{
                 padding: "6px 16px 16px 16px",
-                marginTop: 20,
-                marginBottom: 20
+                marginTop: mt || 20,
+                marginBottom: mb || 20
             }}
         >
             <Box alignItems="center" display="flex">
@@ -28,9 +29,10 @@ const CustomForm = props => {
                             formStyles={formStyles}
                             {...control}
                             entity={entity}
-                            value={control}
                             setField={setField}
                             generatePassword={generatePassword}
+                            noPadding={noPadding}
+                            highlightErrors={highlightErrors}
                         />
                     } else {
                         return null;
@@ -45,8 +47,9 @@ export default CustomForm;
 
 CustomForm.propTypes = {
     controls: PropTypes.array,
-    classes: PropTypes.array,
-    entity: PropTypes.array,
+    entity: PropTypes.object,
     header: PropTypes.string,
-    formStyles: PropTypes.array,
+    formStyles: PropTypes.object,
+    highlightErrors: PropTypes.bool,
+    noPadding: PropTypes.bool
 }

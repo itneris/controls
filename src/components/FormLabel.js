@@ -74,4 +74,4 @@ const styles = theme => ({
     }
 });
 
-export const FormLabel = withStyles(styles)(FormLabelWoStyles);
+export default FormLabelWoStyles = withStyles(styles)(FormLabelWoStyles);
