@@ -57,10 +57,11 @@ export class CustomControl extends Component {
     }
 
     _renderControl(...args) {
-        const { controlValue, type, value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick } = args;
-        switch (type) {
+        const { value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, controlValue } = args;
+        let type = "text";
+        switch (type) { 
             case "select":
-                return <FormControl
+                <FormControl
                     fullWidth
                     error={
                         highlightErrors && (
@@ -89,16 +90,18 @@ export class CustomControl extends Component {
                     </Select>
                     <FormHelperText>{options.items.find(i => i.value === value && i.blocked)}</FormHelperText>
                 </FormControl>;
+                break;
             case "bool":
-                return <Box width="100%">
+                <Box width="100%">
                     <Checkbox
                         disabled={disabled}
                         checked={controlValue}
                         onChange={e => setField(name, !controlValue)}
                     />
                 </Box>;
+                break;
             case "date":
-                return <KeyboardDatePicker
+                <KeyboardDatePicker
                     disabled={disabled}
                     disableToolbar
                     fullWidth
@@ -117,8 +120,9 @@ export class CustomControl extends Component {
                         setField(name, v.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
                         : null}
                 />;
+                break;
             case "password":
-                return <div style={{ display: "flex", width: "100%" }}>
+                <div style={{ display: "flex", width: "100%" }}>
                     <FormControl
                         fullWidth
                         error={this.props.error}>
@@ -146,8 +150,9 @@ export class CustomControl extends Component {
                         <Loop />
                     </IconButton>
                 </div>;
+                break;
             case "chip-input":
-                return <ChipInput
+                <ChipInput
                     fullWidth
                     value={controlValue || ""}
                     placeholder={placeholder}
@@ -156,8 +161,9 @@ export class CustomControl extends Component {
                         setField(name, chips.join(","))
                     }}
                 />;
+                break;
             case "text":
-                return <TextField
+                <TextField
                     disabled={disabled}
                     fullWidth
                     placeholder={placeholder}
@@ -174,8 +180,9 @@ export class CustomControl extends Component {
                     value={controlValue || ""}
                     onChange={event => setField(name, event.currentTarget.value)}
                 />;
+                break;
             case "button":
-                return <Box width="100%">
+                <Box width="100%">
                     <Button
                         variant="text"
                         startIcon={<Send />}
@@ -185,8 +192,9 @@ export class CustomControl extends Component {
                         {controlValue}
                     </Button>
                 </Box>;
+                break;
             case "number":
-                return <TextField fullWidth
+                <TextField fullWidth
                     type="number"
                     placeholder={placeholder}
                     error={highlightErrors}
@@ -194,17 +202,24 @@ export class CustomControl extends Component {
                     disabled={disabled}
                     inputProps={{ 'min': 0 }}
                     onChange={event => setField(name, event.currentTarget.value)}
-                />
+                />;
                 break;
             default: 
-                return <div></div>
+                <div>тест</div>
         }
     };
 
     render() {
         const { type, entity, name, value, label, req, disabled, setField, options, placeholder, tooltip, generatePassword, labelWidth, noPadding, highlightErrors, onClick, min, max, items } = this.props;
 
-        let controlValue = entity[name] ||  value;
+        let controlValue;
+
+        if (value === null) {
+            controlValue = "";
+        } else {
+            controlValue = value;
+        }
+        //let controlValue = value ||  entity[name];
 
         return <Box display="flex" alignItems="cetner" mt="10px">
             <FormLabel req={req} bold labelWidth={labelWidth} tooltip={tooltip} noPadding={noPadding}>{label} </FormLabel>
