@@ -206,7 +206,7 @@ export class CustomControl extends Component {
     };
 
     render() {
-        const { value, label, req,tooltip, labelWidth, noPadding } = this.props;
+        const { label, req,tooltip, labelWidth, noPadding } = this.props;
 
         // let controlValue;
 
