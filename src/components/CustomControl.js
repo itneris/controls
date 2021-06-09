@@ -56,12 +56,16 @@ export class CustomControl extends Component {
         }
     }
 
-    _renderControl(...args) {
-        const { value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, controlValue } = args;
-        let type = "text";
+    _renderControl(args) {
+        console.log(args);
+
+        const { type, value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, controlValue } = args;
+
+        console.log(type);
+
         switch (type) { 
-            case "select":
-                <FormControl
+            case 'select':
+                return <FormControl
                     fullWidth
                     error={
                         highlightErrors && (
@@ -90,29 +94,27 @@ export class CustomControl extends Component {
                     </Select>
                     <FormHelperText>{options.items.find(i => i.value === value && i.blocked)}</FormHelperText>
                 </FormControl>;
-                break;
-            case "bool":
-                <Box width="100%">
+            case 'bool':
+                return <Box width="100%">
                     <Checkbox
                         disabled={disabled}
                         checked={controlValue}
                         onChange={e => setField(name, !controlValue)}
                     />
                 </Box>;
-                break;
-            case "date":
-                <KeyboardDatePicker
+            case 'date':
+                return <KeyboardDatePicker
                     disabled={disabled}
                     disableToolbar
                     fullWidth
                     autoOk
                     maxDate={new Date('2077-01-01')}
-                    maxDateMessage={`Значение даты не должно превышать 01.01.2077`}
-                    minDateMessage='Слишком маленькое значение даты'
-                    invalidDateMessage='Некорректная дата'
+                    maxDateMessage={`пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 01.01.2077`}
+                    minDateMessage='пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ'
+                    invalidDateMessage='пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ'
                     format='DD.MM.YYYY'
-                    okLabel="ОК"
-                    cancelLabel="Отмена"
+                    okLabel="пїЅпїЅ"
+                    cancelLabel="пїЅпїЅпїЅпїЅпїЅпїЅ"
                     placeholder={new Date().toLocaleDateString("ru-RU")}
                     error={highlightErrors && req && controlValue === ""}
                     value={controlValue || null}
@@ -120,9 +122,8 @@ export class CustomControl extends Component {
                         setField(name, v.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
                         : null}
                 />;
-                break;
-            case "password":
-                <div style={{ display: "flex", width: "100%" }}>
+            case 'password':
+                return <div style={{ display: "flex", width: "100%" }}>
                     <FormControl
                         fullWidth
                         error={this.props.error}>
@@ -135,7 +136,7 @@ export class CustomControl extends Component {
                                 type: this.state.showPassword ? 'text' : 'password',
                                 endAdornment: <InputAdornment position="end" >
                                     <IconButton
-                                        aria-label="Видимость пароля"
+                                        aria-label="пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ"
                                         onClick={() => this.setState({ showPassword: !this.state.showPassword })}
                                     >
                                         {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
@@ -150,9 +151,8 @@ export class CustomControl extends Component {
                         <Loop />
                     </IconButton>
                 </div>;
-                break;
-            case "chip-input":
-                <ChipInput
+            case 'chip-input':
+                return <ChipInput
                     fullWidth
                     value={controlValue || ""}
                     placeholder={placeholder}
@@ -161,9 +161,8 @@ export class CustomControl extends Component {
                         setField(name, chips.join(","))
                     }}
                 />;
-                break;
-            case "text":
-                <TextField
+            case 'text':
+                return <TextField
                     disabled={disabled}
                     fullWidth
                     placeholder={placeholder}
@@ -180,9 +179,8 @@ export class CustomControl extends Component {
                     value={controlValue || ""}
                     onChange={event => setField(name, event.currentTarget.value)}
                 />;
-                break;
-            case "button":
-                <Box width="100%">
+            case 'button':
+                return <Box width="100%">
                     <Button
                         variant="text"
                         startIcon={<Send />}
@@ -192,9 +190,8 @@ export class CustomControl extends Component {
                         {controlValue}
                     </Button>
                 </Box>;
-                break;
-            case "number":
-                <TextField fullWidth
+            case 'number':
+                return <TextField fullWidth
                     type="number"
                     placeholder={placeholder}
                     error={highlightErrors}
@@ -203,27 +200,26 @@ export class CustomControl extends Component {
                     inputProps={{ 'min': 0 }}
                     onChange={event => setField(name, event.currentTarget.value)}
                 />;
-                break;
             default: 
-                <div>тест</div>
+                <div>пїЅпїЅпїЅпїЅ</div>
         }
     };
 
     render() {
-        const { type, entity, name, value, label, req, disabled, setField, options, placeholder, tooltip, generatePassword, labelWidth, noPadding, highlightErrors, onClick, min, max, items } = this.props;
+        const { value, label, req,tooltip, labelWidth, noPadding } = this.props;
 
-        let controlValue;
+        // let controlValue;
 
-        if (value === null) {
-            controlValue = "";
-        } else {
-            controlValue = value;
-        }
+        // if (value === null) {
+        //     controlValue = "";
+        // } else {
+        //     controlValue = value;
+        // }
         //let controlValue = value ||  entity[name];
 
         return <Box display="flex" alignItems="cetner" mt="10px">
             <FormLabel req={req} bold labelWidth={labelWidth} tooltip={tooltip} noPadding={noPadding}>{label} </FormLabel>
-            {this._renderControl(type, value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, min, max, items, controlValue)}
+            {this._renderControl(this.props)}
         </Box>;
     }
 }
