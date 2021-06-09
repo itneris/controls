@@ -59,7 +59,9 @@ export class CustomControl extends Component {
     _renderControl(args) {
         console.log(args);
 
-        const { type, value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, controlValue } = args;
+        const { type, value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, onChange, inputProps } = args;
+
+        let controlValue = value || "";
 
         console.log(type);
 
@@ -78,7 +80,7 @@ export class CustomControl extends Component {
                         fullWidth
                         disabled={disabled}
                         value={controlValue || ""}
-                        onChange={event => setField(name, event.target.value)}
+                        onChange={onChange}
                         displayEmpty
                     >
                         <MenuItem disabled value="">
@@ -143,7 +145,7 @@ export class CustomControl extends Component {
                                     </IconButton>
                                 </InputAdornment>
                             }}
-                            onChange={event => setField("password", event.currentTarget.value)}
+                            onChange={event => setField(name, event.currentTarget.value)}
                         />
                         <FormHelperText>{this.props.error}</FormHelperText>
                     </FormControl>
@@ -197,8 +199,8 @@ export class CustomControl extends Component {
                     error={highlightErrors}
                     value={controlValue || ""}
                     disabled={disabled}
-                    inputProps={{ 'min': 0 }}
-                    onChange={event => setField(name, event.currentTarget.value)}
+                    inputProps={inputProps}
+                    onChange={onChange}
                 />;
             default: 
                 <div>����</div>

@@ -9,7 +9,7 @@
             "port": 6767,
             "request": "attach",
             "type": "chrome",
-            "url": "http://localhost:3001",
+            "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/src"
         }
     ]

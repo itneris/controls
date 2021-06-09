@@ -28,8 +28,10 @@ class TestComnonent extends Component {
         this.state = {
             entity: null,
             user: initialUser,
-            roles: [],
+            role: "group 1",
+            roles: [{ name: 'group 1', ruName: 'группа 1' }, { name: 'group 2', ruName: 'группа 2' }, { name: 'group 3', ruName: 'группа 3'}],
             blockOpen: false,
+            smbAvailabilityPeriod: null
         };
     }
 
@@ -149,7 +151,8 @@ class TestComnonent extends Component {
                                 value: r.ruName
                             }))
                         },
-                        isShown: true
+                        isShown: true,
+                        onChange: event => this.setState({ role: event.target.value, check: false, blocking: true })
                     },
                     {
                         label: 'Фамилия',
@@ -249,9 +252,15 @@ class TestComnonent extends Component {
                     {
                         label: 'Период автоматической проверки (мин.)',
                         type: 'number',
-                        value: 360,
+                        value: this.state.availabilityPeriod || "",
                         name: "availabilityPeriod",
-                        isShown: true
+                        placeholder: 10,
+                        inputProps: {min: 0, max: 99},
+                        isShown: true,
+                        onChange: event => {
+                            this.setState({ check: false, blocking: true });
+                            this._setField("availabilityPeriod", event.currentTarget.value);
+                        }
                     },
                     {
                         label: 'Ручная проверка',
