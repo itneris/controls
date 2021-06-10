@@ -243,6 +243,14 @@ class TestComnonent extends Component {
                         isShown: true
                     },
                     {
+                        label: 'Дата уведомления',
+                        type: 'date',
+                        value: this.state.user.dateOfNotification,
+                        placeholder: new Date().toLocaleDateString("ru-RU"),
+                        isShown: true,
+                        name: 'dateOfNotification'
+                    },
+                    {
                         label: 'Уведомить по E-mail?',
                         type: 'bool',
                         value: this.state.sendMail,
@@ -252,15 +260,11 @@ class TestComnonent extends Component {
                     {
                         label: 'Период автоматической проверки (мин.)',
                         type: 'number',
-                        value: this.state.availabilityPeriod || "",
+                        value: this.state.user.availabilityPeriod,
                         name: "availabilityPeriod",
                         placeholder: 10,
                         inputProps: {min: 0, max: 99},
-                        isShown: true,
-                        onChange: event => {
-                            this.setState({ check: false, blocking: true });
-                            this._setField("availabilityPeriod", event.currentTarget.value);
-                        }
+                        isShown: true
                     },
                     {
                         label: 'Ручная проверка',

@@ -111,17 +111,17 @@ export class CustomControl extends Component {
                     fullWidth
                     autoOk
                     maxDate={new Date('2077-01-01')}
-                    maxDateMessage={`�������� ���� �� ������ ��������� 01.01.2077`}
-                    minDateMessage='������� ��������� �������� ����'
-                    invalidDateMessage='������������ ����'
+                    maxDateMessage={`Значение даты не должно превышать 01.01.2077`}
+                    minDateMessage='Слишком маленькое значение даты'
+                    invalidDateMessage='Некорректная дата'
                     format='DD.MM.YYYY'
-                    okLabel="��"
-                    cancelLabel="������"
-                    placeholder={new Date().toLocaleDateString("ru-RU")}
+                    okLabel="ОК"
+                    cancelLabel="Отмена"
+                    placeholder={placeholder}
                     error={highlightErrors && req && controlValue === ""}
                     value={controlValue || null}
-                    onChange={v => controlValue && v.toISOString() ?
-                        setField(name, v.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
+                    onChange={dateValue => dateValue && dateValue.toISOString() ?
+                        setField(name, dateValue.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
                         : null}
                 />;
             case 'password':
@@ -200,7 +200,7 @@ export class CustomControl extends Component {
                     value={controlValue || ""}
                     disabled={disabled}
                     inputProps={inputProps}
-                    onChange={onChange}
+                    onChange={event => {setField("availabilityPeriod", +event.currentTarget.value)}}
                 />;
             default: 
                 <div>����</div>
