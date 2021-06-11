@@ -30,6 +30,8 @@ export class CustomControl extends Component {
         this.state = {
             columns: null,
         };
+
+        this._generatePassword = this._generatePassword.bind(this);
     }
 
     _generatePassword = (newPass, setField) => {
@@ -52,7 +54,7 @@ export class CustomControl extends Component {
                 setField("password", pass);
             }
         } else {
-            this._generatePassword.bind(this)(newPass);
+            this._generatePassword(newPass);
         }
     }
 
@@ -139,7 +141,7 @@ export class CustomControl extends Component {
                                 type: this.state.showPassword ? 'text' : 'password',
                                 endAdornment: <InputAdornment position="end" >
                                     <IconButton
-                                        aria-label="��������� ������"
+                                        aria-label="Видимость пароля"
                                         onClick={() => this.setState({ showPassword: !this.state.showPassword })}
                                     >
                                         {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
@@ -200,8 +202,8 @@ export class CustomControl extends Component {
                     inputProps={inputProps}
                     onChange={event => {setField("availabilityPeriod", +event.currentTarget.value)}}
                 />;
-            default: 
-                <div>����</div>
+            default:
+                return new Error();
         }
     };
 
@@ -217,7 +219,7 @@ export class CustomControl extends Component {
         // }
         //let controlValue = value ||  entity[name];
 
-        return <Box display="flex" alignItems="cetner" mt="10px">
+        return <Box display="flex" alignItems="center" mt="10px">
             <FormLabel req={req} bold labelWidth={labelWidth} tooltip={tooltip} noPadding={noPadding}>{label} </FormLabel>
             {this._renderControl(this.props)}
         </Box>;
