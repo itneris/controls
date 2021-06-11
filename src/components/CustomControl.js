@@ -59,7 +59,7 @@ export class CustomControl extends Component {
     _renderControl(args) {
         console.log(args);
 
-        const { type, value, name, disabled, setField, options, placeholder, generatePassword, highlightErrors, label, req, entity, onClick, onChange, inputProps } = args;
+        const { type, value, name, disabled, setField, options, placeholder, highlightErrors, label, req, entity, onClick, onChange, inputProps, } = args;
 
         let controlValue = value || "";
 
@@ -110,7 +110,8 @@ export class CustomControl extends Component {
                     disableToolbar
                     fullWidth
                     autoOk
-                    maxDate={new Date('2077-01-01')}
+                    minDate={options.minDate}
+                    maxDate={options.maxDate}
                     maxDateMessage={`Значение даты не должно превышать 01.01.2077`}
                     minDateMessage='Слишком маленькое значение даты'
                     invalidDateMessage='Некорректная дата'
@@ -149,19 +150,16 @@ export class CustomControl extends Component {
                         />
                         <FormHelperText>{this.props.error}</FormHelperText>
                     </FormControl>
-                    <IconButton onClick={() => generatePassword(false, setField())}>
+                    <IconButton onClick={() => this._generatePassword(false, setField())}>
                         <Loop />
                     </IconButton>
                 </div>;
             case 'chip-input':
                 return <ChipInput
                     fullWidth
-                    value={controlValue || ""}
+                    defaultValue={controlValue}
                     placeholder={placeholder}
-                    onChange={(chips) => {
-                        this.setState({ highlightErrors: false, blocking: true });
-                        setField(name, chips.join(","))
-                    }}
+                    onChange={(chips) => {setField(name, chips.join(","))}}
                 />;
             case 'text':
                 return <TextField
@@ -208,7 +206,7 @@ export class CustomControl extends Component {
     };
 
     render() {
-        const { label, req,tooltip, labelWidth, noPadding } = this.props;
+        const { label, req, tooltip, labelWidth, noPadding } = this.props;
 
         // let controlValue;
 

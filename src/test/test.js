@@ -12,7 +12,7 @@ import { withStyles } from "@material-ui/core/styles";
 const initialUser = {
     name: "",
     surname: "",
-    middleName: "",
+    middleName: "Петрович",
     email: "",
     personHash: "",
     password: "",
@@ -33,30 +33,6 @@ class TestComnonent extends Component {
             blockOpen: false,
             smbAvailabilityPeriod: null
         };
-    }
-
-    _generatePassword = (newPass) => {
-        var small = "abcdefghijklmnopqrstuvwxyz";
-        var nonAlpha = "!@#$%^&*()-+<>";
-        var big = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        var nums = "1234567890"
-        var chars = small + nonAlpha + big + nums;
-
-        var pass = "";
-        for (var x = 0; x < 9; x++) {
-            var i = Math.floor(Math.random() * chars.length);
-            pass += chars.charAt(i);
-        }
-
-        if (/\d/.test(pass) && /[a-z]/.test(pass) && /[A-Z]/.test(pass) && /[!@#$%^&*()-+<>]/.test(pass)) {
-            if (newPass) {
-                this.setState({ newPassword: pass });
-            } else {
-                this._setField("password", pass);
-            }
-        } else {
-            this._generatePassword.bind(this)(newPass);
-        }
     }
 
     _setField = (name, value, callback) => {
@@ -132,7 +108,6 @@ class TestComnonent extends Component {
             </Box>
             <CustomForm
                 setField={this._setField}
-                generatePassword={this._generatePassword}
                 entity={this.state.entity}
                 classes={classes}
                 header="New entity"
@@ -140,7 +115,7 @@ class TestComnonent extends Component {
                 formStyles={{ paddingLeft: '16px' }}
                 controls={[
                     {
-                        label: 'Группа',
+                        label: 'Select control',
                         req: true,
                         type: 'select',
                         value: this.state.role,
@@ -155,7 +130,7 @@ class TestComnonent extends Component {
                         onChange: event => this.setState({ role: event.target.value, check: false, blocking: true })
                     },
                     {
-                        label: 'Фамилия',
+                        label: 'Text control',
                         req: true,
                         type: 'text',
                         value: this.state.user.surname,
@@ -163,32 +138,14 @@ class TestComnonent extends Component {
                         isShown: true
                     },
                     {
-                        label: 'Имя',
-                        req: true,
-                        type: 'text',
-                        value: this.state.user.name,
-                        name: "name",
-                        isShown: true
-                    },
-                    {
-                        label: 'Отчество',
+                        label: 'Chip-input control',
                         type: 'chip-input',
-                        value: this.state.user.middleName,
+                        value: this.state.user.middleName ? this.state.user.middleName.split(",") : [],
                         name: "middleName",
                         isShown: true
                     },
                     {
-                        label: 'Логин',
-                        req: true,
-                        type: 'text',
-                        value: this.state.user.userName,
-                        name: "userName",
-                        disabled: true,
-                        tooltip: 'Первоначально формируется системой автоматически на основании заполненного ФИО, однако может быть изменен по усмотрению администратора с учетом следующих требований: уникальность в системе, не менее 3 символов, использование латиницы',
-                        isShown: true
-                    },
-                    {
-                        label: 'Пароль',
+                        label: 'Password control',
                         req: true,
                         type: 'password',
                         value: this.state.user.password,
@@ -197,7 +154,7 @@ class TestComnonent extends Component {
                         isShown: true
                     },
                     {
-                        label: 'Контактный телефон',
+                        label: 'Text control',
                         type: 'text',
                         value: this.state.user.phoneNumber,
                         name: "phoneNumber",
@@ -205,60 +162,33 @@ class TestComnonent extends Component {
                         isShown: true
                     },
                     {
-                        label: 'E-mail',
-                        req: true,
-                        type: 'text',
-                        value: this.state.user.email,
-                        name: "email",
-                        isShown: true
-                    },
-                    {
-                        label: 'ИД физлица для ЭП',
-                        type: 'text',
-                        value: this.state.user.personHash,
-                        name: "personHash",
-                        tooltip: 'Идентификатор физического лица, полученный от лиц, отвечающих за ASPMailer. Используется внутрисистемной логикой в рамках предоставления отчетности, требующей ЭП ответственного сотрудника, а именно: указание в составе *.INFO.XML заданного у пользователя "ИД физлица для ЭП"',
-                        isShown: true
-                    },
-                    {
-                        label: 'Статус',
-                        type: 'text',
-                        value: this.state.user.blocked ? "Блокирован" : "Активен",
-                        disabled: true,
-                        tooltip: 'При блокировке пользователя (перевод из статуса "Активен" в статус "Блокирован") дальнейший вход в систему для данного пользователя будет недоступен',
-                        isShown: true
-                    },
-                    {
-                        label: 'Дата создания',
+                        label: 'Text control',
                         type: 'text',
                         value: ToRuDate(this.state.user.createdDate, true),
                         disabled: true,
                         isShown: true
                     },
                     {
-                        label: 'Дата изменения',
-                        type: 'text',
-                        value: ToRuDate(this.state.user.modified, true),
-                        disabled: true,
-                        isShown: true
-                    },
-                    {
-                        label: 'Дата уведомления',
+                        label: 'Date control',
                         type: 'date',
                         value: this.state.user.dateOfNotification,
                         placeholder: new Date().toLocaleDateString("ru-RU"),
+                        options: {
+                            minDate: new Date('1917-01-01'),
+                            maxDate: new Date('2077-01-01')
+                        },
                         isShown: true,
                         name: 'dateOfNotification'
                     },
                     {
-                        label: 'Уведомить по E-mail?',
+                        label: 'Bool control',
                         type: 'bool',
                         value: this.state.sendMail,
                         name: "sendMail",
                         isShown: true
                     },
                     {
-                        label: 'Период автоматической проверки (мин.)',
+                        label: 'Number control',
                         type: 'number',
                         value: this.state.user.availabilityPeriod,
                         name: "availabilityPeriod",
@@ -267,7 +197,7 @@ class TestComnonent extends Component {
                         isShown: true
                     },
                     {
-                        label: 'Ручная проверка',
+                        label: 'Button control',
                         type: 'button',
                         value: 'Отправить тест',
                         name: 'sendButton',
