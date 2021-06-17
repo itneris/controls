@@ -150,15 +150,11 @@ class TestComnonent extends Component {
                         type: 'password',
                         value: this.state.user.password,
                         name: "password",
+                        options: {
+                            buttonTooltip: 'Сгенерировать новый пароль',
+                            passwordLength: 10
+                        },
                         tooltip: 'Может быть сформирован системой автоматически (по нажатию на кнопку генерации пароля правее) либо задан по усмотрению администратора с учетом следующих требований: не менее 9 символов, наличие не менее 1 цифры, наличие не менее 1 символа высокого регистра, наличие не менее 1 символа низкого регистра, наличие не менее 1 специального символа',
-                        isShown: true
-                    },
-                    {
-                        label: 'Text control',
-                        type: 'text',
-                        value: this.state.user.phoneNumber,
-                        name: "phoneNumber",
-                        placeholder: '+7 (123) 456 78 90',
                         isShown: true
                     },
                     {

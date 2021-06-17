@@ -11,8 +11,11 @@ import {
     InputAdornment,
     IconButton,
     Typography,
-    Button
+    Button,
+    Tooltip,
+    Snackbar
 } from "@material-ui/core";
+import Alert from '@material-ui/lab/Alert';
 import {
     Loop,
     Visibility,
@@ -29,12 +32,14 @@ export class CustomControl extends Component {
 
         this.state = {
             columns: null,
+            buttonIsClicked: false,
+            open: false
         };
 
         this._generatePassword = this._generatePassword.bind(this);
     }
 
-    _generatePassword = (newPass, setField) => {
+    _generatePassword = (newPass, setField, length) => {
         var small = "abcdefghijklmnopqrstuvwxyz";
         var nonAlpha = "!@#$%^&*()-+<>";
         var big = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -42,7 +47,7 @@ export class CustomControl extends Component {
         var chars = small + nonAlpha + big + nums;
 
         var pass = "";
-        for (var x = 0; x < 9; x++) {
+        for (var x = 0; x < length; x++) {
             var i = Math.floor(Math.random() * chars.length);
             pass += chars.charAt(i);
         }
@@ -54,8 +59,18 @@ export class CustomControl extends Component {
                 setField("password", pass);
             }
         } else {
-            this._generatePassword(newPass);
+            /*this._generatePassword(newPass);*/
         }
+    }
+
+    closeSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        this.setState({
+            buttonIsClicked: false
+        });
     }
 
     _renderControl(args) {
@@ -152,9 +167,23 @@ export class CustomControl extends Component {
                         />
                         <FormHelperText>{this.props.error}</FormHelperText>
                     </FormControl>
-                    <IconButton onClick={() => this._generatePassword(false, setField())}>
-                        <Loop />
+                    <IconButton onClick={() => { this._generatePassword(false, setField, options.passwordLength); this.setState({ buttonIsClicked: true }) }}>
+                        <Tooltip
+                            title={options.buttonTooltip}
+                        >
+                            <Loop />
+                        </Tooltip>
                     </IconButton>
+                    <Snackbar
+                        open={this.state.buttonIsClicked}
+                        autoHideDuration={1000}
+                        onClose={this.closeSnackbar}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                    >
+                        <Alert severity="info">
+                            Button has been pressed
+                        </Alert>
+                    </Snackbar>
                 </div>;
             case 'chip-input':
                 return <ChipInput
