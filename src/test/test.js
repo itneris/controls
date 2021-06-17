@@ -158,7 +158,7 @@ class TestComnonent extends Component {
                         isShown: true
                     },
                     {
-                        label: 'Text control',
+                        label: 'Text control (disabled)',
                         type: 'text',
                         value: ToRuDate(this.state.user.createdDate, true),
                         disabled: true,
