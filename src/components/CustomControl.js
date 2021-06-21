@@ -73,25 +73,37 @@ export class CustomControl extends Component {
         });
     }
 
+    //isDateInvalid = (value, minDate, maxDate) => {
+    //    let splittedDate = value.split("." || "-");
+    //    let splittedMinDate = minDate.split("." || "-");
+    //    let splittedMaxDate = maxDate.split("." || "-");
+    //    console.log(splittedDate);
+    //    console.log(splittedMinDate);
+    //    console.log(splittedMaxDate);
+
+    //    if (
+    //        ((+splittedDate[2] < +splittedMinDate[2]) && (+splittedDate[1] < +splittedMinDate[1]) && (+splittedDate[0] < +splittedMinDate[0])) ||
+    //        ((+splittedDate[2] > +splittedMaxDate[2]) && (+splittedDate[1] > +splittedMaxDate[1]) && (+splittedDate[0] > +splittedMaxDate[0]))
+    //    ) {
+    //        return true;
+    //    } else {
+    //        return false;
+    //    }
+    //}
+
+
     _renderControl(args) {
-        console.log(args);
 
-        const { type, value, name, disabled, setField, options, placeholder, highlightErrors, label, req, entity, onClick, onChange, inputProps, } = args;
+        const { type, value, name, disabled, setField, options, placeholder, highlightErrors, label, req, onClick, onChange, inputProps } = args;
 
-        let controlValue = value || "";
-
-        console.log(type);
+        const controlValue = value || "";
+        const error = highlightErrors && (req && controlValue === "");
 
         switch (type) { 
             case 'select':
                 return <FormControl
                     fullWidth
-                    error={
-                        highlightErrors && (
-                            (!this.props.isNullable && controlValue === "") ||
-                            controlValue.find(v => v.value === controlValue && v.blocked)
-                        )
-                    }
+                    error={error}
                 >
                     <Select
                         fullWidth
@@ -129,14 +141,16 @@ export class CustomControl extends Component {
                     autoOk
                     minDate={options.minDate}
                     maxDate={options.maxDate}
-                    maxDateMessage={`Значение даты не должно превышать 01.01.2077`}
-                    minDateMessage='Слишком маленькое значение даты'
+                    maxDateMessage={`Значение даты не должно превышать ${options.maxDate}`}
+                    minDateMessage={`Значение даты не должно быть менее ${options.minDate}`}
                     invalidDateMessage='Некорректная дата'
                     format='DD.MM.YYYY'
                     okLabel="ОК"
                     cancelLabel="Отмена"
                     placeholder={placeholder}
-                    error={highlightErrors && req && controlValue === ""}
+                    error={
+                        highlightErrors && (req && controlValue === "")
+                    }
                     value={controlValue || null}
                     onChange={dateValue => dateValue && dateValue.toISOString() ?
                         setField(name, dateValue.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
@@ -149,7 +163,9 @@ export class CustomControl extends Component {
                         error={this.props.error}>
                         <TextField
                             fullWidth
-                            error={highlightErrors && entity.password === ""}
+                            error={
+                                highlightErrors && (req && controlValue === "")
+                            }
                             value={controlValue || null}
                             helperText={highlightErrors}
                             InputProps={{
@@ -190,6 +206,9 @@ export class CustomControl extends Component {
                     fullWidth
                     defaultValue={controlValue}
                     placeholder={placeholder}
+                    error={
+                        highlightErrors && (req && controlValue === "")
+                    }
                     onChange={(chips) => {setField(name, chips.join(","))}}
                 />;
             case 'text':
@@ -198,14 +217,7 @@ export class CustomControl extends Component {
                     fullWidth
                     placeholder={placeholder}
                     error={
-                        highlightErrors &&
-                        (
-                            (req && controlValue === "") ||
-                            (type === "int" && +controlValue <= 0) ||
-                            (controlValue.range && +controlValue < controlValue.range.min) ||
-                            (controlValue.range && +controlValue > controlValue.range.max) ||
-                            (controlValue.mask && !controlValue.match(new RegExp(controlValue.mask.regex)))
-                        )
+                        highlightErrors && (req && controlValue === "")
                     }
                     value={controlValue || ""}
                     onChange={event => setField(name, event.currentTarget.value)}
@@ -225,7 +237,18 @@ export class CustomControl extends Component {
                 return <TextField fullWidth
                     type="number"
                     placeholder={placeholder}
-                    error={highlightErrors}
+                    error={
+                        error ||
+                        (controlValue < inputProps.min) ||
+                        (controlValue > inputProps.max)
+                    }
+                    helperText={
+                        error ||
+                            (controlValue < inputProps.min) ||
+                            (controlValue > inputProps.max) ?
+                            `Введите число от ${inputProps.min} до ${inputProps.max}` :
+                            null
+                    }
                     value={controlValue || ""}
                     disabled={disabled}
                     inputProps={inputProps}

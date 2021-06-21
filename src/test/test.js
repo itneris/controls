@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import {
     Typography,
     Box,
+    Button
 } from "@material-ui/core";
+import { Save } from "@material-ui/icons";
 import common from "../common/styles";
 import colors from "../common/colors";
 import CustomForm from "../components/CustomForm";
@@ -111,7 +113,7 @@ class TestComnonent extends Component {
                 entity={this.state.entity}
                 classes={classes}
                 header="New entity"
-                highlightErrors={false}
+                highlightErrors={this.state.check}
                 formStyles={{ paddingLeft: '16px' }}
                 controls={[
                     {
@@ -170,8 +172,8 @@ class TestComnonent extends Component {
                         value: this.state.user.dateOfNotification,
                         placeholder: new Date().toLocaleDateString("ru-RU"),
                         options: {
-                            minDate: new Date('1917-01-01'),
-                            maxDate: new Date('2077-01-01')
+                            minDate: new Date('01-01-1917'),
+                            maxDate: new Date('01-01-2077')
                         },
                         isShown: true,
                         name: 'dateOfNotification'
@@ -201,6 +203,23 @@ class TestComnonent extends Component {
                     }
                 ]}
             />
+            <Box display="flex" justifyContent="flex-end" marginRight={5}>
+                <Button
+                    startIcon={<Save />}
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                        if  (this.state.role === "" ||
+                            this.state.user.surname === "" ||
+                            this.state.user.password === "") {
+                            this.setState({
+                                check: true
+                            });
+                            return;
+                        }
+                    }}
+                >Сохранить</Button>
+            </Box>
         </div>;
     }
 }
