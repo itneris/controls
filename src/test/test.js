@@ -126,10 +126,10 @@ class TestComnonent extends Component {
                             items: this.state.roles.map(r => ({
                                 label: r.name,
                                 value: r.ruName
-                            }))
+                            })),
+                            onChange: event => this.setState({ role: event.target.value, check: false, blocking: true })
                         },
-                        isShown: true,
-                        onChange: event => this.setState({ role: event.target.value, check: false, blocking: true })
+                        isShown: true
                     },
                     {
                         label: 'Text control',

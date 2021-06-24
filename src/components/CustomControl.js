@@ -249,6 +249,7 @@ class OptionsClass {
     min;
     max;
     onClick;
+    onChange;
     minDate;
     maxDate;
     inputProps;
@@ -257,6 +258,7 @@ class OptionsClass {
 OptionsClass.propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
     onClick: PropTypes.func,
+    onChange: PropTypes.func,
     minDate: PropTypes.date,
     maxDate: PropTypes.date,
     inputProps: PropTypes.objectOf(PropTypes.number)
@@ -276,7 +278,6 @@ CustomControl.propTypes = {
     tooltip: PropTypes.string,
     label: PropTypes.string,
     setField: PropTypes.func,
-    onClick: PropTypes.func,
-    onChange: PropTypes.func
+    onClick: PropTypes.func
 
 }
