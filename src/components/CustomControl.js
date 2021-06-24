@@ -73,28 +73,9 @@ export class CustomControl extends Component {
         });
     }
 
-    //isDateInvalid = (value, minDate, maxDate) => {
-    //    let splittedDate = value.split("." || "-");
-    //    let splittedMinDate = minDate.split("." || "-");
-    //    let splittedMaxDate = maxDate.split("." || "-");
-    //    console.log(splittedDate);
-    //    console.log(splittedMinDate);
-    //    console.log(splittedMaxDate);
-
-    //    if (
-    //        ((+splittedDate[2] < +splittedMinDate[2]) && (+splittedDate[1] < +splittedMinDate[1]) && (+splittedDate[0] < +splittedMinDate[0])) ||
-    //        ((+splittedDate[2] > +splittedMaxDate[2]) && (+splittedDate[1] > +splittedMaxDate[1]) && (+splittedDate[0] > +splittedMaxDate[0]))
-    //    ) {
-    //        return true;
-    //    } else {
-    //        return false;
-    //    }
-    //}
-
-
     _renderControl(args) {
 
-        const { type, value, name, disabled, setField, options, placeholder, highlightErrors, label, req, onClick, onChange, inputProps } = args;
+        const { type, value, name, disabled, setField, options, placeholder, highlightErrors, label, req, onClick, onChange} = args;
 
         const controlValue = value || "";
         const error = highlightErrors && (req && controlValue === "");
@@ -148,9 +129,7 @@ export class CustomControl extends Component {
                     okLabel="ОК"
                     cancelLabel="Отмена"
                     placeholder={placeholder}
-                    error={
-                        highlightErrors && (req && controlValue === "")
-                    }
+                    error={error}
                     value={controlValue || null}
                     onChange={dateValue => dateValue && dateValue.toISOString() ?
                         setField(name, dateValue.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
@@ -163,9 +142,7 @@ export class CustomControl extends Component {
                         error={this.props.error}>
                         <TextField
                             fullWidth
-                            error={
-                                highlightErrors && (req && controlValue === "")
-                            }
+                            error={error}
                             value={controlValue || null}
                             helperText={highlightErrors}
                             InputProps={{
@@ -206,9 +183,7 @@ export class CustomControl extends Component {
                     fullWidth
                     defaultValue={controlValue}
                     placeholder={placeholder}
-                    error={
-                        highlightErrors && (req && controlValue === "")
-                    }
+                    error={error}
                     onChange={(chips) => {setField(name, chips.join(","))}}
                 />;
             case 'text':
@@ -216,9 +191,7 @@ export class CustomControl extends Component {
                     disabled={disabled}
                     fullWidth
                     placeholder={placeholder}
-                    error={
-                        highlightErrors && (req && controlValue === "")
-                    }
+                    error={error}
                     value={controlValue || ""}
                     onChange={event => setField(name, event.currentTarget.value)}
                 />;
@@ -239,19 +212,19 @@ export class CustomControl extends Component {
                     placeholder={placeholder}
                     error={
                         error ||
-                        (controlValue < inputProps.min) ||
-                        (controlValue > inputProps.max)
+                        (controlValue < options.inputProps.min) ||
+                        (controlValue > options.inputProps.max)
                     }
                     helperText={
                         error ||
-                            (controlValue < inputProps.min) ||
-                            (controlValue > inputProps.max) ?
-                            `Введите число от ${inputProps.min} до ${inputProps.max}` :
+                            (controlValue < options.inputProps.min) ||
+                            (controlValue > options.inputProps.max) ?
+                            `Введите число от ${options.inputProps.min} до ${options.inputProps.max}` :
                             null
                     }
                     value={controlValue || ""}
                     disabled={disabled}
-                    inputProps={inputProps}
+                    inputProps={options.inputProps}
                     onChange={event => {setField("availabilityPeriod", +event.currentTarget.value)}}
                 />;
             default:
@@ -261,15 +234,6 @@ export class CustomControl extends Component {
 
     render() {
         const { label, req, tooltip, labelWidth, noPadding } = this.props;
-
-        // let controlValue;
-
-        // if (value === null) {
-        //     controlValue = "";
-        // } else {
-        //     controlValue = value;
-        // }
-        //let controlValue = value ||  entity[name];
 
         return <Box display="flex" alignItems="center" mt="10px">
             <FormLabel req={req} bold labelWidth={labelWidth} tooltip={tooltip} noPadding={noPadding}>{label} </FormLabel>
@@ -285,25 +249,34 @@ class OptionsClass {
     min;
     max;
     onClick;
+    minDate;
+    maxDate;
+    inputProps;
 }
 
 OptionsClass.propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
-    min: PropTypes.number,
-    max: PropTypes.number,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    minDate: PropTypes.date,
+    maxDate: PropTypes.date,
+    inputProps: PropTypes.objectOf(PropTypes.number)
 }
 
 CustomControl.propTypes = {
     type: PropTypes.oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number']),
-    entity: PropTypes.object,
     name: PropTypes.string,
     value: PropTypes.any,
     req: PropTypes.bool,
     disabled: PropTypes.bool,
-    placeholder: PropTypes.string,
+    placeholder: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
     options: PropTypes.instanceOf(OptionsClass),
     highlightErrors: PropTypes.bool,
-    noPadding: PropTypes.bool
-}
+    noPadding: PropTypes.bool,
+    labelWidth: PropTypes.bool,
+    tooltip: PropTypes.string,
+    label: PropTypes.string,
+    setField: PropTypes.func,
+    onClick: PropTypes.func,
+    onChange: PropTypes.func
 
+}

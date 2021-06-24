@@ -110,18 +110,18 @@ class TestComnonent extends Component {
             </Box>
             <CustomForm
                 setField={this._setField}
-                entity={this.state.entity}
                 classes={classes}
                 header="New entity"
                 highlightErrors={this.state.check}
                 formStyles={{ paddingLeft: '16px' }}
+                labelWidth={false}
                 controls={[
                     {
                         label: 'Select control',
                         req: true,
                         type: 'select',
                         value: this.state.role,
-                        name: 'role',
+                        name: "role",
                         options: {
                             items: this.state.roles.map(r => ({
                                 label: r.name,
@@ -172,8 +172,8 @@ class TestComnonent extends Component {
                         value: this.state.user.dateOfNotification,
                         placeholder: new Date().toLocaleDateString("ru-RU"),
                         options: {
-                            minDate: new Date('01-01-1917'),
-                            maxDate: new Date('01-01-2077')
+                            minDate: new Date('01.01.1970'),
+                            maxDate: new Date('01.01.2022')
                         },
                         isShown: true,
                         name: 'dateOfNotification'
@@ -191,7 +191,9 @@ class TestComnonent extends Component {
                         value: this.state.user.availabilityPeriod,
                         name: "availabilityPeriod",
                         placeholder: 10,
-                        inputProps: {min: 0, max: 99},
+                        options: {
+                            inputProps: { min: 0, max: 99 },
+                        },
                         isShown: true
                     },
                     {

@@ -8,7 +8,7 @@ import {
 import CustomControl from "../components/CustomControl";
 
 const CustomForm = props => {
-    const { controls, setField, formStyles, entity, generatePassword, noPadding, highlightErrors, mt, mb } = props;
+    const { controls, setField, formStyles, entity, generatePassword, noPadding, highlightErrors, labelWidth, mt, mb } = props;
 
     return (
         <Paper
@@ -32,6 +32,7 @@ const CustomForm = props => {
                             setField={setField}
                             generatePassword={generatePassword}
                             noPadding={noPadding}
+                            labelWidth={labelWidth}
                             highlightErrors={highlightErrors}
                         />
                     } else {
@@ -51,5 +52,7 @@ CustomForm.propTypes = {
     header: PropTypes.string,
     formStyles: PropTypes.object,
     highlightErrors: PropTypes.bool,
-    noPadding: PropTypes.bool
+    noPadding: PropTypes.bool,
+    labelWidth: PropTypes.bool
+
 }

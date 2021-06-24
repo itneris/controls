@@ -12,6 +12,9 @@ import { withStyles } from '@material-ui/core/styles';
 class FormLabelWoStyles extends Component {
     render() {
         let { classes, req, bold, tooltip, noPadding, labelWidth } = this.props;
+
+        console.log(labelWidth);
+
         return <Typography
             style={{
                 fontWeight: bold ? "bold" : "normal",
