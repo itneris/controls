@@ -12,7 +12,7 @@ Custom ItNeris company web-form and controls based on MaterialUI
 4. **req: bool** - атрибут обязательности ввода, по умолчанию false
 5. **disabled: bool** - отключает возможность ввода у контрола
 6. **placeholder: oneOfType(PropTypes.string, PropTypes.number)** - задаёт значение плейсхолдера
-7. **options: instanceOf([OptionsClass](https://github.com/itneris/controls/edit/main/README.md/Options))** - опциональные функции контрола
+7. **options: instanceOf([OptionsClass](https://github.com/itneris/controls/blob/main/README.md#options)** - опциональные функции контрола
 8. **highlightErrors: bool** - отображение ошибки, по умолчанию false
 9. **noPadding: bool** -  отсутствие/наличие паддинга
 10. **labelWidth: bool** - оборачивает FormLabel в <Box width="103px">, по умолчанию false
