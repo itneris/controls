@@ -3,9 +3,9 @@ Custom ItNeris company web-form and controls based on MaterialUI
 
 -----
 
-1. **[Control props](https://github.com/itneris/controls/blob/main/README.md#control-props)**
-2. **[Form props](https://github.com/itneris/controls/blob/main/README.md#form-props)**
-3. **[Additional classes](https://github.com/itneris/controls/blob/main/README.md#form-props)**
+1. [Control props](https://github.com/itneris/controls/blob/main/README.md#control-props)
+2. [Form props](https://github.com/itneris/controls/blob/main/README.md#form-props)
+3. [Additional classes](https://github.com/itneris/controls/blob/main/README.md#form-props)
 
 ## Control props
  1. **type: oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number'])** - тип генерируемого контрола
