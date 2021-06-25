@@ -8,14 +8,14 @@ import {
 import CustomControl from "../components/CustomControl";
 
 const CustomForm = props => {
-    const { controls, setField, formStyles, entity, generatePassword, noPadding, highlightErrors, labelWidth, mt, mb } = props;
+    const { controls, setField, formStyles, generatePassword, noPadding, highlightErrors, labelWidth, } = props;
 
     return (
         <Paper
             style={{
                 padding: "6px 16px 16px 16px",
-                marginTop: mt || 20,
-                marginBottom: mb || 20
+                marginTop: formStyles.mt || 20,
+                marginBottom: formStyles.mb || 20
             }}
         >
             <Box alignItems="center" display="flex">
@@ -28,9 +28,7 @@ const CustomForm = props => {
                             key={"fc-" + i}
                             formStyles={formStyles}
                             {...control}
-                            entity={entity}
                             setField={setField}
-                            generatePassword={generatePassword}
                             noPadding={noPadding}
                             labelWidth={labelWidth}
                             highlightErrors={highlightErrors}
@@ -47,12 +45,13 @@ const CustomForm = props => {
 export default CustomForm;
 
 CustomForm.propTypes = {
-    controls: PropTypes.array,
-    entity: PropTypes.object,
+    controls: PropTypes.arrayOf(PropTypes.object),
     header: PropTypes.string,
     formStyles: PropTypes.object,
     highlightErrors: PropTypes.bool,
     noPadding: PropTypes.bool,
-    labelWidth: PropTypes.bool
+    labelWidth: PropTypes.bool,
+    mt: PropTypes.number,
+    mb: PropTypes.number
 
 }
