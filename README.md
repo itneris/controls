@@ -38,4 +38,8 @@ Custom ItNeris company web-form and controls based on MaterialUI
   - **minDate: date** - передаёт минимальное значение для контрола типа 'date'
   - **maxDate: date** - передаёт максимальное значение для контрола типа 'date'
  
+  ### Form style
+  - **mt: number** - marginTop
+  - **mb: number** - marginBottom
+ 
   
