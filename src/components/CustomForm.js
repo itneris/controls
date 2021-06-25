@@ -44,14 +44,23 @@ const CustomForm = props => {
 
 export default CustomForm;
 
+class FormStyleClass {
+    mt;
+    mb;
+}
+
+FormStyleClass.PropTypes = {
+    mt: PropTypes.number,
+    mb: PropTypes.number
+}
+
 CustomForm.propTypes = {
     controls: PropTypes.arrayOf(PropTypes.object),
     header: PropTypes.string,
-    formStyles: PropTypes.object,
+    formStyles: PropTypes.objectOf(PropTypes.instanceOf(FormStyleClass)),
     highlightErrors: PropTypes.bool,
     noPadding: PropTypes.bool,
     labelWidth: PropTypes.bool,
-    mt: PropTypes.number,
-    mb: PropTypes.number
+    
 
 }
