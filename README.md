@@ -1,24 +1,31 @@
 # ItNeris Controls
 Custom ItNeris company web-form and controls based on MaterialUI
 
-## Content
-1. **Props**
-2. **Additional classes**
+-----
 
-## Props
-1. **type: oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number'])** - тип генерируемого контрола
-2. **name: string** - имя поля в БД, с которым связан контрол
-3. **value: any** - содержание поля в БД, с которым связан контрол
-4. **req: bool** - атрибут обязательности ввода, по умолчанию false
-5. **disabled: bool** - отключает возможность ввода у контрола
-6. **placeholder: oneOfType(PropTypes.string, PropTypes.number)** - задаёт значение плейсхолдера
-7. **options: instanceOf([OptionsClass](https://github.com/itneris/controls/blob/main/README.md#options))** - опциональные функции контрола
-8. **highlightErrors: bool** - отображение ошибки, по умолчанию false
-9. **noPadding: bool** -  отсутствие/наличие паддинга
-10. **labelWidth: bool** - оборачивает FormLabel в <Box width="103px">, по умолчанию false
-11. **tooltip: string** - передаёт текст в всплывающую подсказку
-12. **label: string** - передаёт наименование контрола
-13. **setField: function()** - функция, устанавливающая значение контрола при вводе
+1. [Control props](https://github.com/itneris/controls/blob/main/README.md#control-props)
+2. [Form props](https://github.com/itneris/controls/blob/main/README.md#form-props)
+3. [Additional classes](https://github.com/itneris/controls/blob/main/README.md#form-props)
+
+## Control props
+ - **type: oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number'])** - тип генерируемого контрола
+ - **name: string** - имя поля в БД, с которым связан контрол
+ - **value: any** - содержание поля в БД, с которым связан контрол
+ - **req: bool** - атрибут обязательности ввода, по умолчанию false
+ - **disabled: bool** - отключает возможность ввода у контрола
+ - **placeholder: oneOfType(PropTypes.string, PropTypes.number)** - задаёт значение плейсхолдера
+ - **options: instanceOf([OptionsClass](https://github.com/itneris/controls/blob/main/README.md#options))** - опциональные функции контрола
+ - **highlightErrors: bool** - отображение ошибки, по умолчанию false
+ - **noPadding: bool** -  отсутствие/наличие паддинга
+ - **labelWidth: bool** - оборачивает FormLabel в <Box width="103px">, по умолчанию false
+ - **tooltip: string** - передаёт текст в всплывающую подсказку
+ - **label: string** - передаёт наименование контрола
+ - **setField: function()** - функция, устанавливающая значение контрола при вводе
+ 
+## Form props
+ - **controls: arrayOf(PropTypes.object)** - массив объектов, где каждый объект представляет данные определённого контрола
+ - **header: string** - имя заголовка формы
+ - **formStyles: object** - передаёт стили для формы
 
  ## Additional classes
   ### Options
@@ -30,3 +37,9 @@ Custom ItNeris company web-form and controls based on MaterialUI
   - **onChange: function()** - функция, передаваемая для контрола типа 'select'
   - **minDate: date** - передаёт минимальное значение для контрола типа 'date'
   - **maxDate: date** - передаёт максимальное значение для контрола типа 'date'
+ 
+  ### Form style
+  - **mt: number** - marginTop
+  - **mb: number** - marginBottom
+ 
+  
