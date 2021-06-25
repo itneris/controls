@@ -25,7 +25,6 @@ Custom ItNeris company web-form and controls based on MaterialUI
  1. **controls: arrayOf(PropTypes.object)** - массив объектов, где каждый объект представляет данные определённого контрола
  2. **header: string** - имя заголовка формы
  3. **formStyles: object** - передаёт стили для формы
- 4. **
 
  ## Additional classes
   ### Options
