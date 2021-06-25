@@ -1,7 +1,7 @@
 # ItNeris Controls
 Custom ItNeris company web-form and controls based on MaterialUI
 
-----------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------
 
 ## Content
 1. **[Control props](https://github.com/itneris/controls/blob/main/README.md#control-props)**
