@@ -62,9 +62,9 @@ Custom ITneris company web-form and controls based on MaterialUI
  - **okButtonDisabled: bool** - если значение true, кнопка окей заблокирована.
  - **onCancel: function()** - вызовается функция onCancel при нажатии на кнопку отмены.
  - **onOk: function()** - вызовается функция onOk при нажатии на кнопку окей.
- - **size: string** - размер модального окна.
+ - **size: string** - размер модального окна. Окно растет вместе с размером экрана. false выключает это. Возможные варианты: 'xs', 'sm', 'md', 'lg', 'xl', false.
  - **okBtnText: string** - текст для кнопки Ok.
- - **titleComponent: string** - компонент, который отображается в заголовке модального окна.
+ - **titleComponent: React.element** - компонент, который отображается в заголовке модального окна.
 
  ## PageTitle props
  - **title: string** - текст заголовка.
@@ -77,9 +77,9 @@ Custom ITneris company web-form and controls based on MaterialUI
  ## Additional classes
   ### Options
   - **items: arrayOf(PropTypes.object)** - элементы контрола типа 'select'.
-  - **inputProps: objectOf(PropTypes.number)** - объект, включающий в себя свойства min и max.
-  - **min: number** - минимальное значение контрола типа 'number'.
-  - **max: number** - максимальное значение контрола типа 'number'.
+  - **inputProps: objectOf(PropTypes.number)** - объект, включающий в себя свойства min и max:
+   - **min: number** - минимальное значение контрола типа 'number'.
+   - **max: number** - максимальное значение контрола типа 'number'.
   - **onClick: function()** - функция, передаваемая для контрола типа 'button'.
   - **onChange: function()** - функция, передаваемая для контрола типа 'select'.
   - **minDate: date** - передаёт минимальное значение для контрола типа 'date'.
@@ -88,9 +88,5 @@ Custom ITneris company web-form and controls based on MaterialUI
   ### Buttons Options
   - **tooltip: component** - текст тултипа.
   - **color: string** - цвет кнопки.
-  - **onClick: function()** - вызовается функция onClick при нажатии на кнопку.
+  - **onClick: function()** - вызывается функция onClick при нажатии на кнопку.
   - **icon: component** - иконка для кнопки.
- 
-  ### Form style
-  - **mt: number** - marginTop.
-  - **mb: number** - marginBottom.
