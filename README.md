@@ -68,7 +68,7 @@ Custom ItNeris company web-form and controls based on MaterialUI
  - **okBtnText: string** - текст для кнопки Ok.
  - **titleComponent: string** - компонент, который отображается в заголовке модального окна.
 
- ## PageTitle
+ ## PageTitle props
 - **title: string** - текст заголовка.
 - **onAdd: function()** - вызовается функция onAdd при нажатии на кнопку окей. Кнопка не отображается если свойство не указано.
 - **btnStyle: object** - обьект со стилями для кнопки.  
