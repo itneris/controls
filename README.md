@@ -1,5 +1,5 @@
-# ItNeris Controls
-Custom ItNeris company web-form and controls based on MaterialUI
+# ITneris Controls
+Custom ITneris company web-form and controls based on MaterialUI
 
 -----
 
@@ -22,7 +22,7 @@ Custom ItNeris company web-form and controls based on MaterialUI
  - **options: instanceOf([OptionsClass](https://github.com/itneris/controls/blob/main/README.md#options))** - опциональные функции контрола
  - **highlightErrors: bool** - отображение ошибки, по умолчанию false
  - **noPadding: bool** -  отсутствие/наличие паддинга
- - **labelWidth: bool** - оборачивает FormLabel в <Box width="103px">, по умолчанию false
+ - **labelWidth: bool** - оборачивает *CustomControl* в FormLabel<Box width="103px">, по умолчанию false
  - **tooltip: string** - передаёт текст в всплывающую подсказку
  - **label: string** - передаёт наименование контрола
  - **setField: function()** - функция, устанавливающая значение контрола при вводе
@@ -33,9 +33,6 @@ Custom ItNeris company web-form and controls based on MaterialUI
  - **formStyles: object** - передаёт стили для формы
 
  ## DatePicker props
- - **controls: arrayOf(PropTypes.object)** - массив объектов, где каждый объект представляет данные определённого контрола
- - **header: string** - имя заголовка формы
- - **formStyles: object** - передаёт стили для формы
  - **mode: string** - режим выбора даты
  - **value: any** - Значение компонента, необходимое для управления компонента.
  - **onChange: function()** - вызовается функция onChange при изменении значения.
@@ -49,8 +46,8 @@ Custom ItNeris company web-form and controls based on MaterialUI
  - **title: string** - текст заголовка дровера.
  - **onDelete: function()** - вызовается функция onDelete при нажатии на кнопку удаления.
  - **onSave: function()** - вызовается функция onSave при нажатии на кнопку сохранения.
- - **buttons: arrayOf(PropTypes.object)** - массив кнопок, которые отображаются в боковом меню.
- - **tabs: arrayOf([Buttons Options](https://github.com/itneris/controls/blob/main/README.md#buttons-options))** - массив вкладок, которые отображаются в боковом меню.
+ - **buttons: arrayOf([Buttons Options](https://github.com/itneris/controls/blob/main/README.md#buttons-options))** - массив кнопок, которые отображаются в боковом меню.
+ - **tabs: arrayOf(PropTypes.object)** - массив вкладок, которые отображаются в боковом меню.
  
  ## Modal props
  - **styleTitle: object** - обьект со стилями для заголовка.
