@@ -52,9 +52,9 @@ Custom ItNeris company web-form and controls based on MaterialUI
  - **tabs: arrayOf([Buttons Options](https://github.com/itneris/controls/blob/main/README.md#buttons-options))** - массив вкладок, которые отображаются в боковом меню.
  
  ## Modal props
- - **styleTitle = { paddingX: "16px", paddingY: "16px" }: object** - обьект со стилями для заголовка.
- - **styleContent = { paddingX: "16px", paddingTop: "0px", paddingBottom: "20px" }: object** - обьект со стилями для контент.
- - **styleBottom = { paddingX: "16px", paddingTop: "8px", paddingBottom: "16px" }: object** - стили контейнера с кнопками отмена и ок.
+ - **styleTitle: object** - обьект со стилями для заголовка.
+ - **styleContent: object** - обьект со стилями для контент.
+ - **styleBottom: object** - стили контейнера с кнопками отмена и ок.
  - **titleJustifyContent: string** - распределяет пространство между элементами контента.
  - **title: string** - текст заголовка модального окна.
  - **open: bool** - если значение true, отображается компонент.
