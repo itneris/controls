@@ -9,7 +9,7 @@ Custom ItNeris company web-form and controls based on MaterialUI
 4. [EditDrawer props](https://github.com/itneris/controls/blob/main/README.md#editdrawer-props)
 5. [Modal props](https://github.com/itneris/controls/blob/main/README.md#modal-props)
 6. [PageTitle props](https://github.com/itneris/controls/blob/main/README.md#pagetitle-props)
-7. [HtmlTooltip props](https://github.com/itneris/controls/blob/main/README.md#рtmlнooltip-props)
+7. [HtmlTooltip props](https://github.com/itneris/controls/blob/main/README.md#htmltooltip-props)
 8. [Additional classes](https://github.com/itneris/controls/blob/main/README.md#form-props)
 
  ## Control props
