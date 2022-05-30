@@ -1,96 +1,45 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import Test from './test/test';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import MomentUtils from '@date-io/moment';
 import moment from "moment";
 import "moment/locale/ru";
 moment.locale("ru");
 
-const theme = createMuiTheme({
-    overrides: {
-        MuiTableCell: {
-            root: {
-                fontSize: "0.8125rem",
-                fontWeight: 400,
-                padding: "16px 56px 16px 24px",
-                "&:last-child": {
-                    paddingRight: "24px"
-                }
-            },
-            head: {
-                fontSize: "0.75rem",
-                fontWeight: 500,
-                color: "grey"
-            }
-        },
-        MUIDataTableBodyCell: {
-            root: {
-                fontSize: "0.8125rem",
-                fontWeight: 400,
-                padding: "16px 56px 16px 24px",
-                "&:last-child": {
-                    paddingRight: "24px"
-                }
-            }
-        },
-        MUIDataTableHeadCell: {
-            root: {
-                fontSize: "0.75rem",
-                fontWeight: 500,
-                color: "grey",
-                padding: "16px 56px 16px 24px",
-                "&:last-child": {
-                    paddingRight: "24px"
-                }
-            }
-        },
-        MUIDataTableBody: {
-            emptyTitle: {
-                fontSize: "0.8125rem"
-            }
-        },
-        MuiTablePagination: {
-            root: {
-                color: "grey",
-                fontSize: "0.75rem"
-            },
-            caption: {
-                fontSize: "0.75rem"
-            }
-        }
-    },
+const theme = createTheme({    
     palette: {
         background: {
-            default: '#f1f1f1'
+            dark: "#eee"
         },
         primary: {
-            main: '#00838f',
-            light: '#4fb3bf',
-            dark: '#005662',
-            contrastText: '#ffffff'
+            main: "#454d58",
+            light: "#707985",
+            dark: "#1d252f"
         },
         secondary: {
-            main: '#0277bd',
-            light: '#58a5f0',
-            dark: '#004c8c',
-            contrastText: '#ffffff'
+            main: "#337ab7",
+            light: "#6ca9ea",
+            dark: "#004e87"
         },
-        text: {
-            secondary: 'grey'
+        default: {
+            main: "#e0e0e0",
+            light: "#eeeeee",
+            dark: "#aeaeae"
         }
-    }
+    },
 });
 
-const rootElement = document.getElementById('root');
+const rootElement = ReactDOM.createRoot(document.getElementById("root"));
 
-ReactDOM.render(
+rootElement.render(
     <React.StrictMode>
-        <MuiThemeProvider theme={theme}>
-            <MuiPickersUtilsProvider utils={MomentUtils}>
+        <ThemeProvider theme={theme}>
+            <LocalizationProvider dateAdapter={moment}>
                 <Test />
-            </MuiPickersUtilsProvider>
-        </MuiThemeProvider>
-    </React.StrictMode>,
-    rootElement);
+            </LocalizationProvider>
+        </ThemeProvider>
+    </React.StrictMode>
+    );

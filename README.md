@@ -9,7 +9,7 @@ Custom ItNeris company web-form and controls based on MaterialUI
 
 ## Control props
  - **type: oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number'])** - тип генерируемого контрола
- - **name: string** - имя поля в БД, с которым связан контрол
+ - **name: string** - имя поля в БД, с которым связан контролnn
  - **value: any** - содержание поля в БД, с которым связан контрол
  - **req: bool** - атрибут обязательности ввода, по умолчанию false
  - **disabled: bool** - отключает возможность ввода у контрола
@@ -41,5 +41,3 @@ Custom ItNeris company web-form and controls based on MaterialUI
   ### Form style
   - **mt: number** - marginTop
   - **mb: number** - marginBottom
- 
-  

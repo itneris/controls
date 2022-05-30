@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import PropTypes from 'prop-types';
 import {
     TextField,
@@ -12,118 +12,139 @@ import {
     IconButton,
     Typography,
     Button,
-    Tooltip,
-    Snackbar
-} from "@material-ui/core";
-import Alert from '@material-ui/lab/Alert';
+    Autocomplete
+} from "@mui/material";
 import {
     Loop,
     Visibility,
     VisibilityOff,
     Send
-} from "@material-ui/icons";
-import ChipInput from 'material-ui-chip-input';
-import { KeyboardDatePicker } from "@material-ui/pickers";
-import FormLabel from "../components/FormLabel";
+} from "@mui/icons-material";
+//import ChipInput from 'material-ui-chip-input';
+import FormLabel from "./FormLabel";
 
-export class CustomControl extends Component {
-    constructor(props) {
-        super(props);
+import HtmlTooltip from "./HtmlTooltip";
+import DatePicker from "./DatePicker";
 
-        this.state = {
-            columns: null,
-            buttonIsClicked: false,
-            open: false
-        };
+function CustomControl(props) {
+    const {
+        type,
+        value,
+        name,
+        disabled,
+        options,
+        placeholder,
+        highlightErrors,
+        label,
+        req,
+        onClick,
+        variant,
+        onChange,
+        tooltip,
+        labelWidth,
+        noPadding,
+    } = props;
 
-        this._generatePassword = this._generatePassword.bind(this);
-    }
+    const [showPassword, setShowPassword] = useState(false);
 
-    _generatePassword = (newPass, setField, length) => {
-        var small = "abcdefghijklmnopqrstuvwxyz";
-        var nonAlpha = "!@#$%^&*()-+<>";
-        var big = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        var nums = "1234567890"
-        var chars = small + nonAlpha + big + nums;
+    const generatePassword = useCallback((newPass, length) => {
+        const small = "abcdefghijklmnopqrstuvwxyz";
+        const nonAlpha = "!@#$%^&*()-+<>";
+        const big = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        const nums = "1234567890"
+        const chars = small + nonAlpha + big + nums;
 
-        var pass = "";
-        for (var x = 0; x < length; x++) {
-            var i = Math.floor(Math.random() * chars.length);
-            pass += chars.charAt(i);
+        let pass = "";
+        for (let i = 0; i < (length || 8); i++) {
+            const charPos = Math.floor(Math.random() * chars.length);
+            pass += chars.charAt(charPos);
         }
 
         if (/\d/.test(pass) && /[a-z]/.test(pass) && /[A-Z]/.test(pass) && /[!@#$%^&*()-+<>]/.test(pass)) {
-            if (newPass) {
-                this.setState({ newPassword: pass });
-            } else {
-                setField("password", pass);
-            }
+           onChange("password", pass);
         } else {
-            /*this._generatePassword(newPass);*/
+           generatePassword(newPass);
         }
-    }
+    }, [onChange])
 
-    closeSnackbar = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        this.setState({
-            buttonIsClicked: false
-        });
-    }
-
-    _renderControl(args) {
-
-        const { type, value, name, disabled, setField, options, placeholder, highlightErrors, label, req, onClick, onChange} = args;
-
+    const control = useMemo(() => {
         const controlValue = value || "";
-        const error = highlightErrors && (req && controlValue === "");
+        const error = highlightErrors && req && controlValue === "";
 
-        switch (type) { 
+        const controlOptions = options || {};
+        const controlVariant = variant || "standard";
+
+        switch (type) {
             case 'select':
                 return <FormControl
                     fullWidth
                     error={error}
                 >
                     <Select
+                        variant={controlVariant}
                         fullWidth
                         disabled={disabled}
-                        value={controlValue || ""}
-                        onChange={onChange}
+                        value={controlValue}
+                        onChange={event => onChange(name, event.target.value)}
                         displayEmpty
                     >
-                        <MenuItem disabled value="">
-                            <Typography variant='body2'>{label}</Typography>
+                        <MenuItem disabled={controlOptions.allowNull ? false : true} value="">
+                            <Typography variant='body2'>{controlOptions.nullLabel || label}</Typography>
                         </MenuItem>
                         {
-                            options.items.map((item, index) => {
-                                return <MenuItem value={item.label}>
-                                    <Typography key={"select-item" + index} variant='body2'>{item.value}</Typography>
+                            controlOptions.items.map((item, index) => {
+                                return <MenuItem key={name + "-o-" + index} value={item.value}>
+                                    <Typography key={"select-item" + index} variant='body2'>{item.label}</Typography>
                                 </MenuItem>
                             })
                         }
                     </Select>
-                    <FormHelperText>{options.items.find(i => i.value === value && i.blocked)}</FormHelperText>
+                    <FormHelperText>{controlOptions.items.find(i => i.value === value && i.blocked)}</FormHelperText>
                 </FormControl>;
+            case 'autocomplete':
+                return <Autocomplete
+                    getOptionLabel={option => option.label || ""}
+                    isOptionEqualToValue={(option, value) => {
+                        return option.value === value;
+                    }}
+                    fullWidth
+                    disabled={disabled}
+                    options={controlOptions.items}
+                    value={controlOptions.items.find(i => i.value.toString() === controlValue.toString()) || null}
+                    noOptionsText={'Ничего не найдено'}
+                    onChange={(event, newValue) => {
+                        onChange(name, newValue.value);
+                    }}
+                    renderOption={(props, option) => (
+                        <Box {...props}>
+                            {option.label}
+                        </Box>
+                    )}
+                    renderInput={(params) => <TextField variant="standard" {...params} ></TextField>}
+                />
             case 'bool':
                 return <Box width="100%">
                     <Checkbox
                         disabled={disabled}
-                        checked={controlValue}
-                        onChange={e => setField(name, !controlValue)}
+                        value={!!controlValue}
+                        onChange={e => onChange(name, !controlValue)}
                     />
                 </Box>;
             case 'date':
-                return <KeyboardDatePicker
+                return <DatePicker
+                    value={controlValue}
+                    onChange={val => onChange(name, val)}
+                    mode={controlOptions.mode}
+                />
+                /*return <DayPicker
                     disabled={disabled}
                     disableToolbar
                     fullWidth
                     autoOk
-                    minDate={options.minDate}
-                    maxDate={options.maxDate}
-                    maxDateMessage={`Значение даты не должно превышать ${options.maxDate}`}
-                    minDateMessage={`Значение даты не должно быть менее ${options.minDate}`}
+                    minDate={controlOptions.minDate}
+                    maxDate={controlOptions.maxDate}
+                    maxDateMessage={`Значение даты не должно превышать ${controlOptions.maxDate}`}
+                    minDateMessage={`Значение даты не должно быть менее ${controlOptions.minDate}`}
                     invalidDateMessage='Некорректная дата'
                     format='DD.MM.YYYY'
                     okLabel="ОК"
@@ -131,69 +152,73 @@ export class CustomControl extends Component {
                     placeholder={placeholder}
                     error={error}
                     value={controlValue || null}
+                    locale={ru}
                     onChange={dateValue => dateValue && dateValue.toISOString() ?
-                        setField(name, dateValue.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
+                        onChange(name, dateValue.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString(true).slice(0, 19))
                         : null}
-                />;
+                />*/;
             case 'password':
                 return <div style={{ display: "flex", width: "100%" }}>
                     <FormControl
                         fullWidth
-                        error={this.props.error}>
+                        error={error}
+                    >
                         <TextField
+                            variant={controlVariant}
                             fullWidth
                             error={error}
-                            value={controlValue || null}
+                            value={controlValue}
                             helperText={highlightErrors}
                             InputProps={{
-                                type: this.state.showPassword ? 'text' : 'password',
+                                type: showPassword ? 'text' : 'password',
                                 endAdornment: <InputAdornment position="end" >
                                     <IconButton
                                         aria-label="Видимость пароля"
-                                        onClick={() => this.setState({ showPassword: !this.state.showPassword })}
+                                        onClick={() => setShowPassword(!showPassword)}
                                     >
-                                        {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                                 </InputAdornment>
                             }}
-                            onChange={event => setField(name, event.currentTarget.value)}
+                            onChange={event => onChange(name, event.currentTarget.value)}
                         />
-                        <FormHelperText>{this.props.error}</FormHelperText>
+                        <FormHelperText>{error}</FormHelperText>
                     </FormControl>
-                    <IconButton onClick={() => { this._generatePassword(false, setField, options.passwordLength); this.setState({ buttonIsClicked: true }) }}>
-                        <Tooltip
-                            title={options.buttonTooltip}
-                        >
+                    <IconButton onClick={() => generatePassword(false, controlOptions.passwordLength)}>
+                        <HtmlTooltip title="Сгенерировать пароль">
                             <Loop />
-                        </Tooltip>
+                        </HtmlTooltip>
                     </IconButton>
-                    <Snackbar
-                        open={this.state.buttonIsClicked}
-                        autoHideDuration={1000}
-                        onClose={this.closeSnackbar}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                    >
-                        <Alert severity="info">
-                            Button has been pressed
-                        </Alert>
-                    </Snackbar>
                 </div>;
+            //TODO проверить чип инпут
+            /*
             case 'chip-input':
                 return <ChipInput
                     fullWidth
                     defaultValue={controlValue}
                     placeholder={placeholder}
                     error={error}
-                    onChange={(chips) => {setField(name, chips.join(","))}}
-                />;
+                    onChange={(chips) => {onChange(name, chips.join(","))}}
+                />;*/
+            //TODO Сделать комит на завтра.
             case 'text':
                 return <TextField
+                    variant={controlVariant}
                     disabled={disabled}
                     fullWidth
                     placeholder={placeholder}
-                    error={error}
-                    value={controlValue || ""}
-                    onChange={event => setField(name, event.currentTarget.value)}
+                    value={controlValue}
+                    onChange={event => onChange(name, event.currentTarget.value)}
+                    error={
+                        error || (controlOptions?.mask && controlValue && !new RegExp(controlOptions?.mask).test(controlValue)) ?
+                            true :
+                            false
+                    }
+                    helperText={
+                        error || (controlOptions?.mask && controlValue && !new RegExp(controlOptions?.mask).test(controlValue)) ?
+                            controlOptions?.maskError :
+                            null
+                    }
                 />;
             case 'button':
                 return <Box width="100%">
@@ -207,77 +232,94 @@ export class CustomControl extends Component {
                     </Button>
                 </Box>;
             case 'number':
-                return <TextField fullWidth
+                return <TextField
+                    fullWidth
+                    variant={controlVariant}
                     type="number"
                     placeholder={placeholder}
                     error={
                         error ||
-                        (controlValue < options.inputProps.min) ||
-                        (controlValue > options.inputProps.max)
+                            (controlOptions.inputProps?.min && controlValue < controlOptions.inputProps.min) ||
+                            (controlOptions.inputProps?.max && controlValue > controlOptions.inputProps.max) ?
+                            true :
+                            false
                     }
                     helperText={
                         error ||
-                            (controlValue < options.inputProps.min) ||
-                            (controlValue > options.inputProps.max) ?
-                            `Введите число от ${options.inputProps.min} до ${options.inputProps.max}` :
+                            (controlOptions.inputProps?.min && controlValue < controlOptions.inputProps.min) ||
+                            (controlOptions.inputProps?.max && controlValue > controlOptions.inputProps.max) ?
+                            `Введите число от ${controlOptions.inputProps.min} до ${controlOptions.inputProps.max}` :
                             null
                     }
                     value={controlValue || ""}
                     disabled={disabled}
-                    inputProps={options.inputProps}
-                    onChange={event => {setField("availabilityPeriod", +event.currentTarget.value)}}
+                    inputProps={controlOptions.inputProps}
+                    onChange={event => { onChange(name, +event.currentTarget.value) }}
                 />;
             default:
-                return new Error();
+                return <TextField
+                    variant={controlVariant}
+                    disabled={disabled}
+                    fullWidth
+                    placeholder={placeholder}
+                    value={controlValue}
+                    onChange={event => onChange(name, event.currentTarget.value)}
+                    error={
+                        error || (controlOptions?.mask && controlValue && !new RegExp(controlOptions?.mask).test(controlValue)) ?
+                            true :
+                            false
+                    }
+                    helperText={
+                        error || (controlOptions?.mask && controlValue && !new RegExp(controlOptions?.mask).test(controlValue)) ?
+                            controlOptions?.maskError :
+                            null
+                    }
+                />;
         }
-    };
+    }, [value, onChange, options, disabled, placeholder, variant, highlightErrors]);
 
-    render() {
-        const { label, req, tooltip, labelWidth, noPadding } = this.props;
-
-        return <Box display="flex" alignItems="center" mt="10px">
-            <FormLabel req={req} bold labelWidth={labelWidth} tooltip={tooltip} noPadding={noPadding}>{label} </FormLabel>
-            {this._renderControl(this.props)}
-        </Box>;
-    }
+    return <Box display="flex" alignItems="center" mt="10px" minHeight="32px">
+        <FormLabel
+            req={req}
+            bold
+            labelWidth={labelWidth}
+            tooltip={tooltip}
+            noPadding={noPadding}
+            pl={options?.pl}
+        >
+            {label}
+        </FormLabel>
+        {control}
+    </Box>;
 }
 
 export default CustomControl;
 
-class OptionsClass {
-    items;
-    min;
-    max;
-    onClick;
-    onChange;
-    minDate;
-    maxDate;
-    inputProps;
-}
-
-OptionsClass.propTypes = {
-    items: PropTypes.arrayOf(PropTypes.object),
-    onClick: PropTypes.func,
-    onChange: PropTypes.func,
-    minDate: PropTypes.date,
-    maxDate: PropTypes.date,
-    inputProps: PropTypes.objectOf(PropTypes.number)
-}
-
 CustomControl.propTypes = {
-    type: PropTypes.oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number']),
+    type: PropTypes.oneOf(['select', 'bool', 'password', 'text', 'date', 'chip-input', 'button', 'number', 'autocomplete', null]),
     name: PropTypes.string,
     value: PropTypes.any,
     req: PropTypes.bool,
     disabled: PropTypes.bool,
-    placeholder: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
-    options: PropTypes.instanceOf(OptionsClass),
+    placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    options: PropTypes.shape({
+        items: PropTypes.arrayOf(PropTypes.object),
+        min: PropTypes.number,
+        max: PropTypes.number,
+        pl: PropTypes.number,
+        onClick: PropTypes.func,
+        onChange: PropTypes.func,
+        minDate: PropTypes.instanceOf(Date),
+        maxDate: PropTypes.instanceOf(Date),
+        mask: PropTypes.string,
+        maskError: PropTypes.string,
+        inputProps: PropTypes.object
+    }),
     highlightErrors: PropTypes.bool,
     noPadding: PropTypes.bool,
     labelWidth: PropTypes.bool,
     tooltip: PropTypes.string,
     label: PropTypes.string,
-    setField: PropTypes.func,
-    onClick: PropTypes.func
-
+    onChange: PropTypes.func,
+    onClick: PropTypes.func,
 }
