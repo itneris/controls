@@ -1,74 +1,73 @@
 import React, { forwardRef, useCallback } from "react";
-import { Box, Drawer, Typography } from "@mui/material";
-import { useTheme } from "@emotion/react";
+import { Box, Drawer, Tooltip, Typography } from "@mui/material";
 import { Close, Delete, Save } from "@mui/icons-material";
 import Fab from '@mui/material/Fab';
-import HtmlToolTip from '../components/HtmlTooltip'
 import { useMemo } from "react";
 import { useState } from "react";
 import { useImperativeHandle } from "react";
+import IDrawerProps, { DrawerBtnProp } from '../props/IDrawerProps';
+import IDrawerRef from '../props/IDrawerRef';
 
-const EditDrawer = forwardRef((props, ref) => {
-    const {
-        open,
-        children,
-        onClose,
-        title,
-        onDelete,
-        onSave,
-        buttons: propsButtons,
-        tabs
-    } = props;
-
-    const theme = useTheme();
-    const [activeTab, setActiveTab] = useState(0);
+const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
+    const [activeTab, setActiveTab] = useState<number>(0);
+    const [open, setOpen] = useState<boolean>(false);
 
     useImperativeHandle(ref, () => ({
         setTab(tabIndex) {
             setActiveTab(tabIndex);
+        },
+        open() {
+            setOpen(true);
         }
     }));
 
-    const handleClose = useCallback((type) => () => {
+    const handleResult = useCallback((result: "delete" | "save" | "cancel" | "hide") => () => {
         setActiveTab(0);
-        onClose(type);
-    }, [onClose]);
+        props.onResult && props.onResult(result);
+        setOpen(false);
+    }, [props.onResult]);
 
-    const buttons = useMemo(() => {
-        let btns = [{
-            tooltip: 'Закрыть',
-            icon: <Close />,
-            onClick: handleClose('btn')
-        }];
-        if (onSave) {
+    const buttons: Array<React.ReactNode> = useMemo(() => {
+        let btns: Array<DrawerBtnProp> = [];
+        if (props.cancelBtnText) {
+            btns.push({
+                tooltip: 'Закрыть',
+                icon: <Close />,
+                onClick: handleResult('cancel'),
+                color: "default"
+            });
+        }
+        if (props.saveBtnText) {
             btns.push({
                 color: 'secondary',
                 tooltip: 'Сохранить',
                 icon: <Save />,
-                onClick: onSave
+                onClick: handleResult("save")
             });
         }
-        if (onDelete) {
+        if (props.deleteBtnText) {
             btns.push({
                 color: 'error',
                 tooltip: 'Удалить',
                 icon: <Delete />,
-                onClick: onDelete
+                onClick: handleResult("delete")
             });
         }
-        if (propsButtons) {
-            btns = [...btns, ...propsButtons];
+        if (props.buttons) {
+            btns = [...btns, ...props.buttons!];
         }
-        return btns.map((btn, index) => <HtmlToolTip
-            title={btn.tooltip}
-            key={`db-${index}`}
-            placement="left"
-        >
-            <Fab variant="contained" color={btn.color} onClick={btn.onClick} size="small">
-                {btn.icon}
-            </Fab>
-        </HtmlToolTip>);
-    }, [onSave, onDelete, propsButtons, onClose]);
+        return btns.map((btn, index) => (
+            <Tooltip
+                title={btn.tooltip}
+                key={`db-${index}`}
+                placement="left"
+            >
+                <Fab color={btn.color} onClick={btn.onClick} size="small">
+                    {btn.icon}
+                </Fab>
+            </Tooltip>
+        ));
+    }, [handleResult, props.buttons]);
 
     const handleTabChange = useCallback(index => setActiveTab(index), [setActiveTab]);
 
@@ -77,7 +76,7 @@ const EditDrawer = forwardRef((props, ref) => {
             <Drawer
                 anchor='right'
                 open={open}
-                onClose={handleClose('auto')}
+                onClose={handleResult('hide')}
                 sx={{
                     width: '40%',
                     '& .MuiDrawer-paper': {
@@ -89,7 +88,7 @@ const EditDrawer = forwardRef((props, ref) => {
                 }}
             >
                 {
-                    (open && buttons) &&
+                    (open && buttons.length) &&
                     <Box
                         zIndex={1300}
                         position="absolute"
@@ -104,20 +103,22 @@ const EditDrawer = forwardRef((props, ref) => {
                             flexDirection="column"
                             justifyContent="top"
                             gap={2}
-                            backgroundColor="rgba(255, 255, 255, 0.7)"
+                            bgcolor="rgba(255, 255, 255, 0.7)"
                         >
                             {buttons}
                         </Box>
                         {
-                            tabs && tabs.map((tab, index) =>
+                            props.tabs.length && props.tabs.map((tab, index) => (
                                 <Box
                                     key={"tab-btn" + index}
                                     height={180}
                                     top={0}
-                                    backgroundColor={index === activeTab ? theme.palette.secondary.main : "rgba(255, 255, 255, 0.7)"}
                                     color={index === activeTab ? "white" : "black"}
                                     onClick={() => handleTabChange(index)}
-                                    sx={{ cursor: "pointer" }}
+                                    sx={theme => ({
+                                        cursor: "pointer",
+                                        backgroundColor: index === activeTab ? theme.palette.secondary.main : "rgba(255, 255, 255, 0.7)"
+                                    })}
                                     borderTop="1px solid grey"
                                 >
                                     <Typography
@@ -129,10 +130,10 @@ const EditDrawer = forwardRef((props, ref) => {
                                         }}
                                         align="center"
                                     >
-                                        {tab.label}
+                                        {tab.title}
                                     </Typography>
                                 </Box>
-                            )
+                            ))
                         }
                     </Box>
                 }
@@ -140,38 +141,46 @@ const EditDrawer = forwardRef((props, ref) => {
                     pl={2}
                     pr={2}
                     pb={2}
-                    overflowY="auto"
                     width="100%"
                     sx={{ overflowY: "auto" }}
                 >
                     <Box
                         position="sticky"
                         top={0}
-                        bgcolor={theme?.palette?.background?.dark || "#eee"}
+                        sx={theme => ({ backgroundColor: theme.palette.grey[500] || "#eee" })}
                         zIndex={1}
                         py={2}
                     >
-                        <Typography variant='h5'>{tabs ? tabs[activeTab].label : title}</Typography>
+                        <Typography variant='h5'>{props.tabs.length ? props.tabs[activeTab].title : props.title}</Typography>
                         {
-                            tabs && tabs[activeTab].subtitle ?
-                                <Typography variant='subtitle2'>{tabs[activeTab].subtitle}</Typography> :
-                                null
+                            props.tabs.length && props.tabs[activeTab].subtitle &&
+                            <Typography variant='subtitle2'>{props.tabs[activeTab].subtitle}</Typography>
                         }
                     </Box>
                     {
-                        tabs &&
-                        tabs.map((tab, index) => <Box
+                        props.tabs.length &&
+                        props.tabs.map((tab, index) => <Box
                             key={"tab-" + index}
                             display={index === activeTab ? 'block' : 'none'}
                         >
                             {tab.component}
                         </Box>)
                     }
-                    {children}
+                    {props.children}
                 </Box>
             </Drawer>
         </>
     );
 });
+
+EditDrawer.defaultProps = {
+    title: null,
+    onResult: null,
+    buttons: [],
+    tabs: [],
+    saveBtnText: null,
+    cancelBtnText: null,
+    deleteBtnText: null
+}
 
 export default EditDrawer;
