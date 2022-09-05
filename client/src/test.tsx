@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "./controls";
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "controls";
 
 interface IUserDTO {
     id: string;
