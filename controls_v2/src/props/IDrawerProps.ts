@@ -15,11 +15,11 @@ export class DrawerBtnProp {
     color?: "inherit" | "default" | "primary" | "secondary" | "error" | "success" | "info" | "warning" = "default";
     tooltip?: string | null = null;
     icon: React.ReactNode;
-    onClick: () => void;
+    onClick: () => void = () => { };
 }
 
 export class DrawerTabProp {
-    title: string;
+    title: string = "";
     subtitle?: string | null = null;
     component: React.ReactNode;
 }

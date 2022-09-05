@@ -58,7 +58,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
         }
         return btns.map((btn, index) => (
             <Tooltip
-                title={btn.tooltip}
+                title={btn.tooltip ?? ""}
                 key={`db-${index}`}
                 placement="left"
             >
@@ -69,7 +69,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
         ));
     }, [handleResult, props.buttons, props.cancelBtnText, props.deleteBtnText, props.saveBtnText]); 
 
-    const handleTabChange = useCallback(index => setActiveTab(index), [setActiveTab]);
+    const handleTabChange = useCallback((index: number) => setActiveTab(index), [setActiveTab]);
 
     return (
         <>
@@ -108,7 +108,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                             {buttons}
                         </Box>
                         {
-                            props.tabs.length && props.tabs.map((tab, index) => (
+                            props.tabs!.length && props.tabs!.map((tab, index) => (
                                 <Box
                                     key={"tab-btn" + index}
                                     height={180}
@@ -151,15 +151,15 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                         zIndex={1}
                         py={2}
                     >
-                        <Typography variant='h5'>{props.tabs.length ? props.tabs[activeTab].title : props.title}</Typography>
+                        <Typography variant='h5'>{props.tabs!.length ? props.tabs![activeTab].title : props.title}</Typography>
                         {
-                            props.tabs.length && props.tabs[activeTab].subtitle &&
-                            <Typography variant='subtitle2'>{props.tabs[activeTab].subtitle}</Typography>
+                            props.tabs!.length && props.tabs![activeTab].subtitle &&
+                            <Typography variant='subtitle2'>{props.tabs![activeTab].subtitle}</Typography>
                         }
                     </Box>
                     {
-                        props.tabs.length &&
-                        props.tabs.map((tab, index) => <Box
+                        props.tabs!.length &&
+                        props.tabs!.map((tab, index) => <Box
                             key={"tab-" + index}
                             display={index === activeTab ? 'block' : 'none'}
                         >

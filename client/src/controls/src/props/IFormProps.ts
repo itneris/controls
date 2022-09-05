@@ -4,6 +4,7 @@ import { LooseObject } from "../base/LooseObject";
 import AbstractFieldBuilder from "../fieldBuilder/AbstractFieldBuilder";
 
 export default interface IFormProps {
+    apiUrl?: string | null;
     queryClient: QueryClient;
     fieldBuilder: AbstractFieldBuilder<LooseObject>;
     onChange?: ((prop: string, value: any) => void) | null;
