@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "controls";
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "controls/src";
+//import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "@itneris/controls";
 
 interface IUserDTO {
     id: string;
@@ -32,7 +33,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.role)
             .WithLabel("Роль")
-            .WithOptions([
+            .Select([
                 new ItnSelectOption("1", "Админ"),
                 new ItnSelectOption("2", "Пользователь"),
                 new ItnSelectOption("3", "Дата-менеджер"),
@@ -66,6 +67,20 @@ const TestComnonent = () => {
                 queryClient={queryClient}
                 fieldBuilder={fieldBuilder}
                 id="1"
+            />
+            <PageTitle>Тестовая форма без апи</PageTitle>
+            <ItnForm
+                entity={{
+                    id: "2",
+                    name: "Name",
+                    surname: "Surname",
+                    role: "1",
+                    blocked: true,
+                    middlename: "middlename",
+                    password: "password",
+                } as IUserDTO}
+                queryClient={queryClient}
+                fieldBuilder={fieldBuilder}
             />
         </>
     );

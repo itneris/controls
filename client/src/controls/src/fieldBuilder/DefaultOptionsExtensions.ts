@@ -5,10 +5,12 @@ import { FieldOptionsBuilder } from "./FieldOptionsBuilder";
 declare module "./FieldOptionsBuilder" {
 	interface FieldOptionsBuilder<T extends LooseObject> {
 		WithLabel(label: string): FieldOptionsBuilder<T>;
-		WithOptions(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
+		Select(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
 		Disable(): FieldOptionsBuilder<T>;
 		Password(): FieldOptionsBuilder<T>;
 		Bool(): FieldOptionsBuilder<T>;
+		Required(): FieldOptionsBuilder<T>;
+		WithValidation(validate: (value: any) => string | null): FieldOptionsBuilder<T>;
 		WithCustomControl(control: (value:any, onChange: (value: any) => void) => React.ReactNode): FieldOptionsBuilder<T>;
 	}
 }
@@ -26,7 +28,7 @@ FieldOptionsBuilder.prototype.WithLabel = function<T extends LooseObject>(label:
  * Changes control type to 'select' and defines options
  * @param {ItnSelectOption[]} options
  * */
-FieldOptionsBuilder.prototype.WithOptions = function<T extends LooseObject>(options: ItnSelectOption[]) {
+FieldOptionsBuilder.prototype.Select = function<T extends LooseObject>(options: ItnSelectOption[]) {
 	return this
 		.SetFieldProp("type", "select")
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
@@ -62,6 +64,22 @@ FieldOptionsBuilder.prototype.Bool = function <T extends LooseObject>() {
 FieldOptionsBuilder.prototype.WithCustomControl = function <T extends LooseObject>(control: (value: any, onChange: (value: any) => void) => React.ReactNode) {
 	return this
 		.SetFieldProp("custom", control) as FieldOptionsBuilder<T>;;
+}
+
+/**
+ * Add validation to field by value
+ * */
+FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(validate: (value: any) => string | null) {
+	return this
+		.SetFieldProp("validation", validate) as FieldOptionsBuilder<T>;;
+}
+
+/**
+ * Add required to field by value
+ * */
+FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>() {
+	return this
+		.SetFieldProp("required", true) as FieldOptionsBuilder<T>;;
 }
 
 /*

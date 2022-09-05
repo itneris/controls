@@ -25,6 +25,8 @@ export class FieldDescription implements LooseObject {
     selectNullLabel: string | null = null;
     noOptionsText: string | null = null;
     display: boolean | (() => boolean) = true;
+    validation: ((value: any) => string | null) | null = null;
+    required: boolean = false;
 
     constructor(order: number, property: string) {
         this.property = property;

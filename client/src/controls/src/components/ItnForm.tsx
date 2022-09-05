@@ -8,6 +8,7 @@ import { Backspace, Save } from "@mui/icons-material";
 import { LooseObject } from "../base/LooseObject";
 import { createEntity, getEntity, updateEntity } from "../queries/dataQueries";
 import { AxiosError, AxiosResponse } from "axios";
+import { Validation } from "../base/Validation";
 
 const ItnFormWithQuery = React.forwardRef<IFormRef,IFormProps>((props, ref) => {
     const form = useRef<IFormRef | null>(null);
@@ -55,17 +56,18 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
     }, [props.entity, props.id, props.type]); 
 
     const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? {});
-    const [isLoading, setIsLoading] = useState<boolean>(formType !== "create");
+    const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [validaion, setValidation] = useState<Validation[]>([]);
 
     const fields = useMemo(() => props.fieldBuilder.Build(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useQuery<AxiosResponse<LooseObject>, AxiosError>(
         [props.apiUrl, props.id],
-        getEntity(props.apiUrl ?? "api", props.id ?? ""),
+        getEntity(props.apiUrl ?? "/", props.id ?? ""),
         {
-            enabled: formType !== "create",
+            enabled: formType !== "create" && props.entity == null,
             onError: (err) => {
                 setErrorLoading(`Ошибка загрузки данных: ${err.message || (err?.response?.data ?? "").toString()}`);
             },
@@ -92,12 +94,31 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
             ...entity,
             [field]: value
         };
+        setValidation(validaion.filter(_ => _.property === field));
         setEntity(newEntity);
         props.onChange && props.onChange(field, value);
-    }, [props.onChange, entity, setEntity]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [props.onChange, entity, setEntity, validaion]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const validateControls = useCallback(() => {
-        return true;
+        let validation: Validation[] = []; 
+        fields.forEach(field => {
+            const val = entity![field.property];
+            const valIsNull =
+                val === undefined ||
+                val === null ||
+                (typeof val === "string" && val === "");
+            if (field.required && valIsNull) {
+                validaion.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`))
+            }
+            if (field.validation !== null && !valIsNull) {
+                const error = field.validation(val);
+                if (error !== null) {
+                    validaion.push(new Validation(field.property, error))
+                }
+            }
+        });
+        setValidation(validaion);
+        return validation.length === 0;
     }, [fields, entity]);
 
     const handleSaveClick = useCallback(() => {
@@ -157,8 +178,8 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                                         placeholder={field.placeholder}
                                         disabled={field.disabled || isSaving}
                                         display={field.display}
-                                        //error={field.error}
-                                        //errorText={field.errorText}
+                                        error={validaion.find(_ => _.property === field.property) !== undefined}
+                                        errorText={validaion.find(_ => _.property === field.property)?.message}
                                         items={field.items}
                                         label={field.label}
                                         max={field.max}
