@@ -34,7 +34,7 @@ const ItnFormWithQuery = React.forwardRef<IFormRef,IFormProps>((props, ref) => {
 const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
-            return entity;
+            return entity!;
         },
         validate() {
             return validateControls();
@@ -53,14 +53,14 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
         }
     }, [props.entity, props.id, props.type]); 
 
-    const [entity, setEntity] = useState<LooseObject | null>(props.entity);
+    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? null);
     const [loading, setLoading] = useState<boolean>(formType !== "create");
     const [saving, setSaving] = useState<boolean>(false);
 
     const fields = useMemo(() => props.fieldBuilder.Build(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-    const handleChange = useCallback((field, value) => {
+    const handleChange = useCallback((field: string, value: any) => {
         const newEntity = {
             ...entity,
             [field]: value
@@ -104,18 +104,18 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                             } else if (formType === "view") {
                                 return <Box height="32px" display="flex" gap={2}>
                                     <Typography variant="body2"><b>{field.label}</b></Typography>
-                                    <Typography variant="body2">{entity[field.property]}</Typography>
+                                    <Typography variant="body2">{entity![field.property]}</Typography>
                                 </Box>;
                             } else {
                                 return <ItnControl
                                     key={"fc-" + field.property}
                                     type={field.type}
-                                    variant={props.variant}
+                                    variant={props.variant!}
                                     onChange={(value) => handleChange(field.property, value)}
-                                    value={entity[field.property]}
+                                    value={entity![field.property]}
                                     allowNullInSelect={field.allowNullInSelect}
                                     selectNullLabel={field.selectNullLabel}
-                                    noOptionsText={field.noOptionsText}
+                                    noOptionsText={field.noOptionsText!}
                                     onClick={field.onClick}
                                     passwordLength={field.passwordLength}
                                     placeholder={field.placeholder}
@@ -140,12 +140,12 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                 (!props.disableSave || props.onCancel) &&
                 <Box display="flex" mt={2} justifyContent={!props.disableSave && props.onCancel ? "space-between" : "flex-end"}>
                     {
-                        !props.onCancel &&
+                        props.onCancel &&
                         <Button
                             startIcon={<Backspace />}
+                            disabled={saving}
                             variant="contained"
                             onClick={props.onCancel}
-                            disabled={saving}
                         >
                             Отмена
                         </Button>

@@ -45,7 +45,7 @@ function ItnControl(props: IControlProps) {
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const handlePasswordGenerate = useCallback(() => {
-        props.onChange(generatePassword(props.passwordLength));
+        props.onChange && props.onChange(generatePassword(props.passwordLength!));
     }, [props.onChange, props.passwordLength]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const control = useMemo(() => {
@@ -56,14 +56,14 @@ function ItnControl(props: IControlProps) {
                     fullWidth
                     disabled={props.disabled}
                     value={props.value}
-                    onChange={event => props.onChange(event.target.value)}
+                    onChange={event => props.onChange && props.onChange(event.target.value)}
                     displayEmpty
                 >
                     <MenuItem disabled={props.allowNullInSelect ? false : true} value="">
                         <Typography variant='body2'>{props.selectNullLabel || `Выберите ${props.label}`}</Typography>
                     </MenuItem>
                     {
-                        props.items.map((item) => {
+                        props.items!.map((item) => {
                             return <MenuItem key={"opt-" + item.id} value={item.id}>
                                 <Typography variant='body2'>{item.label}</Typography>
                             </MenuItem>
@@ -78,10 +78,10 @@ function ItnControl(props: IControlProps) {
                     }}
                     fullWidth
                     disabled={props.disabled}
-                    options={props.items}
-                    value={props.items.find(i => i.id === props.value) || null}
+                    options={props.items!}
+                    value={props.items!.find(i => i.id === props.value) || null}
                     noOptionsText={props.noOptionsText}
-                    onChange={(event, newValue) => props.onChange((newValue as ItnSelectOption).id)}
+                    onChange={(event, newValue) => props.onChange && props.onChange((newValue as ItnSelectOption).id)}
                     renderOption={(props, option) => (
                         <li {...props}>{option.label}</li>
                     )}                    
@@ -92,7 +92,7 @@ function ItnControl(props: IControlProps) {
                     <Checkbox
                         disabled={props.disabled}
                         value={!!props.value}
-                        onChange={e => props.onChange(!props.value)}                        
+                        onChange={() => props.onChange && props.onChange(!props.value)}                        
                     />
                 </Box>;
             case 'date':
@@ -122,7 +122,7 @@ function ItnControl(props: IControlProps) {
                                     </IconButton>
                                 </InputAdornment>
                             }}
-                            onChange={event => props.onChange(event.currentTarget.value)}
+                            onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />
                         <FormHelperText>{props.error}</FormHelperText>
                     </FormControl>
@@ -148,9 +148,9 @@ function ItnControl(props: IControlProps) {
                     variant={props.variant}
                     disabled={props.disabled}
                     fullWidth
-                    placeholder={props.placeholder}
+                    placeholder={props.placeholder ?? ""}
                     value={props.value}
-                    onChange={event => props.onChange(event.currentTarget.value)}
+                    onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                     error={props.error}
                     helperText={props.errorText}
                 />;
@@ -159,12 +159,12 @@ function ItnControl(props: IControlProps) {
                     fullWidth
                     variant={props.variant}
                     type="number"
-                    placeholder={props.placeholder}
+                    placeholder={props.placeholder ?? ""}
                     error={props.error}
                     helperText={props.errorText}
                     value={props.value}
                     disabled={props.disabled}
-                    onChange={event => props.onChange(+event.currentTarget.value)}
+                    onChange={event => props.onChange && props.onChange(+event.currentTarget.value)}
                 />;
             default: throw new Error();
         }
