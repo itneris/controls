@@ -11,13 +11,19 @@ interface IUserDTO {
     blocked: boolean;
     middlename: string;
     password: string;
+    avatar: string
 }
 
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
     constructor() {
         super();
+        this.FieldFor(_ => _.avatar)
+            .WithLabel("Аватар")
+            .File({ withImagePreview: true });
+
         this.FieldFor(_ => _.name)
-            .WithLabel("Имя");
+            .WithLabel("Имя")
+            .Required();
 
         this.FieldFor(_ => _.surname)
             .WithLabel("Фамилия")
@@ -25,7 +31,14 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.password)
             .WithLabel("Пароль")
-            .Password();
+            .Password()
+            .WithValidation((val) => {
+                const value = val as string;
+                if (value.length < 3) {
+                    return "Пароль должен быть длиннее трех символов";
+                }
+                return null;
+            });
 
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")

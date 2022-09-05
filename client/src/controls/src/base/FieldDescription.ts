@@ -5,7 +5,7 @@ import { LooseObject } from "./LooseObject";
 export class FieldDescription implements LooseObject {
     property: string;
     order: number;
-    type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" = "string";
+    type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" = "string";
     disabled: boolean = false;
     placeholder: string | null = null;
     error: boolean = false;
@@ -27,6 +27,11 @@ export class FieldDescription implements LooseObject {
     display: boolean | (() => boolean) = true;
     validation: ((value: any) => string | null) | null = null;
     required: boolean = false;
+    accept: string = "*";
+    maxFileSize: number = 4096 * 1000;
+    withImagePreview: boolean = false;
+    isAvatar: boolean = false;
+    cropImageToSize: [number, number] | null = null;
 
     constructor(order: number, property: string) {
         this.property = property;

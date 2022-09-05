@@ -17,7 +17,8 @@ app.get('/api/test/1', (req, res) => {
         middlename: "Тестович",
         role: "1",
         blocked: true,
-        password: "qwerty"
+        password: "qwerty",
+        avatar: null
     });
 });
 

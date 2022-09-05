@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     TextField,
     Box,
@@ -14,10 +14,16 @@ import {
     Tooltip,
     FormLabel,
     FormControlLabel,
-    InputLabel
+    InputLabel,
+    Button,
+    Avatar
 } from "@mui/material";
 import {
+    AttachFile,
+    CloudUpload,
+    Delete,
     Loop,
+    Refresh,
     Visibility,
     VisibilityOff
 } from "@mui/icons-material";
@@ -45,11 +51,42 @@ const generatePassword = (length: number): string => {
 }
 
 function ItnControl(props: IControlProps) {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const handlePasswordGenerate = useCallback(() => {
         props.onChange && props.onChange(generatePassword(props.passwordLength!));
     }, [props.onChange, props.passwordLength]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!file) {
+            props.withImagePreview && setPreview(null);
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        setPreview(objectUrl);
+
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [file, props.withImagePreview, setPreview]);
+
+    const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        //e.preventDefault();
+        fileInputRef.current!.click();
+    }, []);
+    
+    const handleDeleteFile = useCallback(() => setFile(null), [setFile]);
+
+    const uploadFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || !e.target.files.length) {
+            setFile(null);
+        }
+
+        setFile(e.target.files![0]);
+    }, [setFile]);
 
     const control = useMemo(() => {
         switch (props.type) {
@@ -188,9 +225,98 @@ function ItnControl(props: IControlProps) {
                     onChange={event => props.onChange && props.onChange(+event.currentTarget.value)}
                     size="small"
                 />;
+            case 'file':
+                return (<>
+                    <input ref={fileInputRef} type="file" hidden onChange={uploadFile} accept={props.accept} />
+                    {
+                        file === null ?
+                            <>
+                                {
+                                    props.isAvatar &&
+                                    <Box
+                                        borderRadius="50%"
+                                        height={70}
+                                        width={70}
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        marginRight={3}
+                                        sx={theme => ({
+                                            cursor: "initial",
+                                            backgroundColor: theme.palette.primary.main
+                                        })}
+                                    >
+                                        <Typography variant="h4">А</Typography>
+                                    </Box>
+                                }
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<CloudUpload />}
+                                    onClick={handleUploadClick}
+                                >
+                                    {props.label}
+                                </Button>
+                            </> :
+                            !props.withImagePreview ?
+                                <Box display="flex" alignItems="center" width="100%">
+                                    <AttachFile />
+                                    <Typography style={{ flex: 1 }}>{file.name}</Typography>
+                                    <Tooltip placement="right-start" title="Заменить">
+                                        <IconButton color="secondary" onClick={handleUploadClick}>
+                                            <Refresh />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip placement="right-start" title="Удалить">
+                                        <IconButton color="error" onClick={handleDeleteFile}>
+                                            <Delete />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box> :
+                                <Box display="flex" alignItems="stretch" width="100%">
+                                    {
+                                        props.isAvatar ?
+                                            <Avatar src={preview!} style={{ height: 80, width: 80 }} /> :
+                                            <Box
+                                                borderRadius={1}
+                                                height={80}
+                                                width={140}
+                                                style={{
+                                                    background: `url("${preview}")`,
+                                                    backgroundPosition: "center",
+                                                    backgroundSize: "cover"
+                                                }}
+                                            />
+                                    }
+                                    <Box display="flex" flexDirection="column" ml={2} justifyContent="space-between">
+                                        <Tooltip placement="right-start" title="Заменить">
+                                            <IconButton color="secondary" onClick={handleUploadClick}>
+                                                <Refresh />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip placement="right-start" title="Удалить">
+                                            <IconButton color="error" onClick={handleDeleteFile}>
+                                                <Delete />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+                                </Box> 
+                    }
+                </>);
             default: throw new Error();
         }
-    }, [props, showPassword, handlePasswordGenerate]); 
+    }, [
+        props,
+        showPassword,
+        handlePasswordGenerate,
+        props.isAvatar,
+        props.accept,
+        props.withImagePreview,
+        uploadFile,
+        handleUploadClick,
+        handleDeleteFile,
+        preview
+    ]); 
 
     if (typeof props.display == "boolean" && !props.display) {
         return null;
@@ -227,7 +353,12 @@ ItnControl.defaultProps = {
     allowNullInSelect: true,
     selectNullLabel: null,
     noOptionsText: 'Ничего не найдено',
-    display: true
+    display: true,
+    accept: "*",
+    cropImageToSize: null,
+    maxFileSize: 4096,
+    withImagePreview: false,
+    isAvatar: false
 }
 
 export default ItnControl;

@@ -1,6 +1,7 @@
 import { LooseObject } from "../base/LooseObject";
 import { ItnSelectOption } from "../props/IControlProps";
 import { FieldOptionsBuilder } from "./FieldOptionsBuilder";
+import IFileControlProps from "../props/IFileControlProps";
 
 declare module "./FieldOptionsBuilder" {
 	interface FieldOptionsBuilder<T extends LooseObject> {
@@ -11,7 +12,8 @@ declare module "./FieldOptionsBuilder" {
 		Bool(): FieldOptionsBuilder<T>;
 		Required(): FieldOptionsBuilder<T>;
 		WithValidation(validate: (value: any) => string | null): FieldOptionsBuilder<T>;
-		WithCustomControl(control: (value:any, onChange: (value: any) => void) => React.ReactNode): FieldOptionsBuilder<T>;
+		WithCustomControl(control: (value: any, onChange: (value: any) => void) => React.ReactNode): FieldOptionsBuilder<T>;
+		File(fileOptions: IFileControlProps): FieldOptionsBuilder<T>;
 	}
 }
 
@@ -79,7 +81,33 @@ FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(
  * */
 FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>() {
 	return this
-		.SetFieldProp("required", true) as FieldOptionsBuilder<T>;;
+		.SetFieldProp("required", true) as FieldOptionsBuilder<T>;
+}
+
+
+/** <summary>
+* Change input type to file and set options
+* */
+FieldOptionsBuilder.prototype.File = function <T extends LooseObject>({
+	accept = "*",
+	maxSizeKb = 4096,
+	withImagePreview = false,
+	isAvatar = false,
+	cropImageToSize = null
+}: IFileControlProps) 
+{
+	let fieldBuilder = this
+		.SetFieldProp("type", "file")
+		.SetFieldProp("accept", withImagePreview && accept == "*" ? "image/*" : accept)
+		.SetFieldProp("maxFileSize", maxSizeKb * 1000)
+		.SetFieldProp("withImagePreview", isAvatar ? true : withImagePreview)
+		.SetFieldProp("isAvatar", isAvatar) as FieldOptionsBuilder<T>;
+
+	if (cropImageToSize != null) {
+		fieldBuilder = fieldBuilder.SetFieldProp("cropImageToSize", cropImageToSize) as FieldOptionsBuilder<T>;
+	}
+
+	return fieldBuilder as FieldOptionsBuilder<T>;;
 }
 
 /*
@@ -110,37 +138,6 @@ FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>() {
 		return fieldBuilder
 			.SetFieldProp("Lines", lines);
 	}
-
-	/// <summary>
-	/// Change file input options for file input
-	/// </summary>
-	/// <typeparam name="T">Type of object being validated</typeparam>
-	/// <typeparam name="TProperty">Type of property being validated</typeparam>
-	/// <param name="fieldBuilder">The column builder on which the rule should be defined</param>
-	/// <returns></returns>
-	public static IFieldBuilder<T, TProperty> WithFileOptions<T, TProperty>(
-		this IFieldBuilder<T, TProperty> fieldBuilder, 
-		string accept = "*", 
-		int maxSizeKb = 4096,
-		bool withImagePreview = false,
-		bool isAvatar = false,
-		Tuple<int, int>? cropImageToSize = null
-	)
-	{
-		withImagePreview = isAvatar || withImagePreview;
-		fieldBuilder
-			.SetFieldProp("Accept", withImagePreview && accept == "*" ? "image/*" : accept)
-			.SetFieldProp("MaxFileSize", maxSizeKb * 1000)
-			.SetFieldProp("WithImagePreview", isAvatar ? true : withImagePreview)
-			.SetFieldProp("IsAvatar", isAvatar);
-		if (cropImageToSize != null)
-		{
-            fieldBuilder.SetFieldProp("CropImageToSize", cropImageToSize);
-		}
-
-		return fieldBuilder;
-
-    }
 
 	/// <summary>
 	/// Sets the tooltip for control in quesion mark adornment

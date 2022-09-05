@@ -4,7 +4,7 @@ export default interface IControlProps {
     /**
      * Type of rendered control
      * */
-    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password";
+    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file";
     value: any;
     //name,
     disabled?: boolean;
@@ -26,7 +26,12 @@ export default interface IControlProps {
     allowNullInSelect?: boolean;
     selectNullLabel?: string | null;
     noOptionsText?: string;
-    display?: boolean | (() => boolean)
+    display?: boolean | (() => boolean);
+    accept?: string;
+    maxFileSize?: number;
+    withImagePreview?: boolean;
+    isAvatar?: boolean;
+    cropImageToSize?: [number, number] | null;
 }
 
 export class ItnSelectOption {

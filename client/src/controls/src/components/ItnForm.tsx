@@ -187,6 +187,11 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                                         maxDate={field.maxDate}
                                         minDate={field.minDate}
                                         tooltip={field.tooltip}
+                                        accept={field.accept}
+                                        cropImageToSize={field.cropImageToSize}
+                                        isAvatar={field.isAvatar}
+                                        maxFileSize={field.maxFileSize}
+                                        withImagePreview={field.withImagePreview}
                                     />                                
                                 }
                             })
