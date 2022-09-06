@@ -98,7 +98,7 @@ FieldOptionsBuilder.prototype.File = function <T extends LooseObject>({
 {
 	let fieldBuilder = this
 		.SetFieldProp("type", "file")
-		.SetFieldProp("accept", withImagePreview && accept == "*" ? "image/*" : accept)
+		.SetFieldProp("accept", withImagePreview && accept === "*" ? "image/*" : accept)
 		.SetFieldProp("maxFileSize", maxSizeKb * 1000)
 		.SetFieldProp("withImagePreview", isAvatar ? true : withImagePreview)
 		.SetFieldProp("isAvatar", isAvatar) as FieldOptionsBuilder<T>;

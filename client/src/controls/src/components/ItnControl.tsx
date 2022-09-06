@@ -12,7 +12,6 @@ import {
     Typography,
     Autocomplete,
     Tooltip,
-    FormLabel,
     FormControlLabel,
     InputLabel,
     Button,
@@ -198,7 +197,6 @@ function ItnControl(props: IControlProps) {
                     error={error}
                     onChange={(chips) => {onChange(name, chips.join(","))}}
                 />;*/
-            //TODO Сделать комит на завтра.
             case 'string':
                 return <TextField
                     variant={props.variant}
@@ -309,13 +307,11 @@ function ItnControl(props: IControlProps) {
         props,
         showPassword,
         handlePasswordGenerate,
-        props.isAvatar,
-        props.accept,
-        props.withImagePreview,
         uploadFile,
         handleUploadClick,
         handleDeleteFile,
-        preview
+        preview,
+        file
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {

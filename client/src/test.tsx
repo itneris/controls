@@ -1,7 +1,11 @@
-import { useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "controls/src";
-//import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle } from "@itneris/controls";
+import React, { useRef } from "react";
+import { Button } from "@mui/material";
+
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal } from "controls/src";
+import IDrawerRef from "./controls/src/props/IDrawerRef";
+import IModalRef from "./controls/src/props/IModalRef";
+import { IFormRef } from "./controls/src/base/IFormRef";
+//import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer } from "@itneris/controls";
 
 interface IUserDTO {
     id: string;
@@ -65,24 +69,28 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 const fieldBuilder = new UsersFieldBuilder();
 
 const TestComnonent = () => {
-    const queryClient = useQueryClient();
+    const drawerRef = useRef<IDrawerRef | null>(null);
+    const modalRef = useRef<IModalRef | null>(null);
+    const formRef = useRef<IFormRef | null>(null);
     return (
         <>
+            <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
+            <Button variant="contained" onClick={() => modalRef.current!.open()}>Открыть Modal</Button>
+
             <PageTitle>Тестовая форма создания</PageTitle>
-            <ItnForm
+            <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
-                queryClient={queryClient}
                 fieldBuilder={fieldBuilder}
             />
             <PageTitle>Тестовая форма редактирования</PageTitle>
-            <ItnForm
+            <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
-                queryClient={queryClient}
                 fieldBuilder={fieldBuilder}
                 id="1"
             />
             <PageTitle>Тестовая форма без апи</PageTitle>
             <ItnForm
+                ref={formRef}
                 entity={{
                     id: "2",
                     name: "Name",
@@ -92,9 +100,20 @@ const TestComnonent = () => {
                     middlename: "middlename",
                     password: "password",
                 } as IUserDTO}
-                queryClient={queryClient}
+                onSave={(en) => console.log("qwe")}
                 fieldBuilder={fieldBuilder}
+                
             />
+            <EditDrawer
+                ref={drawerRef}
+            >
+                Контент
+            </EditDrawer>
+            <ItnModal
+                ref={modalRef}
+            >
+                Контент
+            </ItnModal>
         </>
     );
 }

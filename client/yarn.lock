@@ -1355,10 +1355,10 @@
   "resolved" "https://registry.npmjs.org/@istanbuljs/schema/-/schema-0.1.3.tgz"
   "version" "0.1.3"
 
-"@itneris/controls@^2.0.2":
-  "integrity" "sha512-lE4SrIje/8ctg0qXhDgoxRco7wQktDof3DzJ+eZ2N5jcGhu0KqtVQnrjhURntECvALzAoZt+PuFpub3hNB5yMA=="
-  "resolved" "https://registry.npmjs.org/@itneris/controls/-/controls-2.0.2.tgz"
-  "version" "2.0.2"
+"@itneris/controls@^2.0.5":
+  "integrity" "sha512-Dfm/JXyhffm47lIMFtfW48qtYm7lkWY58IEM6cujps6/wBkAR0ZxuRX+97zkFfgkH3OwHF5K+o7oWCcaB22oDQ=="
+  "resolved" "https://registry.npmjs.org/@itneris/controls/-/controls-2.0.5.tgz"
+  "version" "2.0.5"
   dependencies:
     "@testing-library/jest-dom" "^5.16.5"
     "@testing-library/react" "^13.3.0"

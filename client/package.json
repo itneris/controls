@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@itneris/controls": "^2.0.2",
+    "@itneris/controls": "^2.0.5",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@tanstack/react-query": "^4.2.3",

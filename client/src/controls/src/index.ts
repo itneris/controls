@@ -1,7 +1,8 @@
 import PageTitle from "./components/PageTitle";
 import ItnModal from "./components/ItnModal";
 import EditDrawer from "./components/EditDrawer";
-import ItnForm from "./components/ItnForm";
+import ItnForm from "./components/ItnBaseForm";
+import ItnQueryForm from "./components/ItnQueryForm";
 import { DrawerBtnProp, DrawerTabProp } from "./props/IDrawerProps";
 import { ItnSelectOption } from "./props/IControlProps";
 import AbstractFieldBuilder from "./fieldBuilder/AbstractFieldBuilder";
@@ -14,6 +15,7 @@ export {
     DrawerBtnProp,
     DrawerTabProp,
     ItnForm,
+    ItnQueryForm,
     AbstractFieldBuilder,
     ItnSelectOption
 };

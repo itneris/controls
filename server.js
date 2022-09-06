@@ -5,6 +5,8 @@ const cors = require('cors')
 const app = express();
 const port = process.env.PORT || 5000;
 
+const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
@@ -35,11 +37,13 @@ app.get('/api/test/getRoles', (req, res) => {
     ]);
 });
 
-app.post('/api/test', (req, res) => {
+app.post('/api/test', async (req, res) => {
+    await snooze(1000);
     res.send({ result: "ok" });
 });
 
-app.put('/api/test/{id}', (req, res) => {
+app.put('/api/test/:id', async (req, res) => {
+    await snooze(1000);
     res.send({ result: "ok" });
 });
 

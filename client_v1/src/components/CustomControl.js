@@ -190,17 +190,6 @@ function CustomControl(props) {
                         </HtmlTooltip>
                     </IconButton>
                 </div>;
-            //TODO проверить чип инпут
-            /*
-            case 'chip-input':
-                return <ChipInput
-                    fullWidth
-                    defaultValue={controlValue}
-                    placeholder={placeholder}
-                    error={error}
-                    onChange={(chips) => {onChange(name, chips.join(","))}}
-                />;*/
-            //TODO Сделать комит на завтра.
             case 'text':
                 return <TextField
                     variant={controlVariant}

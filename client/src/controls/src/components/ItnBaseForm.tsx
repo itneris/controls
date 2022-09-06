@@ -1,39 +1,13 @@
-import React, { useCallback, useImperativeHandle, useState, useRef, useMemo } from "react";
+import React, { useCallback, useImperativeHandle, useState, useMemo, useEffect } from "react";
 import ItnControl from "./ItnControl";
-import IFormProps from "../props/IFormProps";
-import { QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
-import { Backspace, Save } from "@mui/icons-material";
+import { Backspace, Delete, Save } from "@mui/icons-material";
 import { LooseObject } from "../base/LooseObject";
-import { createEntity, getEntity, updateEntity } from "../queries/dataQueries";
-import { AxiosError, AxiosResponse } from "axios";
 import { Validation } from "../base/Validation";
+import IBaseFormProps from "../props/IBaseFormProps";
 
-const ItnFormWithQuery = React.forwardRef<IFormRef,IFormProps>((props, ref) => {
-    const form = useRef<IFormRef | null>(null);
-
-    useImperativeHandle(ref, () => ({
-        getCurrentValues() {
-            return form.current!.getCurrentValues();
-        },
-        validate() {
-            return form.current!.validate();
-        }
-    }));
-
-    if(props.queryClient) {
-        return (
-            <QueryClientProvider client={props.queryClient}>
-                <ItnForm ref={form} {...props} />
-            </QueryClientProvider>
-        );
-    } else {
-        return <ItnForm ref={form} {...props} />;
-    }
-});
-
-const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
+const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
             return entity!;
@@ -43,51 +17,12 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
         }
     }));
 
-    const formType = useMemo(() => {
-        if (props.type !== "auto") {
-            return props.type;
-        }
-
-        if (props.id === null && props.entity === null) {
-            return "create";
-        } else {
-            return "edit";
-        }
-    }, [props.entity, props.id, props.type]); 
-
     const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? {});
-    const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
-    const [errorLoading, setErrorLoading] = useState<string | null>(null); 
-    const [isSaving, setIsSaving] = useState<boolean>(false);
     const [validaion, setValidation] = useState<Validation[]>([]);
 
+    useEffect(() => setEntity(props.entity ?? {}), [props.entity])
+
     const fields = useMemo(() => props.fieldBuilder.Build(), []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    useQuery<AxiosResponse<LooseObject>, AxiosError>(
-        [props.apiUrl, props.id],
-        getEntity(props.apiUrl ?? "/", props.id ?? ""),
-        {
-            enabled: formType !== "create" && props.entity == null,
-            onError: (err) => {
-                setErrorLoading(`Ошибка загрузки данных: ${err.message || (err?.response?.data ?? "").toString()}`);
-            },
-            onSuccess: (response) => {
-                setEntity(response.data);
-            },
-            onSettled: () => {
-                setIsLoading(false);
-            }
-        }
-    );
-
-    const createQuery = useMutation(createEntity(props.apiUrl!), {
-        onMutate: () => setIsSaving(true),
-        onSettled: () => setIsSaving(false)
-    });
-    const updateQuery = useMutation(updateEntity(props.apiUrl!), {
-        onMutate: () => setIsSaving(true),
-        onSettled: () => setIsSaving(false)
-    });
 
     const handleChange = useCallback((field: string, value: any) => {
         const newEntity = {
@@ -100,7 +35,7 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
     }, [props.onChange, entity, setEntity, validaion]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const validateControls = useCallback(() => {
-        let validation: Validation[] = []; 
+        let newValidation: Validation[] = []; 
         fields.forEach(field => {
             const val = entity![field.property];
             const valIsNull =
@@ -108,32 +43,29 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                 val === null ||
                 (typeof val === "string" && val === "");
             if (field.required && valIsNull) {
-                validaion.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`))
+                newValidation.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`))
             }
             if (field.validation !== null && !valIsNull) {
                 const error = field.validation(val);
                 if (error !== null) {
-                    validaion.push(new Validation(field.property, error))
+                    newValidation.push(new Validation(field.property, error))
                 }
             }
         });
-        setValidation(validaion);
-        return validation.length === 0;
+        setValidation(newValidation);
+        return newValidation.length === 0;
     }, [fields, entity]);
 
     const handleSaveClick = useCallback(() => {
         if (!validateControls()) {
             return;
         }
-        setIsSaving(true);
-        if (formType === "create") {
-            createQuery.mutate(entity!);
-        } else {
-            updateQuery.mutate(entity!);
-        }
-        setIsSaving(false);
-        props.onSave && props.onSave();
-    }, [entity, validateControls, props.onSave, setIsSaving, entity, formType]); // eslint-disable-line react-hooks/exhaustive-deps
+        props.onSave && props.onSave(entity!);
+    }, [entity, validateControls, props.onSave]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleDeleteClick = useCallback(() => {
+        props.onDelete && props.onDelete(entity!.id);
+    }, [entity, props.onDelete, entity]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>
@@ -143,22 +75,43 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
             >
                 {
                     props.header &&
-                    <Box alignItems="center" display="flex">
+                    <Box alignItems="center" display="flex" justifyContent="space-between">
                         <Typography variant="h6">{props.header}</Typography>
+                        {
+                            !props.onDelete ?
+                                <Button
+                                    color="error"
+                                    onClick={handleDeleteClick}
+                                    startIcon={<Delete />}
+                                    disabled={props.isSaving}
+                                    variant="contained"
+                                >
+                                    {props.deleteBtnText}
+                                </Button> :
+                                <div></div>
+
+                        }
                     </Box>
                 }
                 <Box display="flex" gap={2} flexDirection="column">
                     {
-                        errorLoading !== null ?
-                            <Typography variant="body2">{errorLoading}</Typography> :
+                        props.errorLoading !== null ?
+                            <Typography variant="body2">{props.errorLoading}</Typography> :
                             fields.map((field) => {
-                                if (isLoading) {
+                                if (props.isLoading) {
                                     return <Skeleton key={"fc-" + field.property} height="32px" />
                                 } else if (field.custom) {
                                     return <React.Fragment key={"fc-" + field.property}>
-                                        {field.custom(entity![field.property], (value) => handleChange(field.property, value))}
+                                        {
+                                            field.custom(
+                                                entity![field.property],
+                                                (value) => handleChange(field.property, value),
+                                                props.isSaving!,
+                                                props.viewOnly!
+                                            )
+                                        }
                                     </React.Fragment>;
-                                } else if (formType === "view") {
+                                } else if (props.viewOnly) {
                                     return <Box key={"fc-" + field.property} height="32px" display="flex" gap={2}>
                                         <Typography variant="body2"><b>{field.label}</b></Typography>
                                         <Typography variant="body2">{entity![field.property]}</Typography>
@@ -173,10 +126,9 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                                         allowNullInSelect={field.allowNullInSelect}
                                         selectNullLabel={field.selectNullLabel}
                                         noOptionsText={field.noOptionsText!}
-                                        onClick={field.onClick}
                                         passwordLength={field.passwordLength}
                                         placeholder={field.placeholder}
-                                        disabled={field.disabled || isSaving}
+                                        disabled={field.disabled || props.isSaving}
                                         display={field.display}
                                         error={validaion.find(_ => _.property === field.property) !== undefined}
                                         errorText={validaion.find(_ => _.property === field.property)?.message}
@@ -199,29 +151,29 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
                 </Box>
             </Paper>
             {
-                (!props.disableSave || props.onCancel) &&
-                <Box display="flex" mt={2} justifyContent={!props.disableSave && props.onCancel ? "space-between" : "flex-end"}>
+                (props.onSave || props.onCancel) &&
+                <Box display="flex" mt={2} justifyContent={props.onSave && props.onCancel ? "space-between" : "flex-end"}>
                     {
                         props.onCancel &&
                         <Button
                             startIcon={<Backspace />}
-                            disabled={isSaving}
+                            disabled={props.isSaving}
                             variant="contained"
                             onClick={props.onCancel}
                         >
-                            Отмена
+                            {props.cancelBtnText}
                         </Button>
                     }
                     {
-                        !props.disableSave &&
+                        props.onSave &&
                         <Button
                             startIcon={<Save />}
-                            disabled={isSaving}
+                            disabled={props.isSaving}
                             variant="contained"
                             color="secondary"
                             onClick={handleSaveClick}
                         >
-                            Сохранить
+                            {props.saveBtnText}
                         </Button>
                     }
                 </Box>
@@ -230,18 +182,23 @@ const ItnForm = React.forwardRef<IFormRef, IFormProps>((props, ref) => {
     );
 });
 
-ItnForm.defaultProps = {
+ItnBaseForm.defaultProps = {
     onChange: null,
     noPadding: false,
     onSave: null,
+    onDelete: null,
     onCancel: null,
     entity: null,
-    id: null,
-    type: "auto",
     hidePaper: false,
     header: null,
     variant: "outlined",
-    disableSave: false
+    isLoading: false,
+    isSaving: false,
+    errorLoading: null,
+    deleteBtnText: "Удалить",
+    saveBtnText: "Сохранить",
+    cancelBtnText: "Отмена",
+    viewOnly: false
 }
 
-export default ItnFormWithQuery;
+export default ItnBaseForm;
