@@ -57,35 +57,39 @@ function ItnControl(props: IControlProps) {
         props.onChange && props.onChange(generatePassword(props.passwordLength!));
     }, [props.onChange, props.passwordLength]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!file) {
+        if (props.type !== "file") {
+            return;
+        }
+
+        if (!props.value) {
             props.withImagePreview && setPreview(null);
             return;
         }
 
-        const objectUrl = URL.createObjectURL(file);
+        const objectUrl = URL.createObjectURL(props.value as File);
         setPreview(objectUrl);
 
         return () => URL.revokeObjectURL(objectUrl);
-    }, [file, props.withImagePreview, setPreview]);
+    }, [props.value, props.withImagePreview, setPreview, props.type]);
 
     const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         //e.preventDefault();
         fileInputRef.current!.click();
     }, []);
-    
-    const handleDeleteFile = useCallback(() => setFile(null), [setFile]);
+
+    const handleDeleteFile = useCallback(() => props.onChange && props.onChange(null), [props.onChange]);
 
     const uploadFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !e.target.files.length) {
-            setFile(null);
+            props.onChange && props.onChange(null);
+            return;
         }
 
-        setFile(e.target.files![0]);
-    }, [setFile]);
+        props.onChange && props.onChange(e.target.files![0]);
+    }, [props.onChange]);
 
     const control = useMemo(() => {
         switch (props.type) {
@@ -227,7 +231,7 @@ function ItnControl(props: IControlProps) {
                 return (<>
                     <input ref={fileInputRef} type="file" hidden onChange={uploadFile} accept={props.accept} />
                     {
-                        file === null ?
+                        props.value === null ?
                             <>
                                 {
                                     props.isAvatar &&
@@ -259,7 +263,7 @@ function ItnControl(props: IControlProps) {
                             !props.withImagePreview ?
                                 <Box display="flex" alignItems="center" width="100%">
                                     <AttachFile />
-                                    <Typography style={{ flex: 1 }}>{file.name}</Typography>
+                                    <Typography style={{ flex: 1 }}>{(props.value as File).name}</Typography>
                                     <Tooltip placement="right-start" title="Заменить">
                                         <IconButton color="secondary" onClick={handleUploadClick}>
                                             <Refresh />
@@ -279,7 +283,7 @@ function ItnControl(props: IControlProps) {
                                                 borderRadius={1}
                                                 height={80}
                                                 width={140}
-                                                style={{
+                                                sx={{
                                                     background: `url("${preview}")`,
                                                     backgroundPosition: "center",
                                                     backgroundSize: "cover"
@@ -310,8 +314,7 @@ function ItnControl(props: IControlProps) {
         uploadFile,
         handleUploadClick,
         handleDeleteFile,
-        preview,
-        file
+        preview
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {

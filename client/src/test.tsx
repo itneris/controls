@@ -89,7 +89,7 @@ const TestComnonent = () => {
                 id="1"
             />
             <PageTitle>Тестовая форма без апи</PageTitle>
-            <ItnForm
+            <ItnForm                
                 ref={formRef}
                 entity={{
                     id: "2",

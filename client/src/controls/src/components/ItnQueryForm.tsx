@@ -7,6 +7,21 @@ import { AxiosError, AxiosResponse } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
 
+const dataURLtoFile = (src: string, name: string) => {
+    const arr = src.split(',');
+    const mime = arr[0]!.match(/:(.*?);/)![1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    let u8arr = new Uint8Array(n);
+
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], name, { type: mime });
+}
+
+
 const ItnQueryForm = React.forwardRef<IFormRef, IQueryFormProps>((props, ref) => {
     const baseFormRef = useRef<IFormRef | null>(null);
 
@@ -36,15 +51,25 @@ const ItnQueryForm = React.forwardRef<IFormRef, IQueryFormProps>((props, ref) =>
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
 
+    const formWithFiles = useMemo(() => {
+        return props.fieldBuilder.Build().some(_ => _.type === "file");
+    }, [props.fieldBuilder]);
+
     useQuery<AxiosResponse<LooseObject>, AxiosError>(
         [props.apiUrl, props.id],
         getEntity(props.apiUrl ?? "/", props.id ?? ""),
         {
             enabled: formType !== "create" && props.entity == null,
             onError: (err) => {
-                setErrorLoading(`Ошибка загрузки данных: ${err.message || (err?.response?.data ?? "").toString()}`);
+                setErrorLoading(`Ошибка загрузки данных: ${err.message}`);
             },
             onSuccess: (response) => {
+                let newEntity = response.data;
+                for (let key in newEntity) {
+                    if (newEntity[key].name && newEntity[key].data) {
+                        newEntity[key] = dataURLtoFile(newEntity[key].data, newEntity[key].name);
+                    }
+                }
                 setEntity(response.data);
             },
             onSettled: () => {
@@ -71,11 +96,11 @@ const ItnQueryForm = React.forwardRef<IFormRef, IQueryFormProps>((props, ref) =>
 
     const handleSave = useCallback((newEntity: LooseObject) => {
         if (formType === "create") {
-            createQuery.mutate(newEntity);
+            createQuery.mutate({ entity: newEntity, useFormData: formWithFiles });
         } else {
-            updateQuery.mutate(newEntity);
+            updateQuery.mutate({ entity: newEntity, useFormData: formWithFiles });
         }
-    }, [createQuery, updateQuery, formType]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [createQuery, updateQuery, formType, formWithFiles]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleDelete = useCallback((id: string) => {
         deleteQuery.mutate(id);
