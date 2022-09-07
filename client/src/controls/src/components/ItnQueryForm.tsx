@@ -73,7 +73,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             onSuccess: (response) => {
                 let newEntity = response.data;
                 for (let key in newEntity) {
-                    if (newEntity[key].name && newEntity[key].data) {
+                    if (newEntity[key] !== null && newEntity[key].name && newEntity[key].data) {
                         newEntity[key] = dataURLtoFile(newEntity[key].data, newEntity[key].name);
                     }
                 }
