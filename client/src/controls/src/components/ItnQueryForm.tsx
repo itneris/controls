@@ -6,6 +6,7 @@ import { createEntity, deleteEntity, getEntity, updateEntity } from "../queries/
 import { AxiosError, AxiosResponse } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
+import { IQueryFormRef } from "../base/IQueryFormRef";
 
 const dataURLtoFile = (src: string, name: string) => {
     const arr = src.split(',');
@@ -22,7 +23,7 @@ const dataURLtoFile = (src: string, name: string) => {
 }
 
 
-const ItnQueryForm = React.forwardRef<IFormRef, IQueryFormProps>((props, ref) => {
+const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, ref) => {
     const baseFormRef = useRef<IFormRef | null>(null);
 
     useImperativeHandle(ref, () => ({
@@ -31,6 +32,12 @@ const ItnQueryForm = React.forwardRef<IFormRef, IQueryFormProps>((props, ref) =>
         },
         validate() {
             return baseFormRef.current!.validate();
+        }, 
+        saveEntity() {
+            handleSave(baseFormRef.current!.getCurrentValues());
+        },
+        deleteEntity() {
+            handleDelete(baseFormRef.current!.getCurrentValues().id)
         }
     }));
 

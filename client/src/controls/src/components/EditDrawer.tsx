@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback } from "react";
-import { Box, Drawer, Tooltip, Typography } from "@mui/material";
+import { Box, Divider, Drawer, Tooltip, Typography } from "@mui/material";
 import { Close, Delete, Save } from "@mui/icons-material";
 import Fab from '@mui/material/Fab';
 import { useMemo } from "react";
@@ -88,7 +88,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                 }}
             >
                 {
-                    (open && buttons.length) &&
+                    (open && buttons.length > 0) &&
                     <Box
                         zIndex={1300}
                         position="absolute"
@@ -108,7 +108,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                             {buttons}
                         </Box>
                         {
-                            props.tabs!.length && props.tabs!.map((tab, index) => (
+                            props.tabs!.length > 0 && props.tabs!.map((tab, index) => (
                                 <Box
                                     key={"tab-btn" + index}
                                     height={180}
@@ -138,35 +138,41 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                     </Box>
                 }
                 <Box
-                    pl={2}
-                    pr={2}
-                    pb={2}
+                    py={2}
                     width="100%"
                     sx={{ overflowY: "auto" }}
                 >
-                    <Box
-                        position="sticky"
-                        top={0}
-                        sx={theme => ({ backgroundColor: theme.palette.grey[500] || "#eee" })}
-                        zIndex={1}
-                        py={2}
-                    >
-                        <Typography variant='h5'>{props.tabs!.length ? props.tabs![activeTab].title : props.title}</Typography>
-                        {
-                            props.tabs!.length && props.tabs![activeTab].subtitle &&
-                            <Typography variant='subtitle2'>{props.tabs![activeTab].subtitle}</Typography>
-                        }
-                    </Box>
                     {
-                        props.tabs!.length &&
-                        props.tabs!.map((tab, index) => <Box
-                            key={"tab-" + index}
-                            display={index === activeTab ? 'block' : 'none'}
-                        >
-                            {tab.component}
-                        </Box>)
+                        (props.title || props.tabs!.length > 0) &&
+                        <>
+                            <Box
+                                position="sticky"
+                                top={0}
+                                //sx={theme => ({ backgroundColor: theme.palette.grey[500] || "#eee" })}
+                                zIndex={1}
+                                pl={2}
+                            >
+                                <Typography variant='h5'>{props.tabs!.length > 0 ? props.tabs![activeTab].title : props.title}</Typography>
+                                {
+                                    (props.tabs!.length > 0 && props.tabs![activeTab].subtitle) &&
+                                    <Typography variant='subtitle2'>{props.tabs![activeTab].subtitle}</Typography>
+                                }
+                            </Box>
+                            <Divider sx={{ mt: 1, mb: 1 }} />
+                        </>
                     }
-                    {props.children}
+                    <Box paddingX={2}>
+                        {
+                            props.tabs!.length > 0 &&
+                            props.tabs!.map((tab, index) => <Box
+                                key={"tab-" + index}
+                                display={index === activeTab ? 'block' : 'none'}
+                            >
+                                {tab.component}
+                            </Box>)
+                        }
+                        {props.children}
+                    </Box>
                 </Box>
             </Drawer>
         </>

@@ -105,6 +105,8 @@ const TestComnonent = () => {
                 
             />
             <EditDrawer
+                title="Тестовый дровер"
+                cancelBtnText="Отмена"
                 ref={drawerRef}
             >
                 Контент
