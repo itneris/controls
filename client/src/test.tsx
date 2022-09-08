@@ -113,6 +113,21 @@ const TestComnonent = () => {
             </EditDrawer>
             <ItnModal
                 ref={modalRef}
+                yesBtnText="Да"
+                noBtnText="Нет"
+                onResult={(res: boolean | null) => {
+                    if (res == true) {
+                        console.log("Smbdy clicked yes");
+                        return true;
+                    }
+                    if (res == false) {
+                        console.log("Smbdy clicked no");
+                        return false;
+                    }
+                    if (res === null) {
+                        console.log("Smbdy has closed this modal");
+                    }
+                }}
             >
                 Контент
             </ItnModal>

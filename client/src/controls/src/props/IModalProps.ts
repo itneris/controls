@@ -14,8 +14,9 @@ export default interface IModalProps {
     contentText?: string | null;
     /**
      * Modal innter content
+     * Default: null
      * */
-    children: React.ReactNode;
+    children?: React.ReactNode | null;
     /**
      * Callback on result of modal action
      * Default: null
@@ -24,8 +25,9 @@ export default interface IModalProps {
      *          true: "Yes" button clicked
      *          false: "No" button clicked
      *          null: "Cancel" button clicked or dialog hidden another way
+     * Return boolean, should modal be closed after button click
      * */
-    onResult?: ((result: boolean | null) => void) | null;
+    onResult?: ((result: boolean | null) => boolean) | null;
     /**
      * Disable ok button
      * Default: false

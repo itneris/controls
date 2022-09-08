@@ -11,7 +11,12 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
     const [open, setOpen] = useState<boolean>(false);
 
     const handleResult = useCallback((result: boolean | null) => {
-        props.onResult && props.onResult(result);
+        if (props.onResult !== null) {
+            const shouldClose = props.onResult(result);
+            setOpen(!shouldClose);
+            return;
+        }
+
         setOpen(false);
     }, [props.onResult, setOpen]);  // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -61,7 +66,7 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                                 variant="contained"
                                 onClick={() => handleResult(false)}
                             >
-                                {props.cancelBtnText}
+                                {props.noBtnText}
                             </Button>
                         }
                         {
@@ -70,7 +75,7 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                                 variant="contained"
                                 onClick={() => handleResult(true)}
                             >
-                                {props.cancelBtnText}
+                                {props.yesBtnText}
                             </Button>
                         }
                     </Box>
@@ -89,7 +94,8 @@ ItnModal.defaultProps = {
     yesBtnText: null,
     noBtnText: null,
     cancelBtnText: null,
-    titleComponent: null
+    titleComponent: null,
+    children: null
 }
 
 export default ItnModal;
