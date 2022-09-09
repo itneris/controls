@@ -11,9 +11,11 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
     const [open, setOpen] = useState<boolean>(false);
 
     const handleResult = useCallback((result: boolean | null) => {
-        if (props.onResult !== null) {
+        if (props.onResult) {
             const shouldClose = props.onResult(result);
-            setOpen(!shouldClose);
+            if (shouldClose !== false) {
+                setOpen(false);
+            }
             return;
         }
 
@@ -52,7 +54,7 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                         {
                             props.cancelBtnText !== null &&
                             <Button
-                                variant="contained"
+                                variant="text"
                                 onClick={() => handleResult(null)}
                             >
                                 {props.cancelBtnText}
@@ -63,8 +65,9 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                         {
                             props.noBtnText !== null &&
                             <Button
-                                variant="contained"
+                                variant="text"
                                 onClick={() => handleResult(false)}
+                                color="secondary"
                             >
                                 {props.noBtnText}
                             </Button>
@@ -72,8 +75,9 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                         {
                             props.yesBtnText !== null &&
                             <Button
-                                variant="contained"
+                                    variant="text"
                                 onClick={() => handleResult(true)}
+                                color="secondary"
                             >
                                 {props.yesBtnText}
                             </Button>

@@ -1,4 +1,5 @@
 import { LooseObject } from "@itneris/controls/dist/base/LooseObject";
+import { QueryFunctionContext } from "@tanstack/react-query";
 import axios, {  AxiosResponse } from "axios";
 import { ItnSelectOption } from "../props/IControlProps";
 
@@ -9,6 +10,10 @@ export interface IFormMutateParams {
 
 export const getEntity = <T>(apiName: string, id: string) => async (): Promise<AxiosResponse<T>> => {
     return await axios.get(`${apiName}/${id}`);
+}
+
+export const getDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
+    return await axios.get(context.queryKey[0] as string);
 }
 
 export const createEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {

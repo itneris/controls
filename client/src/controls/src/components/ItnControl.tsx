@@ -213,6 +213,9 @@ function ItnControl(props: IControlProps) {
                     error={props.error}
                     size="small"
                     helperText={props.errorText}
+                    multiline={props.multiline}
+                    rows={props.lines || undefined}
+                    maxRows={props.maxLines || undefined}
                 />;
             case 'number':
                 return <TextField
@@ -357,7 +360,10 @@ ItnControl.defaultProps = {
     cropImageToSize: null,
     maxFileSize: 4096,
     withImagePreview: false,
-    isAvatar: false
+    isAvatar: false,
+    lines: null,
+    multiline: false,
+    maxLines: null
 }
 
 export default ItnControl;

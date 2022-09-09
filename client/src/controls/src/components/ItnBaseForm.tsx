@@ -17,12 +17,21 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         }
     }));
 
-    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? {});
+    const fields = props.fieldBuilder.Build();
+
+    const getDefaultValues = useCallback(() => {
+        let initEntity: LooseObject = {};
+        fields.forEach(f => {
+            initEntity[f.property] = f.defaultValue ?? null;
+        });
+        return initEntity;
+    }, [props.fieldBuilder]);
+
+    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? getDefaultValues());
     const [validaion, setValidation] = useState<Validation[]>([]);
 
-    useEffect(() => setEntity(props.entity ?? {}), [props.entity])
+    useEffect(() => setEntity(props.entity ?? getDefaultValues()), [props.entity]);
 
-    const fields = useMemo(() => props.fieldBuilder.Build(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChange = useCallback((field: string, value: any) => {
         const newEntity = {
@@ -144,6 +153,9 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         isAvatar={field.isAvatar}
                                         maxFileSize={field.maxFileSize}
                                         withImagePreview={field.withImagePreview}
+                                        multiline={field.multiline}
+                                        lines={field.lines}
+                                        maxLines={field.maxLines}
                                     />                                
                                 }
                             })

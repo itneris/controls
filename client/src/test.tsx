@@ -12,10 +12,12 @@ interface IUserDTO {
     name: string;
     surname: string;
     role: string;
+    role_api: string;
     blocked: boolean;
     middlename: string;
     password: string;
-    avatar: string
+    avatar: string;
+    note: string;
 }
 
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
@@ -27,10 +29,12 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.name)
             .WithLabel("Имя")
+            .WithDefaultValue("Ибраген")
             .Required();
 
         this.FieldFor(_ => _.surname)
             .WithLabel("Фамилия")
+            .WithDefaultValue("Каромаслов")
             .Disable();
 
         this.FieldFor(_ => _.password)
@@ -56,6 +60,13 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("3", "Дата-менеджер"),
             ]);
 
+        this.FieldFor(_ => _.role_api)
+            .WithLabel("Роль (api)")
+            .SelectWithQuery("http://localhost:5000/api/dicts/roles");
+
+        this.FieldFor(_ => _.note)
+            .WithLabel("Примечание")
+            .TextArea({ lines: 3 });
 
         this.FieldFor(_ => _.middlename)
             .WithCustomControl((val, onChange) => {

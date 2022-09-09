@@ -18,6 +18,21 @@
      * */
     placeholder?: string | null;
     /**
+     * Shoud be string controol textarea
+     * Default: false
+     * */
+    multiline?: boolean;
+    /**
+     * Initial height of textarea
+     * Default: null
+     * */
+    lines?: number | null;
+    /**
+     * Maximum height of textarea
+     * Default: null
+     * */
+    maxLines?: number | null;
+    /**
      * Should be control heighlight with red border
      * Default: false
      * */

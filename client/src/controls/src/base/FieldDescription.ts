@@ -32,6 +32,11 @@ export class FieldDescription implements LooseObject {
     withImagePreview: boolean = false;
     isAvatar: boolean = false;
     cropImageToSize: [number, number] | null = null;
+    lines: number | null = null;
+    maxLines: number | null = null;
+    multiline: boolean = false;
+    defaultValue: any | null = null;
+    selectApiUrl: string | null = null;
 
     constructor(order: number, property: string) {
         this.property = property;

@@ -1,12 +1,13 @@
-import React, { useCallback, useImperativeHandle, useState, useRef, useMemo } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, useEffect } from "react";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { LooseObject } from "../base/LooseObject";
-import { createEntity, deleteEntity, getEntity, updateEntity } from "../queries/dataQueries";
+import { createEntity, deleteEntity, getDict, getEntity, updateEntity } from "../queries/dataQueries";
 import { AxiosError, AxiosResponse } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
 import { IQueryFormRef } from "../base/IQueryFormRef";
+import { ItnSelectOption } from "../props/IControlProps";
 
 const dataURLtoFile = (src: string, name: string) => {
     const arr = src.split(',');
@@ -53,14 +54,20 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         }
     }, [props.entity, props.id, props.type]); 
 
-    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? {});
+    let fieldBuilder = props.fieldBuilder;
+
+    useEffect(() => {
+        dictQuieries.forEach(_ => _.refetch());
+    }, [fieldBuilder]);
+
+    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? null);
     const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
 
     const formWithFiles = useMemo(() => {
-        return props.fieldBuilder.Build().some(_ => _.type === "file");
-    }, [props.fieldBuilder]);
+        return fieldBuilder.Build().some(_ => _.type === "file");
+    }, [fieldBuilder]);
 
     useQuery<AxiosResponse<LooseObject>, AxiosError>(
         [props.apiUrl, props.id],
@@ -84,6 +91,18 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             }
         }
     );
+
+    const dictQuieries = useQueries({
+        queries: fieldBuilder.Build()
+            .filter(_ => _.selectApiUrl !== null)
+            .map(_ => ({
+                queryKey: [_.selectApiUrl],
+                queryFn: getDict,
+                onSuccess: (response: AxiosResponse) => {
+                    fieldBuilder = fieldBuilder.SetSelectOptions(_.property, response.data)
+                }
+            }))
+    });
 
     const createQuery = useMutation(createEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
@@ -115,7 +134,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
     return (
         <ItnBaseForm
-            fieldBuilder={props.fieldBuilder}
+            fieldBuilder={fieldBuilder}
             viewOnly={formType === "view"}
             cancelBtnText={props.cancelBtnText}
             deleteBtnText={props.deleteBtnText}
