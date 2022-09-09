@@ -21,6 +21,9 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
     if (params.useFormData) {
         const bodyFormData = new FormData();
         for (let key in entity) {
+            if (entity[key] === "" || entity[key] === null || entity[key] === undefined) {
+                continue;
+            }
             bodyFormData.append(key, entity[key]);
         }
         return await axios({
@@ -38,6 +41,9 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
     if (params.useFormData) {
         const bodyFormData = new FormData();
         for (let key in entity) {
+            if (entity[key] === "" || entity[key] === null || entity[key] === undefined) {
+                continue;
+            }
             bodyFormData.append(key, entity[key]);
         }
         return await axios({
