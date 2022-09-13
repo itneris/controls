@@ -26,6 +26,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
+  "devDependencies": {
+    "install-peers": "^1.0.4"
+  },
   "babel": {
     "presets": [
       "@babel/preset-react"
