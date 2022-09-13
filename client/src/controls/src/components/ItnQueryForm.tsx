@@ -130,6 +130,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
     const handleDelete = useCallback((id: string) => {
         deleteQuery.mutate(id);
+        props.onAfterDelete && props.onAfterDelete();
     }, [deleteQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (

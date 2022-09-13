@@ -131,7 +131,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         type={field.type}
                                         variant={props.variant!}
                                         onChange={(value) => handleChange(field.property, value)}
-                                        value={entity![field.property] ?? (field.type === "file" ? null : "")}
+                                        value={entity![field.property] === null || entity![field.property] === undefined ? (field.type === "file" ? null : "") : entity![field.property]}
                                         allowNullInSelect={field.allowNullInSelect}
                                         selectNullLabel={field.selectNullLabel}
                                         noOptionsText={field.noOptionsText!}

@@ -58,7 +58,7 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
 }
 
 export const deleteEntity = (apiName: string) => async (id: string): Promise<AxiosResponse<string>> => {
-    return await axios.put(`${apiName}/${id}`);
+    return await axios.delete(`${apiName}/${id}`);
 }
 
 export const getDictionary = (apiName: string) => async (): Promise<AxiosResponse<ItnSelectOption[]>> => {

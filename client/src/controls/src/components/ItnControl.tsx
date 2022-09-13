@@ -145,7 +145,7 @@ function ItnControl(props: IControlProps) {
                     label={props.label}
                     control={<Checkbox
                         disabled={props.disabled}
-                        value={!!props.value}
+                        checked={!!props.value}
                         onChange={() => props.onChange && props.onChange(!props.value)}
                     />}
                 />;
