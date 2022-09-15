@@ -11,6 +11,7 @@ interface IUserDTO {
     id: string;
     name: string;
     surname: string;
+    visitDate: string;
     role: string;
     role_api: string;
     blocked: boolean;
@@ -47,6 +48,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 }
                 return null;
             });
+
+        this.FieldFor(_ => _.visitDate)
+            .WithLabel("Дата записи")
+            .DatePicker();
 
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")
@@ -127,11 +132,11 @@ const TestComnonent = () => {
                 yesBtnText="Да"
                 noBtnText="Нет"
                 onResult={(res: boolean | null) => {
-                    if (res == true) {
+                    if (res === true) {
                         console.log("Smbdy clicked yes");
                         return true;
                     }
-                    if (res == false) {
+                    if (res === false) {
                         console.log("Smbdy clicked no");
                         return false;
                     }

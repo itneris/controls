@@ -1,4 +1,4 @@
-﻿export default interface IControlProps {
+export default interface IControlProps {
     /**
      * Type of rendered control
      * */

@@ -1,4 +1,4 @@
-import React, { useCallback, useImperativeHandle, useState, useMemo, useEffect } from "react";
+import React, { useCallback, useImperativeHandle, useState, useEffect } from "react";
 import ItnControl from "./ItnControl";
 import { IFormRef } from "../base/IFormRef";
 import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
@@ -25,12 +25,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             initEntity[f.property] = f.defaultValue ?? null;
         });
         return initEntity;
-    }, [props.fieldBuilder]);
+    }, [fields]);
 
     const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? getDefaultValues());
     const [validaion, setValidation] = useState<Validation[]>([]);
 
-    useEffect(() => setEntity(props.entity ?? getDefaultValues()), [props.entity]);
+    useEffect(() => setEntity(props.entity ?? getDefaultValues()), [props.entity]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const handleChange = useCallback((field: string, value: any) => {
@@ -83,11 +83,15 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 sx={props.hidePaper ? undefined : { paddingX: 2, paddingY: 2 }}
             >
                 {
-                    props.header &&
+                    (props.header || props.onDelete) &&
                     <Box alignItems="center" display="flex" justifyContent="space-between">
-                        <Typography variant="h6">{props.header}</Typography>
                         {
-                            !props.onDelete ?
+                            props.header ?
+                                <Typography variant="h6">{props.header}</Typography> :
+                                <div></div>
+                        }
+                        {
+                            props.onDelete ?
                                 <Button
                                     color="error"
                                     onClick={handleDeleteClick}
@@ -126,12 +130,14 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         <Typography variant="body2">{entity![field.property]}</Typography>
                                     </Box>;
                                 } else {
+                                    const controlValue = entity![field.property] ?? (field.type === "file" || field.type === "date" ? null : "");
+
                                     return <ItnControl
                                         key={"fc-" + field.property}
                                         type={field.type}
                                         variant={props.variant!}
                                         onChange={(value) => handleChange(field.property, value)}
-                                        value={entity![field.property] === null || entity![field.property] === undefined ? (field.type === "file" ? null : "") : entity![field.property]}
+                                        value={controlValue}
                                         allowNullInSelect={field.allowNullInSelect}
                                         selectNullLabel={field.selectNullLabel}
                                         noOptionsText={field.noOptionsText!}

@@ -6,6 +6,7 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@itneris/controls": "^2.0.5",
+    "@itneris/pickers": "^1.0.5",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@tanstack/react-query": "^4.2.3",
@@ -18,13 +19,11 @@
     "@types/react-dom": "^18.0.6",
     "axios": "^0.27.2",
     "date-fns": "^2.29.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.8.2",
     "web-vitals": "^2.1.4"
-  },
-  "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "install-peers": "^1.0.4"

@@ -7,7 +7,6 @@ import { AxiosError, AxiosResponse } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
 import { IQueryFormRef } from "../base/IQueryFormRef";
-import { ItnSelectOption } from "../props/IControlProps";
 
 const dataURLtoFile = (src: string, name: string) => {
     const arr = src.split(',');
@@ -56,10 +55,6 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
     let fieldBuilder = props.fieldBuilder;
 
-    useEffect(() => {
-        dictQuieries.forEach(_ => _.refetch());
-    }, [fieldBuilder]);
-
     const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? null);
     const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
@@ -103,6 +98,10 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 }
             }))
     });
+
+    useEffect(() => {
+        dictQuieries.forEach(_ => _.refetch());
+    }, [fieldBuilder]);
 
     const createQuery = useMutation(createEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
@@ -169,7 +168,7 @@ ItnQueryForm.defaultProps = {
     header: null,
     variant: "outlined",
     disableSave: false,
-    disableDelete: true,
+    disableDelete: false,
     deleteBtnText: "Удалить",
     saveBtnText: "Сохранить",
     cancelBtnText: "Отмена"

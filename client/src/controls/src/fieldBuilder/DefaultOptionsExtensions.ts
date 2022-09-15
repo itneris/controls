@@ -17,6 +17,11 @@ declare module "./FieldOptionsBuilder" {
 		 * */
 		Select(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
 		/**
+		 * Changes control type to 'date'
+		 * @param {ItnSelectOption[]} options Array of opitons to render in select
+		 * */
+		DatePicker(): FieldOptionsBuilder<T>;
+		/**
 		 * !!!USE ONLY WITH QUERY FORM
 		 * Changes control type to 'select' and defines api url for get options
 		 * @param {string} apiUrl API address that return array of ItnSelectOption
@@ -75,6 +80,11 @@ FieldOptionsBuilder.prototype.Select = function<T extends LooseObject>(options: 
 	return this
 		.SetFieldProp("type", "select")
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
+}
+
+FieldOptionsBuilder.prototype.DatePicker = function <T extends LooseObject>() {
+	return this
+		.SetFieldProp("type", "date") as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string) {

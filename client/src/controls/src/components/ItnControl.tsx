@@ -26,7 +26,7 @@ import {
     Visibility,
     VisibilityOff
 } from "@mui/icons-material";
-//import DatePicker from "./DatePicker";
+import { ItnDatePicker } from "@itneris/pickers";
 import IControlProps, { ItnSelectOption } from "../props/IControlProps";
 
 const generatePassword = (length: number): string => {
@@ -80,7 +80,7 @@ function ItnControl(props: IControlProps) {
         fileInputRef.current!.click();
     }, []);
 
-    const handleDeleteFile = useCallback(() => props.onChange && props.onChange(null), [props.onChange]);
+    const handleDeleteFile = useCallback(() => props.onChange && props.onChange(null), [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const uploadFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !e.target.files.length) {
@@ -89,7 +89,7 @@ function ItnControl(props: IControlProps) {
         }
 
         props.onChange && props.onChange(e.target.files![0]);
-    }, [props.onChange]);
+    }, [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const control = useMemo(() => {
         switch (props.type) {
@@ -150,11 +150,14 @@ function ItnControl(props: IControlProps) {
                     />}
                 />;
             case 'date':
-                /*return <DatePicker
-                    value={controlValue}
-                    onChange={val => onChange(name, val)}
-                    mode={controlOptions.mode}
-                />*/break;
+                return <ItnDatePicker
+                    label={props.label ?? ""}
+                    value={props.value}
+                    onChange={val => props.onChange && props.onChange(val)}
+                    size="small"
+                    disabled={props.disabled}
+                    fullWidth
+                />;
             case 'password':
                 return <Box display="flex" width="100%">
                     <FormControl
