@@ -55,7 +55,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 newValidation.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`))
             }
             if (field.validation !== null && !valIsNull) {
-                const error = field.validation(val);
+                const error = field.validation(val, entity ?? {});
                 if (error !== null) {
                     newValidation.push(new Validation(field.property, error))
                 }

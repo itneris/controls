@@ -36,6 +36,11 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.surname)
             .WithLabel("Фамилия")
             .WithDefaultValue("Каромаслов")
+            .WithValidation((val, entity) => {
+                console.log(val);
+                console.log(entity);
+                return null;
+            })
             .Disable();
 
         this.FieldFor(_ => _.password)

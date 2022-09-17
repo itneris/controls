@@ -47,7 +47,7 @@ declare module "./FieldOptionsBuilder" {
 		 * Add validation to field by value
 		 * @param {(value: any) => string | null} validate Function that get current value as param and return errorMessage or null if value is valid
 		 * */
-		WithValidation(validate: (value: any) => string | null): FieldOptionsBuilder<T>;
+		WithValidation(validate: (value: any, entity: LooseObject) => string | null): FieldOptionsBuilder<T>;
 		 /**
 		 * Renders custom control
 		 * @param {(value: any, onChange: (value: any) => void) => React.ReactNode} control Function that receives as paramteres entity current value, onChange function. Also current state as isSaving and viewOnly
@@ -113,7 +113,7 @@ FieldOptionsBuilder.prototype.WithCustomControl = function <T extends LooseObjec
 		.SetFieldProp("custom", control) as FieldOptionsBuilder<T>;;
 }
 
-FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(validate: (value: any) => string | null) {
+FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(validate: (value: any, entity: LooseObject) => string | null) {
 	return this
 		.SetFieldProp("validation", validate) as FieldOptionsBuilder<T>;;
 }

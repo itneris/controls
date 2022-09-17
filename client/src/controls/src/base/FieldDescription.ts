@@ -25,7 +25,7 @@ export class FieldDescription implements LooseObject {
     selectNullLabel: string | null = null;
     noOptionsText: string | null = null;
     display: boolean | (() => boolean) = true;
-    validation: ((value: any) => string | null) | null = null;
+    validation: ((value: any, entity: LooseObject) => string | null) | null = null;
     required: boolean = false;
     accept: string = "*";
     maxFileSize: number = 4096 * 1000;
