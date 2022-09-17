@@ -6,6 +6,7 @@ import IModalRef from '../props/IModalRef';
 const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: ForwardedRef<IModalRef>) => {
     useImperativeHandle(ref, () => ({
         open: () => setOpen(true),
+        close: () => setOpen(false)
     }));
 
     const [open, setOpen] = useState<boolean>(false);

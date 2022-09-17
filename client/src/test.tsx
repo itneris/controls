@@ -103,6 +103,8 @@ const TestComnonent = () => {
                 apiUrl="http://localhost:5000/api/test"
                 fieldBuilder={fieldBuilder}
                 id="1"
+                onAfterLoad={(e) => console.log(e)}
+                urlParams={{ forGodsSake: "true" }}
             />
             <PageTitle>Тестовая форма без апи</PageTitle>
             <ItnForm                

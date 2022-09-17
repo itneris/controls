@@ -3,7 +3,12 @@ import { QueryFunctionContext } from "@tanstack/react-query";
 import axios, {  AxiosResponse } from "axios";
 import { ItnSelectOption } from "../props/IControlProps";
 
-export interface IFormMutateParams {
+export interface IFormDeleteParams {
+    id?: string | null,
+    urlParams?: LooseObject | null
+}
+
+export interface IFormMutateParams extends IFormDeleteParams {
     entity: LooseObject,
     useFormData: boolean
 }
@@ -38,6 +43,16 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
 
 export const updateEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
+    let url = `${apiName}/${params.id}`;
+    if (params.urlParams !== null) {
+        url += "?";
+        let paramsArr: string[] = [];
+        for (let key in params.urlParams) {
+            paramsArr.push(`${key}=${encodeURIComponent(params.urlParams[key])}`);
+        }
+        url += paramsArr.join("&");
+    }
+
     if (params.useFormData) {
         const bodyFormData = new FormData();
         for (let key in entity) {
@@ -48,7 +63,7 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
         }
         return await axios({
             method: "put",
-            url: `${apiName}/${entity.id}`,
+            url: url,
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" }
         });
@@ -57,8 +72,18 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
     return await axios.put(`${apiName}/${entity.id}`, entity);
 }
 
-export const deleteEntity = (apiName: string) => async (id: string): Promise<AxiosResponse<string>> => {
-    return await axios.delete(`${apiName}/${id}`);
+export const deleteEntity = (apiName: string) => async (params: IFormDeleteParams): Promise<AxiosResponse<string>> => {
+    let url = `${apiName}/${params.id}`;
+    if (params.urlParams !== null) {
+        url += "?";
+        let paramsArr: string[] = [];
+        for (let key in params.urlParams) {
+            paramsArr.push(`${key}=${encodeURIComponent(params.urlParams[key])}`);
+        }
+        url += paramsArr.join("&");
+    }
+
+    return await axios.delete(url);
 }
 
 export const getDictionary = (apiName: string) => async (): Promise<AxiosResponse<ItnSelectOption[]>> => {

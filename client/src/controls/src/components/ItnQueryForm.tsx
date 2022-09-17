@@ -2,7 +2,7 @@ import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, use
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { LooseObject } from "../base/LooseObject";
-import { createEntity, deleteEntity, getDict, getEntity, updateEntity } from "../queries/dataQueries";
+import { createEntity, deleteEntity, getDict, getEntity, updateEntity, IFormMutateParams } from "../queries/dataQueries";
 import { AxiosError, AxiosResponse } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
@@ -33,11 +33,11 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         validate() {
             return baseFormRef.current!.validate();
         }, 
-        saveEntity() {
-            handleSave(baseFormRef.current!.getCurrentValues());
+        saveEntity(urlParams) {
+            handleSave(baseFormRef.current!.getCurrentValues(), urlParams);
         },
-        deleteEntity() {
-            handleDelete(baseFormRef.current!.getCurrentValues().id)
+        deleteEntity(urlParams) {
+            handleDelete(baseFormRef.current!.getCurrentValues().id, urlParams)
         }
     }));
 
@@ -79,7 +79,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                         newEntity[key] = dataURLtoFile(newEntity[key].data, newEntity[key].name);
                     }
                 }
-                setEntity(response.data);
+                setEntity(newEntity);
+                props.onAfterLoad && props.onAfterLoad(newEntity);
             },
             onSettled: () => {
                 setIsLoading(false);
@@ -105,32 +106,46 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
     const createQuery = useMutation(createEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
-        onSuccess: () => props.onAfterSave && props.onAfterSave(),
+        onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
         onSettled: () => setIsSaving(false)
     });
     const updateQuery = useMutation(updateEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
-        onSuccess: () => props.onAfterSave && props.onAfterSave(),
+        onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
         onSettled: () => setIsSaving(false)
     });
     const deleteQuery = useMutation(deleteEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
-        onSuccess: () => props.onAfterDelete && props.onAfterDelete(),
+        onSuccess: (response) => props.onAfterDelete && props.onAfterDelete(response.data),
         onSettled: () => setIsSaving(false)
     });
 
-    const handleSave = useCallback((newEntity: LooseObject) => {
-        if (formType === "create") {
-            createQuery.mutate({ entity: newEntity, useFormData: formWithFiles });
-        } else {
-            updateQuery.mutate({ entity: newEntity, useFormData: formWithFiles });
+    const handleSave = useCallback((newEntity: LooseObject, urlParams: LooseObject | null = null) => {
+        let allParams: LooseObject | null = null;
+        if (props.urlParams !== null) {
+            allParams = { ...props.urlParams };
         }
-    }, [createQuery, updateQuery, formType, formWithFiles]); // eslint-disable-line react-hooks/exhaustive-deps
+        if (urlParams !== null) {
+            allParams = { ...allParams, ...urlParams };
+        }
+        if (formType === "create") {
+            createQuery.mutate({ entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
+        } else {
+            updateQuery.mutate({ id: props.id, entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
+        }
+    }, [createQuery, updateQuery, formType, formWithFiles, props.urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleDelete = useCallback((id: string) => {
-        deleteQuery.mutate(id);
-        props.onAfterDelete && props.onAfterDelete();
-    }, [deleteQuery]); // eslint-disable-line react-hooks/exhaustive-deps
+    const handleDelete = useCallback((id: string, urlParams: LooseObject | null = null) => {
+        let allParams: LooseObject | null = null;
+        if (props.urlParams !== null) {
+            allParams = { ...props.urlParams };
+        }
+        if (urlParams !== null) {
+            allParams = { ...allParams, ...urlParams };
+        }
+
+        deleteQuery.mutate({ id: id, urlParams: allParams });
+    }, [deleteQuery, props.urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <ItnBaseForm
@@ -171,7 +186,8 @@ ItnQueryForm.defaultProps = {
     disableDelete: false,
     deleteBtnText: "Удалить",
     saveBtnText: "Сохранить",
-    cancelBtnText: "Отмена"
+    cancelBtnText: "Отмена",
+    urlParams: null
 }
 
 export default ItnQueryForm;
