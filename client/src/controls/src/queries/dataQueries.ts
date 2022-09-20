@@ -9,6 +9,7 @@ export interface IFormDeleteParams {
 }
 
 export interface IFormMutateParams extends IFormDeleteParams {
+    id?: string | null,
     entity: LooseObject,
     useFormData: boolean
 }
@@ -53,7 +54,10 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
 
 export const updateEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
-    let url = `${apiName}/${params.id}`;
+    let url = `${apiName}`;
+    if (params.id) {
+        url += `/${params.id}`;
+    }
     if (params.urlParams !== null) {
         url += "?";
         let paramsArr: string[] = [];
@@ -79,7 +83,7 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
         });
     }
 
-    return await axios.put(`${apiName}/${entity.id}`, entity);
+    return await axios.put(url, entity);
 }
 
 export const deleteEntity = (apiName: string) => async (params: IFormDeleteParams): Promise<AxiosResponse<string>> => {

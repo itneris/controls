@@ -15,7 +15,6 @@ app.get('/api/test/1', (req, res) => {
     const date = new Date();
     date.setDate(date.getDate() - 1);
     res.send({
-        id: "1",
         surname: "Тестовый",
         name: "Тест",
         middlename: "Тестович",

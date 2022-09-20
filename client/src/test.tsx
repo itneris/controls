@@ -24,9 +24,10 @@ interface IUserDTO {
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
     constructor() {
         super();
+        /*
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
-            .File({ withImagePreview: true });
+            .File({ withImagePreview: true });*/
 
         this.FieldFor(_ => _.name)
             .WithLabel("Имя")
