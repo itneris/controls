@@ -1,5 +1,5 @@
 import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, useEffect } from "react";
-import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { LooseObject } from "../base/LooseObject";
 import { createEntity, deleteEntity, getDict, getEntity, updateEntity, IFormMutateParams } from "../queries/dataQueries";
@@ -21,6 +21,38 @@ const dataURLtoFile = (src: string, name: string) => {
 
     return new File([u8arr], name, { type: mime });
 }
+
+export const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: false,
+            refetchOnWindowFocus: false,
+        }
+    }
+});
+
+const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, ref) => {
+    const form = useRef<IQueryFormRef>(null);
+
+    useImperativeHandle(ref, () => ({
+        getCurrentValues() {
+            return form.current!.getCurrentValues();
+        },
+        validate() {
+            return form.current!.validate();
+        },
+        saveEntity(urlParams) {
+            form.current!.saveEntity(urlParams);
+        },
+        deleteEntity(urlParams) {
+            form.current!.deleteEntity(urlParams);
+        }
+    }));
+
+    return <QueryClientProvider client={queryClient} contextSharing>
+        <ItnQueryForm {...props} />
+    </QueryClientProvider>
+});
 
 
 const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, ref) => {
@@ -131,9 +163,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         if (formType === "create") {
             createQuery.mutate({ entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
         } else {
-            updateQuery.mutate({ id: props.id, entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
+            updateQuery.mutate({ id: props.id ?? newEntity.id, entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
         }
-    }, [createQuery, updateQuery, formType, formWithFiles, props.urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [createQuery, updateQuery, formType, formWithFiles, props.urlParams, props.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleDelete = useCallback((id: string, urlParams: LooseObject | null = null) => {
         let allParams: LooseObject | null = null;
@@ -167,6 +199,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             ref={baseFormRef}
             saveBtnText={props.saveBtnText}
             variant={props.variant}
+            headerContent={props.headerContent}
+            footerContent={props.footerContent}
         />
     );
 });
@@ -190,4 +224,4 @@ ItnQueryForm.defaultProps = {
     urlParams: null
 }
 
-export default ItnQueryForm;
+export default ItnQueryFormWrapper;

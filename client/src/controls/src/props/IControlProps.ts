@@ -93,6 +93,10 @@ export default interface IControlProps {
      * */
     passwordLength?: number;
     /**
+     * Disable generate password button
+     * */
+    disableNewPasswordGenerate?: boolean;
+    /**
      * Disables blocked options for null value for control type select
      * Default: false
      * */

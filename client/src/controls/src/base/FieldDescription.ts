@@ -6,7 +6,8 @@ export class FieldDescription implements LooseObject {
     property: string;
     order: number;
     type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" = "string";
-    disabled: boolean = false;
+    disabled: boolean | ((entity: LooseObject) => boolean) = false;
+    hidden: boolean | ((entity: LooseObject) => boolean) = false;
     placeholder: string | null = null;
     error: boolean = false;
     errorText: string | null = null;
@@ -37,6 +38,7 @@ export class FieldDescription implements LooseObject {
     multiline: boolean = false;
     defaultValue: any | null = null;
     selectApiUrl: string | null = null;
+    disableNewPasswordGenerate: boolean = false;
 
     constructor(order: number, property: string) {
         this.property = property;

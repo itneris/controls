@@ -188,11 +188,14 @@ function ItnControl(props: IControlProps) {
                         />
                         <FormHelperText>{props.error}</FormHelperText>
                     </FormControl>
-                    <IconButton onClick={handlePasswordGenerate}>
-                        <Tooltip title="Сгенерировать пароль">
-                            <Loop />
-                        </Tooltip>
-                    </IconButton>
+                    {
+                        !props.disableNewPasswordGenerate &&
+                        <IconButton onClick={handlePasswordGenerate}>
+                            <Tooltip title="Сгенерировать пароль">
+                                <Loop />
+                            </Tooltip>
+                        </IconButton>
+                    }
                 </Box>;
             //TODO проверить чип инпут
             /*
@@ -366,7 +369,8 @@ ItnControl.defaultProps = {
     isAvatar: false,
     lines: null,
     multiline: false,
-    maxLines: null
+    maxLines: null,
+    disableNewPasswordGenerate: false
 }
 
 export default ItnControl;

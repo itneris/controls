@@ -84,7 +84,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             >
                 {
                     (props.header || props.onDelete) &&
-                    <Box alignItems="center" display="flex" justifyContent="space-between">
+                    <Box alignItems="center" display="flex" justifyContent="space-between" mb={2}>
                         {
                             props.header ?
                                 <Typography variant="h6">{props.header}</Typography> :
@@ -104,6 +104,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                 <div></div>
 
                         }
+                    </Box>
+                }
+                {
+                    props.headerContent !== null &&
+                    <Box mb={2}>
+                        {props.headerContent}
                     </Box>
                 }
                 <Box display="flex" gap={2} flexDirection="column">
@@ -130,11 +136,18 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         <Typography variant="body2">{entity![field.property]}</Typography>
                                     </Box>;
                                 } else {
+                                    const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
+                                    if (controlHidden) {
+                                        return null;
+                                    }
+
                                     const controlValue = entity![field.property] ?? (field.type === "file" || field.type === "date" ? null : "");
+                                    const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity ?? {}) : field.disabled;
 
                                     return <ItnControl
                                         key={"fc-" + field.property}
                                         type={field.type}
+                                        disableNewPasswordGenerate={field.disableNewPasswordGenerate}
                                         variant={props.variant!}
                                         onChange={(value) => handleChange(field.property, value)}
                                         value={controlValue}
@@ -143,7 +156,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         noOptionsText={field.noOptionsText!}
                                         passwordLength={field.passwordLength}
                                         placeholder={field.placeholder}
-                                        disabled={field.disabled || props.isSaving}
+                                        disabled={controlDisabled || props.isSaving}
                                         display={field.display}
                                         error={validaion.find(_ => _.property === field.property) !== undefined}
                                         errorText={validaion.find(_ => _.property === field.property)?.message}
@@ -167,6 +180,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                             })
                     }
                 </Box>
+                {
+                    props.footerContent !== null &&
+                    <Box mt={2}>
+                        {props.footerContent}
+                    </Box>
+                }
             </Paper>
             {
                 (props.onSave || props.onCancel) &&
@@ -216,7 +235,9 @@ ItnBaseForm.defaultProps = {
     deleteBtnText: "Удалить",
     saveBtnText: "Сохранить",
     cancelBtnText: "Отмена",
-    viewOnly: false
+    viewOnly: false,
+    headerContent: null,
+    footerContent: null
 }
 
 export default ItnBaseForm;

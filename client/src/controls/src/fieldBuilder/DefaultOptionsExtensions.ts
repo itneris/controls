@@ -29,12 +29,19 @@ declare module "./FieldOptionsBuilder" {
 		SelectWithQuery(apiUrl: string): FieldOptionsBuilder<T>;
 		/**
 		 * Disables control
+		 * @param {boolean | (entity: LooseObject) => boolean} disabled sets control state or function for calculate control state dependent on current form values
 		 * */
-		Disable(): FieldOptionsBuilder<T>;
+		Disable(disabled?: boolean | ((entity: LooseObject) => boolean)): FieldOptionsBuilder<T>;
+		/**
+		 * Hides control
+		 * @param {boolean | (entity: LooseObject) => boolean} visible sets control state or function for calculate control state dependent on current form values
+		 * */
+		Hide(hidden?: boolean | ((entity: LooseObject) => boolean)): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to password
+		 * @param {boolean} disableNewPasswordGenerate hide button for generate new password
 		 * */
-		Password(): FieldOptionsBuilder<T>;
+		Password(disableNewPasswordGenerate?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to boolean
 		 * */
@@ -93,29 +100,35 @@ FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Disable = function<T extends LooseObject>() {
+FieldOptionsBuilder.prototype.Disable = function <T extends LooseObject>(disabled: boolean | ((entity: LooseObject) => boolean) = true) {
 	return this
-		.SetFieldProp("disabled", true) as FieldOptionsBuilder<T>;;
+		.SetFieldProp("disabled", disabled) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Password = function<T extends LooseObject>() {
+FieldOptionsBuilder.prototype.Hide = function <T extends LooseObject>(hidden: boolean | ((entity: LooseObject) => boolean) = true) {
 	return this
-		.SetFieldProp("type", "password") as FieldOptionsBuilder<T>;;
+		.SetFieldProp("hidden", hidden) as FieldOptionsBuilder<T>;
+}
+
+FieldOptionsBuilder.prototype.Password = function <T extends LooseObject>(disableNewPasswordGenerate: boolean = false) {
+	return this
+		.SetFieldProp("type", "password") 
+		.SetFieldProp("disableNewPasswordGenerate", disableNewPasswordGenerate) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.Bool = function <T extends LooseObject>() {
 	return this
-		.SetFieldProp("type", "checkbox") as FieldOptionsBuilder<T>;;
+		.SetFieldProp("type", "checkbox") as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.WithCustomControl = function <T extends LooseObject>(control: (value: any, onChange: (value: any) => void, isSaving: boolean, viewOnly: boolean) => React.ReactNode) {
 	return this
-		.SetFieldProp("custom", control) as FieldOptionsBuilder<T>;;
+		.SetFieldProp("custom", control) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(validate: (value: any, entity: LooseObject) => string | null) {
 	return this
-		.SetFieldProp("validation", validate) as FieldOptionsBuilder<T>;;
+		.SetFieldProp("validation", validate) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>() {
@@ -142,7 +155,7 @@ FieldOptionsBuilder.prototype.File = function <T extends LooseObject>({
 		fieldBuilder = fieldBuilder.SetFieldProp("cropImageToSize", cropImageToSize) as FieldOptionsBuilder<T>;
 	}
 
-	return fieldBuilder as FieldOptionsBuilder<T>;;
+	return fieldBuilder as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.TextArea = function <T extends LooseObject>(textAreaOptions?: ITextAreaControlProps) {
@@ -158,7 +171,7 @@ FieldOptionsBuilder.prototype.TextArea = function <T extends LooseObject>(textAr
 		}
 	}
 
-	return fieldBuilder as FieldOptionsBuilder<T>;;
+	return fieldBuilder as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.WithDefaultValue = function <T extends LooseObject>(value: any) {

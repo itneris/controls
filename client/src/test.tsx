@@ -45,7 +45,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.password)
             .WithLabel("Пароль")
-            .Password()
+            .Password(true)
             .WithValidation((val) => {
                 const value = val as string;
                 if (value.length < 3) {
@@ -60,7 +60,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")
-            .Bool();
+            .Bool()
+            .Hide((e) => e.role === "1");
 
         this.FieldFor(_ => _.role)
             .WithLabel("Роль")
@@ -98,10 +99,12 @@ const TestComnonent = () => {
             <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
             <Button variant="contained" onClick={() => modalRef.current!.open()}>Открыть Modal</Button>
 
-            <PageTitle>Тестовая форма создания</PageTitle>
             <ItnQueryForm
+                header="Форма создания"
+                headerContent={<b>Пример контента после заголовка</b>}
                 apiUrl="http://localhost:5000/api/test"
                 fieldBuilder={fieldBuilder}
+                footerContent={<b>Пример контента после контролов</b>}
             />
             <PageTitle>Тестовая форма редактирования</PageTitle>
             <ItnQueryForm

@@ -59,4 +59,14 @@ export default interface ICommonFormProps {
      * Default: "Отмена"
      * */
     cancelBtnText?: string;
+    /**
+     * Render element after form header
+     * Default: null
+     * */
+    headerContent?: React.ReactNode | null;
+    /**
+     * Render element before form footer
+     * Default: null
+     * */
+    footerContent?: React.ReactNode | null;
 }

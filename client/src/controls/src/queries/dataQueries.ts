@@ -23,6 +23,16 @@ export const getDict = async (context: QueryFunctionContext): Promise<AxiosRespo
 
 export const createEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
+    let url = apiName;
+    if (params.urlParams !== null) {
+        url += "?";
+        let paramsArr: string[] = [];
+        for (let key in params.urlParams) {
+            paramsArr.push(`${key}=${encodeURIComponent(params.urlParams[key])}`);
+        }
+        url += paramsArr.join("&");
+    }
+
     if (params.useFormData) {
         const bodyFormData = new FormData();
         for (let key in entity) {
@@ -38,7 +48,7 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
             headers: { "Content-Type": "multipart/form-data" }
         });
     }
-    return await axios.post(`${apiName}`, entity);
+    return await axios.post(url, entity);
 }
 
 export const updateEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
