@@ -50,7 +50,7 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
     }));
 
     return <QueryClientProvider client={queryClient} contextSharing>
-        <ItnQueryForm {...props} />
+        <ItnQueryForm ref={form} {...props} />
     </QueryClientProvider>
 });
 
