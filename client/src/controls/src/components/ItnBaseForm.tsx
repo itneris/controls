@@ -130,18 +130,18 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                             )
                                         }
                                     </React.Fragment>;
-                                } else if (props.viewOnly) {
+                                } /*else if (props.viewOnly) {
                                     return <Box key={"fc-" + field.property} height="32px" display="flex" gap={2}>
                                         <Typography variant="body2"><b>{field.label}</b></Typography>
                                         <Typography variant="body2">{entity![field.property]}</Typography>
                                     </Box>;
-                                } else {
+                                } */else {
                                     const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
                                     if (controlHidden) {
                                         return null;
                                     }
 
-                                    const controlValue = entity![field.property] ?? (field.type === "file" || field.type === "date" ? null : "");
+                                    const controlValue = entity![field.property] ?? (["file", "date", "time", "autocomplete"].includes(field.type) ? null : "");
                                     const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity ?? {}) : field.disabled;
 
                                     return <ItnControl
@@ -156,7 +156,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         noOptionsText={field.noOptionsText!}
                                         passwordLength={field.passwordLength}
                                         placeholder={field.placeholder}
-                                        disabled={controlDisabled || props.isSaving}
+                                        disabled={controlDisabled || props.isSaving || props.viewOnly}
                                         display={field.display}
                                         error={validaion.find(_ => _.property === field.property) !== undefined}
                                         errorText={validaion.find(_ => _.property === field.property)?.message}
@@ -175,6 +175,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         multiline={field.multiline}
                                         lines={field.lines}
                                         maxLines={field.maxLines}
+                                        onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
+                                        autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
                                     />                                
                                 }
                             })
@@ -237,7 +239,9 @@ ItnBaseForm.defaultProps = {
     cancelBtnText: "Отмена",
     viewOnly: false,
     headerContent: null,
-    footerContent: null
+    footerContent: null,
+    onAutocompleteInputChange: () => { },
+    controlsLoading: {}
 }
 
 export default ItnBaseForm;

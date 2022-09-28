@@ -39,6 +39,7 @@ export class FieldDescription implements LooseObject {
     defaultValue: any | null = null;
     selectApiUrl: string | null = null;
     disableNewPasswordGenerate: boolean = false;
+    searchAsType: boolean = false;
 
     constructor(order: number, property: string) {
         this.property = property;

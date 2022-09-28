@@ -2,7 +2,7 @@ export default interface IControlProps {
     /**
      * Type of rendered control
      * */
-    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file";
+    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file" | "time";
     /**
      * Controlled value of control
      * */
@@ -59,6 +59,24 @@ export default interface IControlProps {
      * Default: null
      * */
     onChange?: ((value: any) => void) | null;
+    /**
+     * Callback when autocomplete input changed
+     * Function params: 
+     *      value: string, current input value
+     *      reason: "input" | "reset" | "clear", reason causing autocomplete change
+     * Default: null
+     * */
+    onAutocompleteInputChange?: ((value: string, reason: "input" | "reset" | "clear") => void) | null;
+    /**
+     * Sets autocomplete loading state when async search enabled
+     * Default: undefind
+     * */
+    autocompleteLoading?: boolean;
+    /**
+     * Sets autocomplete loading text
+     * Default: "Загрука..."
+     * */
+    autocompleteLoadingText?: string;
     /**
      * Tooltip with question mark icon trigger for control
      * */

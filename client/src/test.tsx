@@ -12,8 +12,13 @@ interface IUserDTO {
     name: string;
     surname: string;
     visitDate: string;
+    visitTime: string;
     role: string;
     role_api: string;
+    roleValue: {
+        id: string, 
+        label: string
+    }
     blocked: boolean;
     middlename: string;
     password: string;
@@ -59,6 +64,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Дата записи")
             .DatePicker();
 
+        this.FieldFor(_ => _.visitTime)
+            .WithLabel("Время записи")
+            .TimePicker();
+
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")
             .Bool()
@@ -71,6 +80,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("2", "Пользователь"),
                 new ItnSelectOption("3", "Дата-менеджер"),
             ]);
+
+        this.FieldFor(_ => _.roleValue)
+            .WithLabel("Роль (autocomplete)")
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")

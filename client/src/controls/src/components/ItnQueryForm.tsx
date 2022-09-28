@@ -2,11 +2,12 @@ import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, use
 import { QueryClient, QueryClientProvider, useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { LooseObject } from "../base/LooseObject";
-import { createEntity, deleteEntity, getDict, getEntity, updateEntity, IFormMutateParams } from "../queries/dataQueries";
+import { createEntity, deleteEntity, getDict, getEntity, updateEntity, getAutocompleteDict } from "../queries/dataQueries";
 import { AxiosError, AxiosResponse } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
 import { IQueryFormRef } from "../base/IQueryFormRef";
+import { LooseTimeoutObject } from "../base/LooseTimeoutObject";
 
 const dataURLtoFile = (src: string, name: string) => {
     const arr = src.split(',');
@@ -49,7 +50,7 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
         }
     }));
 
-    return <QueryClientProvider client={queryClient} contextSharing>
+    return <QueryClientProvider client={props.queryClient ?? queryClient} contextSharing >
         <ItnQueryForm ref={form} {...props} />
     </QueryClientProvider>
 });
@@ -57,6 +58,7 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
 
 const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, ref) => {
     const baseFormRef = useRef<IFormRef | null>(null);
+    const autoCompleteTimeouts = useRef<LooseTimeoutObject>({});
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
@@ -91,6 +93,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
+    const [autocompleteValues, setAutocompleteValues] = useState<LooseObject>({});
 
     const formWithFiles = useMemo(() => {
         return fieldBuilder.Build().some(_ => _.type === "file");
@@ -122,18 +126,46 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
     const dictQuieries = useQueries({
         queries: fieldBuilder.Build()
-            .filter(_ => _.selectApiUrl !== null)
+            .filter(_ => _.selectApiUrl !== null && _.type === "select")
             .map(_ => ({
                 queryKey: [_.selectApiUrl],
                 queryFn: getDict,
                 onSuccess: (response: AxiosResponse) => {
-                    fieldBuilder = fieldBuilder.SetSelectOptions(_.property, response.data)
+                    fieldBuilder = fieldBuilder.SetSelectOptions(_.property, response.data);
+                }
+            }))
+    });
+
+    const autocompleteQueries = useQueries({
+        queries: fieldBuilder.Build()
+            .filter(_ => _.selectApiUrl !== null && _.type === "autocomplete")
+            .map(_ => ({
+                queryKey: [_.selectApiUrl, autocompleteValues[_.property] ?? ""],
+                queryFn: getAutocompleteDict,
+                onSuccess: (response: AxiosResponse) => {
+                    const options = response.data.length > 0 ?
+                        [
+                            ...response.data,
+                            { id: null, label: "Показаны не все опции", disabled: true }
+                        ] :
+                        [ { id: null, label: "Не найдено значений", disabled: true }];
+                    fieldBuilder = fieldBuilder.SetSelectOptions(_.property, options);
+                },
+                onSettled: () => {
+                    setControlsLoading({
+                        ...controlsLoading,
+                        [_.property]: false
+                    });
                 }
             }))
     });
 
     useEffect(() => {
         dictQuieries.forEach(_ => _.refetch());
+        autocompleteQueries.forEach(_ => _.refetch());
+        if (Object.keys(controlsLoading).length === 0) {
+            setControlsLoading(fieldBuilder.Build().filter(f => f.type === "autocomplete").map(f => ({ [f.property]: true })));
+        }
     }, [fieldBuilder]);
 
     const createQuery = useMutation(createEntity(props.apiUrl!), {
@@ -179,6 +211,18 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         deleteQuery.mutate({ id: id, urlParams: allParams });
     }, [deleteQuery, props.urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const handleAutoCompleteInputChange = useCallback((prop: string, value: string, event: "input" | "clear" | "reset") => {
+        if (event === "input" || event === "reset") {
+            if (autoCompleteTimeouts.current[prop] !== undefined) {
+                clearTimeout(autoCompleteTimeouts.current[prop]);
+            }
+            autoCompleteTimeouts.current[prop] = setTimeout(() => setAutocompleteValues({
+                ...autocompleteValues,
+                [prop]: value
+            }), 300);
+        }
+    }, [setAutocompleteValues, autocompleteValues]);
+
     return (
         <ItnBaseForm
             fieldBuilder={fieldBuilder}
@@ -201,6 +245,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             variant={props.variant}
             headerContent={props.headerContent}
             footerContent={props.footerContent}
+            controlsLoading={controlsLoading}
+            onAutocompleteInputChange={handleAutoCompleteInputChange}
         />
     );
 });

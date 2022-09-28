@@ -1,4 +1,5 @@
-﻿import { LooseObject } from "../base/LooseObject";
+﻿import { LooseBoolObject } from "../base/LooseBoolObject";
+import { LooseObject } from "../base/LooseObject";
 import ICommonFormProps from "./ICommonFormProps";
 
 export default interface IBaseFormProps extends ICommonFormProps {
@@ -36,4 +37,14 @@ export default interface IBaseFormProps extends ICommonFormProps {
      * Default: false
      * */
     viewOnly?: boolean;
+    /**
+     * Callback when form autocomplete input changes
+     * Default: () => {}
+     * */
+    onAutocompleteInputChange?: (property: string, value: string, event: "reset" | "input" | "clear") => void;
+    /**
+     * Sets controls state to loading (autocomplete only)
+     * Default: {}
+     * */
+    controlsLoading?: LooseBoolObject;
 }

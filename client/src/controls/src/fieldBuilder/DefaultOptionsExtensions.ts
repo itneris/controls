@@ -17,16 +17,33 @@ declare module "./FieldOptionsBuilder" {
 		 * */
 		Select(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
 		/**
+		 * Changes control type to 'autocomplete' and defines options
+		 * @param {ItnSelectOption[]} options Array of opitons to render in autocomplete
+		 * */
+		Autocomplete(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
+		/**
 		 * Changes control type to 'date'
 		 * @param {ItnSelectOption[]} options Array of opitons to render in select
 		 * */
 		DatePicker(): FieldOptionsBuilder<T>;
+		/**
+		 * Changes control type to 'time'
+		 * @param {ItnSelectOption[]} options Array of opitons to render in select
+		 * */
+		TimePicker(): FieldOptionsBuilder<T>;
 		/**
 		 * !!!USE ONLY WITH QUERY FORM
 		 * Changes control type to 'select' and defines api url for get options
 		 * @param {string} apiUrl API address that return array of ItnSelectOption
 		 * */
 		SelectWithQuery(apiUrl: string): FieldOptionsBuilder<T>;
+		/**
+		 * !!!USE ONLY WITH QUERY FORM
+		 * Changes control type to 'autocomplete' and defines api url for get options
+		 * @param {string} apiUrl API address that return array of ItnSelectOption
+		 * @param {boolean} searchAsType Calls the api with "search=" query param when user types text, default false
+		 * */
+		AutocompleteWithQuery(apiUrl: string, searchAsType?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * Disables control
 		 * @param {boolean | (entity: LooseObject) => boolean} disabled sets control state or function for calculate control state dependent on current form values
@@ -89,15 +106,20 @@ FieldOptionsBuilder.prototype.Select = function<T extends LooseObject>(options: 
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
+FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string) {
+	return this
+		.SetFieldProp("type", "select")
+		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
+}
+
 FieldOptionsBuilder.prototype.DatePicker = function <T extends LooseObject>() {
 	return this
 		.SetFieldProp("type", "date") as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string) {
+FieldOptionsBuilder.prototype.TimePicker = function <T extends LooseObject>() {
 	return this
-		.SetFieldProp("type", "select")
-		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
+		.SetFieldProp("type", "time") as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.Disable = function <T extends LooseObject>(disabled: boolean | ((entity: LooseObject) => boolean) = true) {
@@ -177,6 +199,19 @@ FieldOptionsBuilder.prototype.TextArea = function <T extends LooseObject>(textAr
 FieldOptionsBuilder.prototype.WithDefaultValue = function <T extends LooseObject>(value: any) {
 	return this
 		.SetFieldProp("defaultValue", value) as FieldOptionsBuilder<T>;
+}
+
+FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(options: ItnSelectOption[]) {
+	return this
+		.SetFieldProp("type", "autocomplete")
+		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
+}
+
+FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T extends LooseObject>(apiUrl: string, searchAsType: boolean = false) {
+	return this
+		.SetFieldProp("type", "autocomplete")
+		.SetFieldProp("searchAsType", searchAsType)
+		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 
 /*

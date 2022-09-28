@@ -1,4 +1,5 @@
-﻿import { LooseObject } from "../base/LooseObject";
+﻿import { QueryClient } from "@tanstack/react-query";
+import { LooseObject } from "../base/LooseObject";
 import ICommonFormProps from "./ICommonFormProps";
 
 export default interface IQueryFormProps extends ICommonFormProps {
@@ -14,4 +15,5 @@ export default interface IQueryFormProps extends ICommonFormProps {
     disableSave?: boolean | null;
     disableDelete?: boolean | null;
     urlParams?: LooseObject | null;
+    queryClient?: QueryClient | null
 }

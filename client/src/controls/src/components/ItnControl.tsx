@@ -15,7 +15,8 @@ import {
     FormControlLabel,
     InputLabel,
     Button,
-    Avatar
+    Avatar,
+    CircularProgress
 } from "@mui/material";
 import {
     AttachFile,
@@ -26,7 +27,7 @@ import {
     Visibility,
     VisibilityOff
 } from "@mui/icons-material";
-import { ItnDatePicker } from "@itneris/pickers";
+import { ItnDatePicker, ItnTimePicker } from "@itneris/pickers";
 import IControlProps, { ItnSelectOption } from "../props/IControlProps";
 
 const generatePassword = (length: number): string => {
@@ -123,22 +124,42 @@ function ItnControl(props: IControlProps) {
                     </FormControl>
                 );
             case 'autocomplete':
-                return <Autocomplete<ItnSelectOption>
-                    getOptionLabel={option => (option as ItnSelectOption).label}
+                return <Autocomplete
+                    onInputChange={(event, value, reason) => props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason)}
+                    getOptionLabel={option => option.label}
                     isOptionEqualToValue={(option, value) => {
                         return option.id === value.id;
-                    }}
+                    }}                    
                     size="small"
                     fullWidth
                     disabled={props.disabled}
                     options={props.items!}
-                    value={props.items!.find(i => i.id === props.value) || null}
+                    value={props.value}
                     noOptionsText={props.noOptionsText}
-                    onChange={(event, newValue) => props.onChange && props.onChange((newValue as ItnSelectOption).id)}
+                    loadingText={props.autocompleteLoadingText}
+                    loading={props.autocompleteLoading}
+                    onChange={(event, newValue) => props.onChange && props.onChange(newValue)}
                     renderOption={(props, option) => (
                         <li {...props}>{option.label}</li>
-                    )}                    
-                    renderInput={(params) => <TextField variant={props.variant} {...params} ></TextField>}
+                    )}
+                    getOptionDisabled={opt => opt.disabled === true}
+                    filterOptions={props.onAutocompleteInputChange !== null ? (_) => _ : undefined}
+                    renderInput={(params) => (
+                        <TextField
+                            label={props.label}
+                            variant={props.variant}
+                            {...params}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {props.autocompleteLoading === true ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>    
+                                )
+                            }}
+                        />
+                    )}
                 />
             case 'checkbox':
                 return <FormControlLabel
@@ -151,6 +172,15 @@ function ItnControl(props: IControlProps) {
                 />;
             case 'date':
                 return <ItnDatePicker
+                    label={props.label ?? ""}
+                    value={props.value}
+                    onChange={val => props.onChange && props.onChange(val)}
+                    size="small"
+                    disabled={props.disabled}
+                    fullWidth
+                />;
+            case 'time':
+                return <ItnTimePicker
                     label={props.label ?? ""}
                     value={props.value}
                     onChange={val => props.onChange && props.onChange(val)}
@@ -370,7 +400,9 @@ ItnControl.defaultProps = {
     lines: null,
     multiline: false,
     maxLines: null,
-    disableNewPasswordGenerate: false
+    disableNewPasswordGenerate: false,
+    autocompleteLoadingText: "Загрузка...",
+    onAutocompleteInputChange: null
 }
 
 export default ItnControl;

@@ -22,6 +22,17 @@ export const getDict = async (context: QueryFunctionContext): Promise<AxiosRespo
     return await axios.get(context.queryKey[0] as string);
 }
 
+export const getAutocompleteDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
+    let url = context.queryKey[0] as string;
+    if (url.includes("?")) {
+        url += `&search=${context.queryKey[1]}`
+    } else {
+        url += `?search=${context.queryKey[1]}`
+    }
+
+    return await axios.get(url);
+}
+
 export const createEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
     let url = apiName;
