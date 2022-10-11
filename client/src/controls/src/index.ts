@@ -1,4 +1,5 @@
 import PageTitle from "./components/PageTitle";
+import ItnControl from "./components/ItnControl";
 import ItnModal from "./components/ItnModal";
 import EditDrawer from "./components/EditDrawer";
 import ItnForm from "./components/ItnBaseForm";
@@ -17,5 +18,6 @@ export {
     ItnForm,
     ItnQueryForm,
     AbstractFieldBuilder,
-    ItnSelectOption
+    ItnSelectOption,
+    ItnControl
 };

@@ -38,7 +38,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             ...entity,
             [field]: value
         };
-        setValidation(validaion.filter(_ => _.property === field));
+        setValidation(validaion.filter(_ => _.property !== field));
         setEntity(newEntity);
         props.onChange && props.onChange(field, value);
     }, [props.onChange, entity, setEntity, validaion]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -125,6 +125,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                             field.custom(
                                                 entity![field.property],
                                                 (value) => handleChange(field.property, value),
+                                                validaion.find(_ => _.property === field.property) !== undefined,
+                                                validaion.find(_ => _.property === field.property)?.message,
                                                 props.isSaving!,
                                                 props.viewOnly!
                                             )

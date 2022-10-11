@@ -94,11 +94,20 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .TextArea({ lines: 3 });
 
         this.FieldFor(_ => _.middlename)
-            .WithCustomControl((val, onChange) => {
-                return <div style={{ cursor: "pointer" }} onClick={() => onChange((val ?? "") + "1")}>
+            .WithCustomControl((val, onChange, isError, errorMessage) => {
+                return <div>
                     {val ?? "Нет значения"}
+                    <br />
+                    <div style={{ cursor: "pointer" }} onClick={() => onChange((val ?? "") + "1")}>
+                        ++1
+                    </div>
+                    <div style={{ cursor: "pointer" }} onClick={() => onChange("1")}>
+                        = 1
+                    </div>
+                    {isError ? errorMessage : "Пока ошибки нет"}
                 </div>
-            });
+            })
+            .WithValidation(_ => _.length > 10 ? "Too much" : null);
     }
 }
 
@@ -126,7 +135,7 @@ const TestComnonent = () => {
                 fieldBuilder={fieldBuilder}
                 id="1"
                 onAfterLoad={(e) => console.log(e)}
-                urlParams={{ forGodsSake: "true" }}
+                urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
             />
             <PageTitle>Тестовая форма без апи</PageTitle>
             <ItnForm                

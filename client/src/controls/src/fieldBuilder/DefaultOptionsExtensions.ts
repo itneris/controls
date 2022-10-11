@@ -76,7 +76,7 @@ declare module "./FieldOptionsBuilder" {
 		 * Renders custom control
 		 * @param {(value: any, onChange: (value: any) => void) => React.ReactNode} control Function that receives as paramteres entity current value, onChange function. Also current state as isSaving and viewOnly
 		 * */
-		WithCustomControl(control: (value: any, onChange: (value: any) => void, isSaving: boolean, viewOnly: boolean) => React.ReactNode): FieldOptionsBuilder<T>;
+		WithCustomControl(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean) => React.ReactNode): FieldOptionsBuilder<T>;
 		/** 
 		* Change input type to file and set options
 		* @param {{ accept = "*", maxSizeKb = 4096,withImagePreview = false,isAvatar = false,cropImageToSize = null}} fileOptions File input configuring options 
@@ -143,7 +143,7 @@ FieldOptionsBuilder.prototype.Bool = function <T extends LooseObject>() {
 		.SetFieldProp("type", "checkbox") as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithCustomControl = function <T extends LooseObject>(control: (value: any, onChange: (value: any) => void, isSaving: boolean, viewOnly: boolean) => React.ReactNode) {
+FieldOptionsBuilder.prototype.WithCustomControl = function <T extends LooseObject>(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean) => React.ReactNode) {
 	return this
 		.SetFieldProp("custom", control) as FieldOptionsBuilder<T>;
 }
