@@ -124,7 +124,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         }
     );
 
-    const dictQuieries = useQueries({
+    const dictQueries = useQueries({
         queries: fieldBuilder.Build()
             .filter(_ => _.selectApiUrl !== null && _.type === "select")
             .map(_ => ({
@@ -161,7 +161,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     });
 
     useEffect(() => {
-        dictQuieries.forEach(_ => _.refetch());
+        dictQueries.forEach(_ => _.refetch());
         autocompleteQueries.forEach(_ => _.refetch());
         if (Object.keys(controlsLoading).length === 0) {
             setControlsLoading(fieldBuilder.Build().filter(f => f.type === "autocomplete").map(f => ({ [f.property]: true })));

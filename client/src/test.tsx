@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Button } from "@mui/material";
 
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal } from "controls/src";
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl } from "controls/src";
 import IDrawerRef from "./controls/src/props/IDrawerRef";
 import IModalRef from "./controls/src/props/IModalRef";
 import { IFormRef } from "./controls/src/base/IFormRef";
@@ -121,6 +121,11 @@ const TestComnonent = () => {
         <>
             <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
             <Button variant="contained" onClick={() => modalRef.current!.open()}>Открыть Modal</Button>
+            <ItnControl
+                type="string"
+                value="qwe"
+                onEnter={() => console.log("enter Pressed")}
+            />
 
             <ItnQueryForm
                 header="Форма создания"

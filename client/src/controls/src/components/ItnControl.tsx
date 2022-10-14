@@ -92,6 +92,12 @@ function ItnControl(props: IControlProps) {
         props.onChange && props.onChange(e.target.files![0]);
     }, [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const checkEnter = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            props.onEnter && props.onEnter();
+        }
+    }, [props.onEnter]);
+
     const control = useMemo(() => {
         switch (props.type) {
             case 'select':
@@ -214,6 +220,7 @@ function ItnControl(props: IControlProps) {
                                     </IconButton>
                                 </InputAdornment>
                             }}
+                            onKeyPress={checkEnter}
                             onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />
                         <FormHelperText>{props.error}</FormHelperText>
@@ -239,6 +246,7 @@ function ItnControl(props: IControlProps) {
                 />;*/
             case 'string':
                 return <TextField
+                    onKeyPress={checkEnter}
                     variant={props.variant}
                     disabled={props.disabled}
                     fullWidth
@@ -251,10 +259,11 @@ function ItnControl(props: IControlProps) {
                     helperText={props.errorText}
                     multiline={props.multiline}
                     rows={props.lines || undefined}
-                    maxRows={props.maxLines || undefined}
+                    maxRows={props.maxLines || undefined}                    
                 />;
             case 'number':
                 return <TextField
+                    onKeyPress={checkEnter}
                     fullWidth
                     variant={props.variant}
                     type="number"
@@ -353,7 +362,8 @@ function ItnControl(props: IControlProps) {
         uploadFile,
         handleUploadClick,
         handleDeleteFile,
-        preview
+        preview,
+        checkEnter
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {
@@ -388,7 +398,7 @@ ItnControl.defaultProps = {
     passwordLength: 8,
     error: false,
     errorText: null,
-    allowNullInSelect: true,
+    allowNullInSelect: false,
     selectNullLabel: null,
     noOptionsText: 'Ничего не найдено',
     display: true,
@@ -402,7 +412,8 @@ ItnControl.defaultProps = {
     maxLines: null,
     disableNewPasswordGenerate: false,
     autocompleteLoadingText: "Загрузка...",
-    onAutocompleteInputChange: null
+    onAutocompleteInputChange: null,
+    onEnter: null
 }
 
 export default ItnControl;

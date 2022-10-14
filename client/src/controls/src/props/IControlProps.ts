@@ -160,6 +160,11 @@ export default interface IControlProps {
      * Default: null
      * */
     cropImageToSize?: [number, number] | null;
+    /**
+     * Fires event when enter key pressed
+     * Default: null
+     * */
+    onEnter?: () => void;
 }
 
 export class ItnSelectOption {
