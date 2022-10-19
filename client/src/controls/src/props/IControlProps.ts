@@ -180,7 +180,7 @@ export default interface IControlProps {
 export class ItnSelectOption {
     id: string;
     label: string;
-    blocked: boolean;
+    blocked?: boolean;
     inputValue?: string;
 
     constructor(id: string, label: string, blocked: boolean = false) {

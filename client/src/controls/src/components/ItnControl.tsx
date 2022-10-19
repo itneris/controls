@@ -150,8 +150,10 @@ function ItnControl(props: IControlProps) {
                     onChange={(event, newValue) => {
                         if (newValue.inputValue) {
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
+                            props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
+                        } else {
+                            props.onChange && props.onChange(newValue);
                         }
-                        props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
                     }}
                     renderOption={(props, option) => (
                         <li {...props}>{option.label}</li>

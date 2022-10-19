@@ -140,7 +140,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         queries: fieldBuilder.Build()
             .filter(_ => _.selectApiUrl !== null && _.type === "autocomplete")
             .map(_ => ({
-                queryKey: [_.selectApiUrl, !_.searchAsType ? null : autocompleteValues[_.property] ?? ""],
+                queryKey: [_.selectApiUrl, !_.searchAsType ? null : (autocompleteValues[_.property] ?? "")],
                 queryFn: getAutocompleteDict,
                 onSuccess: (response: AxiosResponse) => {
                     const options = response.data.length === 0 ?
