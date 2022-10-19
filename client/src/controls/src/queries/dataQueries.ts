@@ -24,10 +24,12 @@ export const getDict = async (context: QueryFunctionContext): Promise<AxiosRespo
 
 export const getAutocompleteDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
     let url = context.queryKey[0] as string;
-    if (url.includes("?")) {
-        url += `&search=${context.queryKey[1]}`
-    } else {
-        url += `?search=${context.queryKey[1]}`
+    if (context.queryKey[1] !== null) {
+        if (url.includes("?")) {
+            url += `&search=${context.queryKey[1]}`
+        } else {
+            url += `?search=${context.queryKey[1]}`
+        }
     }
 
     return await axios.get(url);

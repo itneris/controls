@@ -10,6 +10,7 @@ export default interface IQueryFormProps extends ICommonFormProps {
     onAfterSave?: ((id: string) => void) | null;
     onAfterDelete?: ((id: string) => void) | null;
     onAfterLoad?: ((entity: any) => void) | null;
+    onError?: ((response: any) => void) | null;
     type?: "view" | "create" | "edit" | "auto" | null;
     id?: string | null;
     disableSave?: boolean | null;

@@ -155,7 +155,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         value={controlValue}
                                         allowNullInSelect={field.allowNullInSelect}
                                         selectNullLabel={field.selectNullLabel}
-                                        noOptionsText={field.noOptionsText!}
+                                        noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
                                         passwordLength={field.passwordLength}
                                         placeholder={field.placeholder}
                                         disabled={controlDisabled || props.isSaving || props.viewOnly}
@@ -179,6 +179,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         maxLines={field.maxLines}
                                         onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
                                         autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
+                                        autocompleteCreatable={field.autocompleteCreatable}
+                                        onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
                                     />                                
                                 }
                             })

@@ -77,15 +77,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                 anchor='right'
                 open={open}
                 onClose={handleResult('hide')}
-                sx={{
-                    width: '40%',
-                    '& .MuiDrawer-paper': {
-                        width: '40%',
-                        overflow: 'visible',
-                        backgroundColor: "#eee",
-                        boxSizing: 'border-box',
-                    },
-                }}
+                sx={props.sx}
             >
                 {
                     (open && buttons.length > 0) &&
@@ -186,7 +178,16 @@ EditDrawer.defaultProps = {
     tabs: [],
     saveBtnText: null,
     cancelBtnText: null,
-    deleteBtnText: null
+    deleteBtnText: null,
+    sx: {
+        width: '40%',
+        '& .MuiDrawer-paper': {
+            width: '40%',
+            overflow: 'visible',
+            boxSizing: 'border-box',
+            backgroundColor: "#eee"
+        },
+    }
 }
 
 export default EditDrawer;

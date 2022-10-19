@@ -78,6 +78,16 @@ export default interface IControlProps {
      * */
     autocompleteLoadingText?: string;
     /**
+     * Enables create new options in autocomplete
+     * Default: false
+     * */
+    autocompleteCreatable?: boolean;
+    /**
+     * Callback when autocomplete option add
+     * Default: null
+     * */
+    onAutocompleteOptionAdded?: ((value: string) => void) | null;
+    /**
      * Tooltip with question mark icon trigger for control
      * */
     tooltip?: string | null;
@@ -171,6 +181,7 @@ export class ItnSelectOption {
     id: string;
     label: string;
     blocked: boolean;
+    inputValue?: string;
 
     constructor(id: string, label: string, blocked: boolean = false) {
         this.id = id;

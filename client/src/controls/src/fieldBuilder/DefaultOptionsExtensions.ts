@@ -19,8 +19,19 @@ declare module "./FieldOptionsBuilder" {
 		/**
 		 * Changes control type to 'autocomplete' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in autocomplete
+		 * @param {boolean} creatable can user add new options, default false
+		 * @param {(value: string) => void | null} onOptionAdded callback when option added
 		 * */
-		Autocomplete(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
+		Autocomplete(options: ItnSelectOption[], creatable?: boolean, onOptionAdded?: ((value: string) => void) | null): FieldOptionsBuilder<T>;
+		/**
+		 * !!!USE ONLY WITH QUERY FORM
+		 * Changes control type to 'autocomplete' and defines api url for get options
+		 * @param {string} apiUrl API address that return array of ItnSelectOption
+		 * @param {boolean} searchAsType Calls the api with "search=" query param when user types text, default false
+		 * @param {boolean} creatable can user add new options, default false
+		 * @param {(value: string) => void | null} onOptionAdded callback when option added
+		 * */
+		AutocompleteWithQuery(apiUrl: string, searchAsType?: boolean, creatable?: boolean, onOptionAdded?: ((value: string) => void) | null): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'date'
 		 * @param {ItnSelectOption[]} options Array of opitons to render in select
@@ -37,13 +48,6 @@ declare module "./FieldOptionsBuilder" {
 		 * @param {string} apiUrl API address that return array of ItnSelectOption
 		 * */
 		SelectWithQuery(apiUrl: string): FieldOptionsBuilder<T>;
-		/**
-		 * !!!USE ONLY WITH QUERY FORM
-		 * Changes control type to 'autocomplete' and defines api url for get options
-		 * @param {string} apiUrl API address that return array of ItnSelectOption
-		 * @param {boolean} searchAsType Calls the api with "search=" query param when user types text, default false
-		 * */
-		AutocompleteWithQuery(apiUrl: string, searchAsType?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * Disables control
 		 * @param {boolean | (entity: LooseObject) => boolean} disabled sets control state or function for calculate control state dependent on current form values
@@ -201,16 +205,29 @@ FieldOptionsBuilder.prototype.WithDefaultValue = function <T extends LooseObject
 		.SetFieldProp("defaultValue", value) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(options: ItnSelectOption[]) {
+FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(
+	options: ItnSelectOption[],
+	creatable: boolean = false,
+	onOptionAdded: ((value: string) => void) | null = null
+) {
 	return this
 		.SetFieldProp("type", "autocomplete")
+		.SetFieldProp("autocompleteCreatable", creatable)
+		.SetFieldProp("onAutocompleteOptionAdded", onOptionAdded)
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T extends LooseObject>(apiUrl: string, searchAsType: boolean = false) {
+FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T extends LooseObject>(
+	apiUrl: string,
+	searchAsType: boolean = false,
+	creatable: boolean = false,
+	onOptionAdded: ((value: string) => void) | null = null
+) {
 	return this
 		.SetFieldProp("type", "autocomplete")
 		.SetFieldProp("searchAsType", searchAsType)
+		.SetFieldProp("autocompleteCreatable", creatable)
+		.SetFieldProp("onAutocompleteOptionAdded", onOptionAdded)
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 

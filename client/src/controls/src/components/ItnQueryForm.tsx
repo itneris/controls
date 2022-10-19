@@ -140,15 +140,18 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         queries: fieldBuilder.Build()
             .filter(_ => _.selectApiUrl !== null && _.type === "autocomplete")
             .map(_ => ({
-                queryKey: [_.selectApiUrl, autocompleteValues[_.property] ?? ""],
+                queryKey: [_.selectApiUrl, !_.searchAsType ? null : autocompleteValues[_.property] ?? ""],
                 queryFn: getAutocompleteDict,
                 onSuccess: (response: AxiosResponse) => {
-                    const options = response.data.length > 0 ?
-                        [
-                            ...response.data,
-                            { id: null, label: "Показаны не все опции", disabled: true }
-                        ] :
-                        [ { id: null, label: "Не найдено значений", disabled: true }];
+                    const options = response.data.length === 0 ?
+                        [] :
+                            _.searchAsType ? 
+                            [
+                                ...response.data,
+                                { id: null, label: "Показаны не все опции", disabled: true }
+                            ] :
+                            response.data;
+
                     fieldBuilder = fieldBuilder.SetSelectOptions(_.property, options);
                 },
                 onSettled: () => {
@@ -171,16 +174,19 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const createQuery = useMutation(createEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
         onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
+        onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => setIsSaving(false)
     });
     const updateQuery = useMutation(updateEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
         onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
+        onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => setIsSaving(false)
     });
     const deleteQuery = useMutation(deleteEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
         onSuccess: (response) => props.onAfterDelete && props.onAfterDelete(response.data),
+        onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => setIsSaving(false)
     });
 
@@ -267,7 +273,8 @@ ItnQueryForm.defaultProps = {
     deleteBtnText: "Удалить",
     saveBtnText: "Сохранить",
     cancelBtnText: "Отмена",
-    urlParams: null
+    urlParams: null,
+    onError: null
 }
 
 export default ItnQueryFormWrapper;

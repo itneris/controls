@@ -16,9 +16,13 @@ interface IUserDTO {
     role: string;
     role_api: string;
     roleValue: {
-        id: string, 
+        id: string,
         label: string
-    }
+    };
+    roleValueWithSearch: {
+        id: string,
+        label: string
+    };
     blocked: boolean;
     middlename: string;
     password: string;
@@ -81,9 +85,13 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("3", "Дата-менеджер"),
             ]);
 
+        this.FieldFor(_ => _.roleValueWithSearch)
+            .WithLabel("Роль (autocomplete with search)")
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true);
+
         this.FieldFor(_ => _.roleValue)
             .WithLabel("Роль (autocomplete)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
@@ -141,6 +149,7 @@ const TestComnonent = () => {
                 id="1"
                 onAfterLoad={(e) => console.log(e)}
                 urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
+                onError={e => console.log(e)}
             />
             <PageTitle>Тестовая форма без апи</PageTitle>
             <ItnForm                
@@ -162,6 +171,11 @@ const TestComnonent = () => {
                 title="Тестовый дровер"
                 cancelBtnText="Отмена"
                 ref={drawerRef}
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        backgroundColor: "white"
+                    }
+                }}
             >
                 Контент
             </EditDrawer>

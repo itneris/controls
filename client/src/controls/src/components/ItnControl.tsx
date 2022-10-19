@@ -16,7 +16,8 @@ import {
     InputLabel,
     Button,
     Avatar,
-    CircularProgress
+    CircularProgress,
+    createFilterOptions
 } from "@mui/material";
 import {
     AttachFile,
@@ -49,6 +50,8 @@ const generatePassword = (length: number): string => {
         return generatePassword(length);
     }
 }
+
+const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -144,12 +147,42 @@ function ItnControl(props: IControlProps) {
                     noOptionsText={props.noOptionsText}
                     loadingText={props.autocompleteLoadingText}
                     loading={props.autocompleteLoading}
-                    onChange={(event, newValue) => props.onChange && props.onChange(newValue)}
+                    onChange={(event, newValue) => {
+                        if (newValue.inputValue) {
+                            props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
+                        }
+                        props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
+                    }}
                     renderOption={(props, option) => (
                         <li {...props}>{option.label}</li>
                     )}
                     getOptionDisabled={opt => opt.disabled === true}
-                    filterOptions={props.onAutocompleteInputChange !== null ? (_) => _ : undefined}
+                    filterOptions={(options, params) => {
+                        let filtered: ItnSelectOption[];
+                        if (props.onAutocompleteInputChange !== null) {
+                            filtered = options;
+                        } else {
+                            filtered = filter(options, params);
+                        }
+
+                        if (!props.autocompleteCreatable) {
+                            return filtered;
+                        }
+
+                        const { inputValue } = params;
+                        const isExisting = options.some((option) => inputValue === option.title);
+
+                        if (inputValue !== '' && !isExisting) {
+                            filtered.push({
+                                id: "new",
+                                label: `Добавить "${inputValue}"`,
+                                inputValue,
+                                blocked: false
+                            });
+                        }
+
+                        return filtered;                        
+                    }}
                     renderInput={(params) => (
                         <TextField
                             label={props.label}
@@ -413,7 +446,8 @@ ItnControl.defaultProps = {
     disableNewPasswordGenerate: false,
     autocompleteLoadingText: "Загрузка...",
     onAutocompleteInputChange: null,
-    onEnter: null
+    onEnter: null,
+    autocompleteCreatable: false
 }
 
 export default ItnControl;

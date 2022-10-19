@@ -1,3 +1,4 @@
+import { SxProps, Theme } from "@mui/material";
 import React from "react";
 
 export default interface IDrawerProps {
@@ -46,6 +47,19 @@ export default interface IDrawerProps {
      * Default: "Удалить"
      * */
     deleteBtnText?: string | null;
+    /**
+     * Props for defining paper style
+     * Default: {
+            width: '40%',
+            '& .MuiDrawer-paper': {
+                width: '40%',
+                overflow: 'visible',
+                boxSizing: 'border-box',
+                backgroundColor: "#eee"
+            }
+        }
+     * */
+    sx?: SxProps<Theme>;
 }
 
 export class DrawerBtnProp {
