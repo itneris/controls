@@ -14,5 +14,9 @@ export interface IFormRef {
      * 
      * @returns {boolean} validation result
      * */
-    validate: () => boolean
+    validate: () => boolean,
+    /**
+     * Add error text to specified form field
+     * */
+    addError: (field: string, message: string) => void
 }

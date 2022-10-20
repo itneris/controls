@@ -2,7 +2,7 @@ export default interface IControlProps {
     /**
      * Type of rendered control
      * */
-    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file" | "time";
+    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime";
     /**
      * Controlled value of control
      * */
@@ -47,6 +47,11 @@ export default interface IControlProps {
      * Default: null
      * */
     label?: string | null;
+    /**
+     * Text to render below control
+     * Default: null
+     * */
+    helperText?: string | null;
     /**
      * Control varinat based on MaterilaUI for all types except file and checkbox
      * Default: "outlined"
@@ -106,6 +111,16 @@ export default interface IControlProps {
      * Default: null
      * */
     max?: number | null;
+    /**
+     * Allow decimal input in number
+     * Default: false
+     * */
+    allowDecimals?: boolean;
+    /**
+     * Allow negative input in number
+     * Default: false
+     * */
+    allowNegative?: boolean;
     /**
      * Mimimal date for control type date
      * Default: null

@@ -11,8 +11,10 @@ interface IUserDTO {
     id: string;
     name: string;
     surname: string;
+    visitCount: number;
     visitDate: string;
     visitTime: string;
+    visitDateTime: string;
     role: string;
     role_api: string;
     roleValue: {
@@ -41,6 +43,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.name)
             .WithLabel("Имя")
             .WithDefaultValue("Ибраген")
+            .WithHelperText("Не надо вводить сюда цифры")
             .Required();
 
         this.FieldFor(_ => _.surname)
@@ -64,6 +67,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 return null;
             });
 
+        this.FieldFor(_ => _.visitCount)
+            .WithLabel("Число посещений")
+            .Number(true, true);
+
         this.FieldFor(_ => _.visitDate)
             .WithLabel("Дата записи")
             .DatePicker();
@@ -71,6 +78,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.visitTime)
             .WithLabel("Время записи")
             .TimePicker();
+
+        this.FieldFor(_ => _.visitDateTime)
+            .WithLabel("Дата и время записи")
+            .DateTimePicker();
 
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")

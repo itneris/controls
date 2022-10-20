@@ -28,8 +28,10 @@ import {
     Visibility,
     VisibilityOff
 } from "@mui/icons-material";
-import { ItnDatePicker, ItnTimePicker } from "@itneris/pickers";
 import IControlProps, { ItnSelectOption } from "../props/IControlProps";
+import { DatePicker, DateTimePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { ru } from "date-fns/locale";
 
 const generatePassword = (length: number): string => {
     const small = "abcdefghijklmnopqrstuvwxyz";
@@ -101,6 +103,28 @@ function ItnControl(props: IControlProps) {
         }
     }, [props.onEnter]);
 
+    const handleNumberKeyPress = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            props.onEnter && props.onEnter();
+            return;
+        }
+
+        const isNumber = /[1-9]/.test(e.key);
+        if (isNumber) {
+            return;
+        }
+
+        if (props.allowDecimals && (e.key === "." || e.key === ",")) {
+            return;
+        }
+
+        if (props.allowNegative && e.key === "-" && (e.target as HTMLInputElement).value === "") {
+            return;
+        }
+
+        e.preventDefault();
+    }, [props.onEnter, props.allowDecimals, props.allowNegative]);
+
     const control = useMemo(() => {
         switch (props.type) {
             case 'select':
@@ -129,7 +153,7 @@ function ItnControl(props: IControlProps) {
                                 })
                             }
                         </Select>
-                        <FormHelperText>{props.error && props.errorText}</FormHelperText>
+                        <FormHelperText>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
                     </FormControl>
                 );
             case 'autocomplete':
@@ -212,23 +236,83 @@ function ItnControl(props: IControlProps) {
                     />}
                 />;
             case 'date':
-                return <ItnDatePicker
-                    label={props.label ?? ""}
-                    value={props.value}
-                    onChange={val => props.onChange && props.onChange(val)}
-                    size="small"
-                    disabled={props.disabled}
-                    fullWidth
-                />;
+                return <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
+                    <DatePicker
+                        label={props.label ?? ""}
+                        value={props.value ? new Date(props.value) : null}
+                        onChange={val => {
+                            if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
+                                props.onChange(val?.toISOString())
+                            }
+                        }}  
+                        renderInput={(params) =>
+                            <TextField
+                                {...params}
+                                inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: "дд.мм.гггг"
+                                }}
+                                size="small"
+                                disabled={props.disabled}
+                                fullWidth
+                                error={props.error}
+                                helperText={props.error ? props.errorText : (props.helperText ?? "")}
+                            />
+                        }
+                    />
+                </LocalizationProvider>;
             case 'time':
-                return <ItnTimePicker
-                    label={props.label ?? ""}
-                    value={props.value}
-                    onChange={val => props.onChange && props.onChange(val)}
-                    size="small"
-                    disabled={props.disabled}
-                    fullWidth
-                />;
+                return <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
+                    <TimePicker
+                        label={props.label ?? ""}
+                        value={props.value ? new Date(props.value) : null}
+                        onChange={val => {
+                            if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
+                                props.onChange(val?.toISOString())
+                            }
+                        }}  
+                        renderInput={(params) =>
+                            <TextField
+                                {...params}
+                                inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: "ЧЧ:ММ"
+                                }}
+                                size="small"
+                                disabled={props.disabled}
+                                fullWidth
+                                error={props.error}
+                                helperText={props.error ? props.errorText : (props.helperText ?? "")}
+                            />
+                        }
+                    />
+                </LocalizationProvider>;
+            case 'datetime':
+                return <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
+                    <DateTimePicker
+                        label={props.label ?? ""}
+                        value={props.value ? new Date(props.value) : null}
+                        onChange={val => {
+                            if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
+                                props.onChange(val?.toISOString())
+                            }
+                        }}  
+                        renderInput={(params) =>
+                            <TextField
+                                {...params}
+                                inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: "дд.мм.гггг ЧЧ:ММ"
+                                }}
+                                size="small"
+                                disabled={props.disabled}
+                                fullWidth
+                                error={props.error}
+                                helperText={props.error ? props.errorText : (props.helperText ?? "")}
+                            />
+                        }
+                    />
+                </LocalizationProvider>;
             case 'password':
                 return <Box display="flex" width="100%">
                     <FormControl
@@ -243,7 +327,7 @@ function ItnControl(props: IControlProps) {
                             label={props.label}
                             size="small"
                             error={props.error}
-                            helperText={props.errorText}
+                            helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             InputProps={{
                                 type: showPassword ? 'text' : 'password',
                                 endAdornment: <InputAdornment position="end" >
@@ -258,7 +342,7 @@ function ItnControl(props: IControlProps) {
                             onKeyPress={checkEnter}
                             onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />
-                        <FormHelperText>{props.error}</FormHelperText>
+                        <FormHelperText>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
                     </FormControl>
                     {
                         !props.disableNewPasswordGenerate &&
@@ -291,23 +375,23 @@ function ItnControl(props: IControlProps) {
                     onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                     error={props.error}
                     size="small"
-                    helperText={props.errorText}
+                    helperText={props.error ? props.errorText : (props.helperText ?? "")}
                     multiline={props.multiline}
                     rows={props.lines || undefined}
                     maxRows={props.maxLines || undefined}                    
                 />;
             case 'number':
                 return <TextField
-                    onKeyPress={checkEnter}
+                    onKeyPress={handleNumberKeyPress}
                     fullWidth
                     variant={props.variant}
                     type="number"
                     placeholder={props.placeholder ?? ""}
                     error={props.error}
-                    helperText={props.errorText}
+                    helperText={props.error ? props.errorText : (props.helperText ?? "")}
                     value={props.value}
                     disabled={props.disabled}
-                    onChange={event => props.onChange && props.onChange(+event.currentTarget.value)}
+                    onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
                     size="small"
                 />;
             case 'file':
@@ -397,6 +481,7 @@ function ItnControl(props: IControlProps) {
         uploadFile,
         handleUploadClick,
         handleDeleteFile,
+        handleNumberKeyPress,
         preview,
         checkEnter
     ]); 
@@ -449,7 +534,10 @@ ItnControl.defaultProps = {
     autocompleteLoadingText: "Загрузка...",
     onAutocompleteInputChange: null,
     onEnter: null,
-    autocompleteCreatable: false
+    autocompleteCreatable: false,
+    helperText: null,
+    allowNegative: false,
+    allowDecimals: false
 }
 
 export default ItnControl;

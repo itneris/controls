@@ -47,6 +47,9 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
         },
         deleteEntity(urlParams) {
             form.current!.deleteEntity(urlParams);
+        },
+        addError(field, error) {
+            form.current!.addError(field, error);
         }
     }));
 
@@ -72,6 +75,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         },
         deleteEntity(urlParams) {
             handleDelete(baseFormRef.current!.getCurrentValues().id, urlParams)
+        },
+        addError(field, error) {
+            baseFormRef.current!.addError(field, error);
         }
     }));
 

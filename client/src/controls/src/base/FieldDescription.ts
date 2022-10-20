@@ -5,7 +5,7 @@ import { LooseObject } from "./LooseObject";
 export class FieldDescription implements LooseObject {
     property: string;
     order: number;
-    type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" = "string";
+    type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime" = "string";
     disabled: boolean | ((entity: LooseObject) => boolean) = false;
     hidden: boolean | ((entity: LooseObject) => boolean) = false;
     placeholder: string | null = null;
@@ -15,10 +15,13 @@ export class FieldDescription implements LooseObject {
     onClick: (() => void) | null = null;
     variant: "outlined" | "standard" | "filled" = "outlined";
     tooltip: string | null = null;
+    helperText: string | null = null;
     custom: ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean) => ReactNode) | null = null;
     items: ItnSelectOption[] = [];
     min: number | null = null;
     max: number | null = null;
+    allowDecimals: boolean = false;
+    allowNegative: boolean = false;
     minDate: Date | null = null;
     maxDate: Date | null = null;
     passwordLength: number = 8;

@@ -6,17 +6,9 @@ import { Backspace, Delete, Save } from "@mui/icons-material";
 import { LooseObject } from "../base/LooseObject";
 import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
+import fi from "date-fns/esm/locale/fi";
 
 const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
-    useImperativeHandle(ref, () => ({
-        getCurrentValues() {
-            return entity!;
-        },
-        validate() {
-            return validateControls();
-        }
-    }));
-
     const fields = props.fieldBuilder.Build();
 
     const getDefaultValues = useCallback(() => {
@@ -28,7 +20,19 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
     }, [fields]);
 
     const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? getDefaultValues());
-    const [validaion, setValidation] = useState<Validation[]>([]);
+    const [validation, setValidation] = useState<Validation[]>([]);
+
+    useImperativeHandle(ref, () => ({
+        getCurrentValues() {
+            return entity!;
+        },
+        validate() {
+            return validateControls();
+        },
+        addError(field, error) {
+            setValidation([...validation, { property: field, message: error }]);
+        }
+    }));
 
     useEffect(() => setEntity(props.entity ?? getDefaultValues()), [props.entity]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -38,10 +42,10 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             ...entity,
             [field]: value
         };
-        setValidation(validaion.filter(_ => _.property !== field));
+        setValidation(validation.filter(_ => _.property !== field));
         setEntity(newEntity);
         props.onChange && props.onChange(field, value);
-    }, [props.onChange, entity, setEntity, validaion]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [props.onChange, entity, setEntity, validation]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const validateControls = useCallback(() => {
         let newValidation: Validation[] = []; 
@@ -51,13 +55,37 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 val === undefined ||
                 val === null ||
                 (typeof val === "string" && val === "");
+
             if (field.required && valIsNull) {
-                newValidation.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`))
+                newValidation.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`));
             }
+
             if (field.validation !== null && !valIsNull) {
                 const error = field.validation(val, entity ?? {});
                 if (error !== null) {
                     newValidation.push(new Validation(field.property, error))
+                }
+            }
+
+            if (field.type === "date") {
+                if (field.maxDate !== null && new Date(val) > field.maxDate) {
+                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть больше ${field.maxDate.toLocaleDateString("ru-RU")}`))
+                } else if (field.minDate !== null && new Date(val) < field.minDate) {
+                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть меньше ${field.minDate.toLocaleDateString("ru-RU")}`))
+                }
+            }
+
+            if (field.type === "number") {
+                if (isNaN(+val)) {
+                    newValidation.push(new Validation(field.property, `Некорректное числовое значение`))
+                } else if (!field.allowNegative && val.includes("-")) {
+                    newValidation.push(new Validation(field.property, `Значение должно быть больше 0`))
+                } else if (!field.allowDecimals && (val.includes(".") || val.includes(","))) {
+                    newValidation.push(new Validation(field.property, `Значение должно быть целым числом`))
+                } else  if (field.max !== null && +val > field.max) {
+                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть больше ${field.max}`))
+                } else if (field.min !== null && +val < field.min) {
+                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть меньше ${field.min}`))
                 }
             }
         });
@@ -125,8 +153,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                             field.custom(
                                                 entity![field.property],
                                                 (value) => handleChange(field.property, value),
-                                                validaion.find(_ => _.property === field.property) !== undefined,
-                                                validaion.find(_ => _.property === field.property)?.message,
+                                                validation.find(_ => _.property === field.property) !== undefined,
+                                                validation.find(_ => _.property === field.property)?.message,
                                                 props.isSaving!,
                                                 props.viewOnly!
                                             )
@@ -160,12 +188,14 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         placeholder={field.placeholder}
                                         disabled={controlDisabled || props.isSaving || props.viewOnly}
                                         display={field.display}
-                                        error={validaion.find(_ => _.property === field.property) !== undefined}
-                                        errorText={validaion.find(_ => _.property === field.property)?.message}
+                                        error={validation.find(_ => _.property === field.property) !== undefined}
+                                        errorText={validation.find(_ => _.property === field.property)?.message}
                                         items={field.items}
                                         label={field.label}
                                         max={field.max}
                                         min={field.min}
+                                        allowDecimals={field.allowDecimals}
+                                        allowNegative={field.allowNegative}
                                         maxDate={field.maxDate}
                                         minDate={field.minDate}
                                         tooltip={field.tooltip}
@@ -181,6 +211,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
                                         autocompleteCreatable={field.autocompleteCreatable}
                                         onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
+                                        helperText={field.helperText}
                                     />                                
                                 }
                             })

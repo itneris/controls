@@ -33,15 +33,25 @@ declare module "./FieldOptionsBuilder" {
 		 * */
 		AutocompleteWithQuery(apiUrl: string, searchAsType?: boolean, creatable?: boolean, onOptionAdded?: ((value: string) => void) | null): FieldOptionsBuilder<T>;
 		/**
+		 * Changes control type to 'number'
+		 * @param {boolean} allowDecimal allows user to enter decimal numbers
+		 * @param {boolean} allowNegative allows user to enter negative numbers
+		 * @param {number} min sets the min value for number
+		 * @param {number} max sets the max value for number
+		 * */
+		Number(allowDecimals?: boolean, allowNegative?: boolean, min?: number | null, max?: number | null): FieldOptionsBuilder<T>;
+		/**
 		 * Changes control type to 'date'
-		 * @param {ItnSelectOption[]} options Array of opitons to render in select
 		 * */
 		DatePicker(): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'time'
-		 * @param {ItnSelectOption[]} options Array of opitons to render in select
 		 * */
 		TimePicker(): FieldOptionsBuilder<T>;
+		/**
+		 * Changes control type to 'datetime'
+		 * */
+		DateTimePicker(): FieldOptionsBuilder<T>;
 		/**
 		 * !!!USE ONLY WITH QUERY FORM
 		 * Changes control type to 'select' and defines api url for get options
@@ -96,6 +106,11 @@ declare module "./FieldOptionsBuilder" {
 		 * @param {any} value value that will be in intial entity for create form
 		* */
 		WithDefaultValue(value: any): FieldOptionsBuilder<T>;
+		/**
+		* Sets helper text for the control
+		 * @param {string} text text to render below control
+		* */
+		WithHelperText(text: string): FieldOptionsBuilder<T>;
 	}
 }
 
@@ -124,6 +139,11 @@ FieldOptionsBuilder.prototype.DatePicker = function <T extends LooseObject>() {
 FieldOptionsBuilder.prototype.TimePicker = function <T extends LooseObject>() {
 	return this
 		.SetFieldProp("type", "time") as FieldOptionsBuilder<T>;
+}
+
+FieldOptionsBuilder.prototype.DateTimePicker = function <T extends LooseObject>() {
+	return this
+		.SetFieldProp("type", "datetime") as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.Disable = function <T extends LooseObject>(disabled: boolean | ((entity: LooseObject) => boolean) = true) {
@@ -160,6 +180,21 @@ FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(
 FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>() {
 	return this
 		.SetFieldProp("required", true) as FieldOptionsBuilder<T>;
+
+}
+
+FieldOptionsBuilder.prototype.Number = function <T extends LooseObject>(
+	allowDecimals: boolean = false,
+	allowNegative: boolean = false,
+	min: number | null = null,
+	max: number | null = null
+) {
+	return this
+		.SetFieldProp("type", "number")
+		.SetFieldProp("allowDecimals", allowDecimals)
+		.SetFieldProp("allowNegative", allowNegative)
+		.SetFieldProp("max", max)
+		.SetFieldProp("min", min) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.File = function <T extends LooseObject>({
@@ -203,6 +238,11 @@ FieldOptionsBuilder.prototype.TextArea = function <T extends LooseObject>(textAr
 FieldOptionsBuilder.prototype.WithDefaultValue = function <T extends LooseObject>(value: any) {
 	return this
 		.SetFieldProp("defaultValue", value) as FieldOptionsBuilder<T>;
+}
+
+FieldOptionsBuilder.prototype.WithHelperText = function <T extends LooseObject>(text: string) {
+	return this
+		.SetFieldProp("helperText", text) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(
