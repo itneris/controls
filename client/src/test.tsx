@@ -35,10 +35,11 @@ interface IUserDTO {
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
     constructor() {
         super();
-        /*
+        
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
-            .File({ withImagePreview: true });*/
+            .File({ withImagePreview: true })
+            .Required();
 
         this.FieldFor(_ => _.name)
             .WithLabel("Имя")
@@ -65,15 +66,18 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                     return "Пароль должен быть длиннее трех символов";
                 }
                 return null;
-            });
+            })
+            .Required();
 
         this.FieldFor(_ => _.visitCount)
             .WithLabel("Число посещений")
-            .Number(true, true);
+            .Number()
+            .Required();
 
         this.FieldFor(_ => _.visitDate)
             .WithLabel("Дата записи")
-            .DatePicker();
+            .DatePicker()
+            .Required();
 
         this.FieldFor(_ => _.visitTime)
             .WithLabel("Время записи")
@@ -153,7 +157,7 @@ const TestComnonent = () => {
                 fieldBuilder={fieldBuilder}
                 footerContent={<b>Пример контента после контролов</b>}
             />
-            <PageTitle>Тестовая форма редактирования</PageTitle>
+            <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
                 fieldBuilder={fieldBuilder}

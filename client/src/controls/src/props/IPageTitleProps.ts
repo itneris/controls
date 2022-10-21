@@ -20,4 +20,10 @@ export interface IPageTitleProps {
      * Default: null
      * */
     headerComponent?: React.ReactNode | null;
+
+    /**
+     * Tooltip for question mark near title, will not be rendered if not set
+     * Default: null
+     * */
+    tooltip?: React.ReactNode | null;
 }

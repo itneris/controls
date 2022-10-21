@@ -342,7 +342,6 @@ function ItnControl(props: IControlProps) {
                             onKeyPress={checkEnter}
                             onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />
-                        <FormHelperText>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
                     </FormControl>
                     {
                         !props.disableNewPasswordGenerate &&
@@ -382,6 +381,7 @@ function ItnControl(props: IControlProps) {
                 />;
             case 'number':
                 return <TextField
+                    label={props.label}
                     onKeyPress={handleNumberKeyPress}
                     fullWidth
                     variant={props.variant}
@@ -395,7 +395,7 @@ function ItnControl(props: IControlProps) {
                     size="small"
                 />;
             case 'file':
-                return (<>
+                return (<FormControl>
                     <input ref={fileInputRef} type="file" hidden onChange={uploadFile} accept={props.accept} />
                     {
                         props.value === null ?
@@ -423,6 +423,7 @@ function ItnControl(props: IControlProps) {
                                     color="secondary"
                                     startIcon={<CloudUpload />}
                                     onClick={handleUploadClick}
+                                    style={{ alignSelf: "start" }}
                                 >
                                     {props.label}
                                 </Button>
@@ -471,7 +472,8 @@ function ItnControl(props: IControlProps) {
                                     </Box>
                                 </Box> 
                     }
-                </>);
+                    <FormHelperText error={props.error}>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
+                </FormControl>);
             default: throw new Error();
         }
     }, [

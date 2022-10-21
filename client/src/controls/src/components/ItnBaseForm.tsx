@@ -67,7 +67,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 }
             }
 
-            if (field.type === "date") {
+            if (field.type === "date" && val !== null) {
                 if (field.maxDate !== null && new Date(val) > field.maxDate) {
                     newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть больше ${field.maxDate.toLocaleDateString("ru-RU")}`))
                 } else if (field.minDate !== null && new Date(val) < field.minDate) {
@@ -75,7 +75,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 }
             }
 
-            if (field.type === "number") {
+            if (field.type === "number" && val !== null) {
                 if (isNaN(+val)) {
                     newValidation.push(new Validation(field.property, `Некорректное числовое значение`))
                 } else if (!field.allowNegative && val.includes("-")) {
