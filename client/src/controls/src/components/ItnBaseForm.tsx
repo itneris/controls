@@ -31,12 +31,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         addError(field, error) {
             setValidation([...validation, { property: field, message: error }]);
         },
-        setValue(field, value) {
-            const newEntity = {
-                ...entity,
-                [field]: value
-            };
-            setValidation(validation.filter(_ => _.property !== field));
+        setEntity(newEntity: LooseObject) {
             setEntity(newEntity);
         }
     }));

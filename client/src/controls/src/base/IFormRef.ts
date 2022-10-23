@@ -20,7 +20,7 @@ export interface IFormRef {
      * */
     addError: (field: string, message: string) => void
     /**
-     * Sets value to specified form field
+     * Sets new entity
      * */
-    setValue: (field: string, value: any) => void
+    setEntity: (entity: LooseObject) => void
 }

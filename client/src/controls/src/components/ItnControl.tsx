@@ -343,6 +343,7 @@ function ItnControl(props: IControlProps) {
                                     </IconButton>
                                 </InputAdornment>
                             }}
+                            disabled={props.disabled}
                             onKeyPress={checkEnter}
                             onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />

@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { Button } from "@mui/material";
 
 import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl } from "controls/src";
 import IDrawerRef from "./controls/src/props/IDrawerRef";
 import IModalRef from "./controls/src/props/IModalRef";
 import { IFormRef } from "./controls/src/base/IFormRef";
+import { IQueryFormRef } from "./controls/src/base/IQueryFormRef";
 //import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer } from "@itneris/controls";
 
 interface IUserDTO {
@@ -34,6 +35,7 @@ interface IUserDTO {
     password: string;
     avatar: string;
     note: string;
+    calcValue: string;
 }
 
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
@@ -58,8 +60,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 console.log(val);
                 console.log(entity);
                 return null;
-            })
-            .Disable();
+            });
+
+        this.FieldFor(_ => _.calcValue)
+            .WithLabel("Калькулируемое поле");
 
         this.FieldFor(_ => _.password)
             .WithLabel("Пароль")
@@ -148,6 +152,27 @@ const TestComnonent = () => {
     const drawerRef = useRef<IDrawerRef | null>(null);
     const modalRef = useRef<IModalRef | null>(null);
     const formRef = useRef<IFormRef | null>(null);
+    const createFormRef = useRef<IQueryFormRef>(null);
+
+    const handleCreateChange = useCallback((prop: string, value: any) => {
+        if (prop === "name" || prop === "surname") {
+            const values = createFormRef.current!.getCurrentValues();
+            const loginNamePart = prop === "name" ?
+                (!value ? "" : value[0]) :
+                (!values.name ? "" : values.name[0]);
+
+            const loginSurnamePart = prop === "surname" ?
+                (!value ? "" : value) :
+                (!values.surname ? "" : values.surname);
+
+            values[prop] = value;
+            values.calcValue = `${loginNamePart}.${loginSurnamePart}`;
+
+
+            createFormRef.current?.setEntity(values);
+        }
+    }, []);
+
     return (
         <>
             <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
@@ -159,11 +184,13 @@ const TestComnonent = () => {
             />
 
             <ItnQueryForm
+                ref={createFormRef}
                 header="Форма создания"
                 headerContent={<b>Пример контента после заголовка</b>}
                 apiUrl="http://localhost:5000/api/test"
                 fieldBuilder={fieldBuilder}
                 footerContent={<b>Пример контента после контролов</b>}
+                onChange={handleCreateChange}
             />
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm
