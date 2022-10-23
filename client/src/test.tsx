@@ -21,6 +21,10 @@ interface IUserDTO {
         id: string,
         label: string
     };
+    roleValueArray: {
+        id: string,
+        label: string
+    }[];
     roleValueWithSearch: {
         id: string,
         label: string
@@ -107,6 +111,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.roleValue)
             .WithLabel("Роль (autocomplete)")
             .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
+
+        this.FieldFor(_ => _.roleValueArray)
+            .WithLabel("Роли (autocomplete multiple)")
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true, null, true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")

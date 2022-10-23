@@ -93,6 +93,11 @@ export default interface IControlProps {
      * */
     onAutocompleteOptionAdded?: ((value: string) => void) | null;
     /**
+     * Enables multiselection for select and autocomplete types
+     * Default: false
+     * */
+    multiple?: boolean;
+    /**
      * Tooltip with question mark icon trigger for control
      * */
     tooltip?: string | null;

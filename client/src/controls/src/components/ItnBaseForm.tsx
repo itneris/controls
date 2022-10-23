@@ -171,7 +171,13 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         return null;
                                     }
 
-                                    const controlValue = entity![field.property] ?? (["file", "date", "time", "autocomplete"].includes(field.type) ? null : "");
+                                    const contolDefaultValue =
+                                        (["file", "date", "time"]).includes(field.type) ? null :
+                                            field.type !== "select" && field.type !== "autocomplete" ? "" :
+                                                field.multiple ? [] :
+                                                    null;
+
+                                    const controlValue = entity![field.property] ?? contolDefaultValue;
                                     const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity ?? {}) : field.disabled;
 
                                     return <ItnControl
@@ -212,6 +218,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                                         autocompleteCreatable={field.autocompleteCreatable}
                                         onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
                                         helperText={field.helperText}
+                                        multiple={field.multiple}
                                     />                                
                                 }
                             })

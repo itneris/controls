@@ -15,14 +15,14 @@ declare module "./FieldOptionsBuilder" {
 		 * Changes control type to 'select' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in select
 		 * */
-		Select(options: ItnSelectOption[]): FieldOptionsBuilder<T>;
+		Select(options: ItnSelectOption[], multiple?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'autocomplete' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in autocomplete
 		 * @param {boolean} creatable can user add new options, default false
 		 * @param {(value: string) => void | null} onOptionAdded callback when option added
 		 * */
-		Autocomplete(options: ItnSelectOption[], creatable?: boolean, onOptionAdded?: ((value: string) => void) | null): FieldOptionsBuilder<T>;
+		Autocomplete(options: ItnSelectOption[], creatable?: boolean, onOptionAdded?: ((value: string) => void) | null, multiple?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * !!!USE ONLY WITH QUERY FORM
 		 * Changes control type to 'autocomplete' and defines api url for get options
@@ -31,7 +31,7 @@ declare module "./FieldOptionsBuilder" {
 		 * @param {boolean} creatable can user add new options, default false
 		 * @param {(value: string) => void | null} onOptionAdded callback when option added
 		 * */
-		AutocompleteWithQuery(apiUrl: string, searchAsType?: boolean, creatable?: boolean, onOptionAdded?: ((value: string) => void) | null): FieldOptionsBuilder<T>;
+		AutocompleteWithQuery(apiUrl: string, searchAsType?: boolean, creatable?: boolean, onOptionAdded?: ((value: string) => void) | null, multiple?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'number'
 		 * @param {boolean} allowDecimal allows user to enter decimal numbers
@@ -57,7 +57,7 @@ declare module "./FieldOptionsBuilder" {
 		 * Changes control type to 'select' and defines api url for get options
 		 * @param {string} apiUrl API address that return array of ItnSelectOption
 		 * */
-		SelectWithQuery(apiUrl: string): FieldOptionsBuilder<T>;
+		SelectWithQuery(apiUrl: string, multiple?: boolean): FieldOptionsBuilder<T>;
 		/**
 		 * Disables control
 		 * @param {boolean | (entity: LooseObject) => boolean} disabled sets control state or function for calculate control state dependent on current form values
@@ -119,15 +119,17 @@ FieldOptionsBuilder.prototype.WithLabel = function<T extends LooseObject>(label:
 		.SetFieldProp("label", label) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Select = function<T extends LooseObject>(options: ItnSelectOption[]) {
+FieldOptionsBuilder.prototype.Select = function <T extends LooseObject>(options: ItnSelectOption[], multiple: boolean = false) {
 	return this
 		.SetFieldProp("type", "select")
+		.SetFieldProp("multiple", multiple)
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string) {
+FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string, multiple: boolean = false) {
 	return this
 		.SetFieldProp("type", "select")
+		.SetFieldProp("multiple", multiple)
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 
@@ -248,12 +250,14 @@ FieldOptionsBuilder.prototype.WithHelperText = function <T extends LooseObject>(
 FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(
 	options: ItnSelectOption[],
 	creatable: boolean = false,
-	onOptionAdded: ((value: string) => void) | null = null
+	onOptionAdded: ((value: string) => void) | null = null,
+	multiple: boolean = false
 ) {
 	return this
 		.SetFieldProp("type", "autocomplete")
 		.SetFieldProp("autocompleteCreatable", creatable)
 		.SetFieldProp("onAutocompleteOptionAdded", onOptionAdded)
+		.SetFieldProp("multiple", multiple)
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
@@ -261,13 +265,15 @@ FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T extends LooseO
 	apiUrl: string,
 	searchAsType: boolean = false,
 	creatable: boolean = false,
-	onOptionAdded: ((value: string) => void) | null = null
+	onOptionAdded: ((value: string) => void) | null = null,
+	multiple: boolean = false
 ) {
 	return this
 		.SetFieldProp("type", "autocomplete")
 		.SetFieldProp("searchAsType", searchAsType)
 		.SetFieldProp("autocompleteCreatable", creatable)
 		.SetFieldProp("onAutocompleteOptionAdded", onOptionAdded)
+		.SetFieldProp("multiple", multiple)
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 

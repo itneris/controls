@@ -71,6 +71,7 @@ app.get('/api/test/1', (req, res) => {
         },
         note: "some note about user",
         roleValue: rolesValues[0],
+        roleValueArray: [rolesValues[0], rolesValues[1]],
         roleValueWithSearch: rolesValues[0]
     });
 });

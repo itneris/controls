@@ -109,7 +109,7 @@ function ItnControl(props: IControlProps) {
             return;
         }
 
-        const isNumber = /[1-9]/.test(e.key);
+        const isNumber = /[0-9]/.test(e.key);
         if (isNumber) {
             return;
         }
@@ -141,6 +141,7 @@ function ItnControl(props: IControlProps) {
                             disabled={props.disabled}
                             value={props.value ?? ""}
                             onChange={event => props.onChange && props.onChange(event.target.value)}
+                            multiple={props.multiple}
                         >
                             <MenuItem disabled={props.allowNullInSelect ? false : true} value="">
                                 <Typography variant='body2'>{props.selectNullLabel || `Выберите ${props.label}`}</Typography>
@@ -162,7 +163,7 @@ function ItnControl(props: IControlProps) {
                     getOptionLabel={option => option.label}
                     isOptionEqualToValue={(option, value) => {
                         return option.id === value.id;
-                    }}                    
+                    }}
                     size="small"
                     fullWidth
                     disabled={props.disabled}
@@ -207,7 +208,7 @@ function ItnControl(props: IControlProps) {
                             });
                         }
 
-                        return filtered;                        
+                        return filtered;
                     }}
                     renderInput={(params) => (
                         <TextField
@@ -220,11 +221,12 @@ function ItnControl(props: IControlProps) {
                                     <>
                                         {props.autocompleteLoading === true ? <CircularProgress color="inherit" size={20} /> : null}
                                         {params.InputProps.endAdornment}
-                                    </>    
+                                    </>
                                 )
                             }}
                         />
                     )}
+                    multiple={props.multiple}
                 />
             case 'checkbox':
                 return <FormControlLabel
@@ -539,7 +541,8 @@ ItnControl.defaultProps = {
     autocompleteCreatable: false,
     helperText: null,
     allowNegative: false,
-    allowDecimals: false
+    allowDecimals: false,
+    multiple: false
 }
 
 export default ItnControl;
