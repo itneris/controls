@@ -19,4 +19,8 @@ export interface IFormRef {
      * Add error text to specified form field
      * */
     addError: (field: string, message: string) => void
+    /**
+     * Sets value to specified form field
+     * */
+    setValue: (field: string, value: any) => void
 }

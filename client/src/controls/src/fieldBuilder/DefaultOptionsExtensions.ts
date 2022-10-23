@@ -71,8 +71,9 @@ declare module "./FieldOptionsBuilder" {
 		/**
 		 * Changes control type to password
 		 * @param {boolean} disableNewPasswordGenerate hide button for generate new password
+		 * @param {number} length length for generated password, default = 8
 		 * */
-		Password(disableNewPasswordGenerate?: boolean): FieldOptionsBuilder<T>;
+		Password(disableNewPasswordGenerate?: boolean, length?: number): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to boolean
 		 * */
@@ -158,9 +159,10 @@ FieldOptionsBuilder.prototype.Hide = function <T extends LooseObject>(hidden: bo
 		.SetFieldProp("hidden", hidden) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Password = function <T extends LooseObject>(disableNewPasswordGenerate: boolean = false) {
+FieldOptionsBuilder.prototype.Password = function <T extends LooseObject>(disableNewPasswordGenerate: boolean = false, length: number = 6) {
 	return this
-		.SetFieldProp("type", "password") 
+		.SetFieldProp("type", "password")
+		.SetFieldProp("passwordLength", length) 
 		.SetFieldProp("disableNewPasswordGenerate", disableNewPasswordGenerate) as FieldOptionsBuilder<T>;
 }
 

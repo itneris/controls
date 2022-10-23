@@ -215,6 +215,8 @@ function ItnControl(props: IControlProps) {
                             label={props.label}
                             variant={props.variant}
                             {...params}
+                            error={props.error}
+                            helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: (

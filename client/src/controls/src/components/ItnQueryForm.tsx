@@ -50,6 +50,9 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
         },
         addError(field, error) {
             form.current!.addError(field, error);
+        },
+        setValue(field, value) {
+            form.current!.setValue(field, value);
         }
     }));
 
@@ -78,6 +81,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         },
         addError(field, error) {
             baseFormRef.current!.addError(field, error);
+        },
+        setValue(field, value) {
+            baseFormRef.current!.setValue(field, value);
         }
     }));
 

@@ -6,7 +6,6 @@ import { Backspace, Delete, Save } from "@mui/icons-material";
 import { LooseObject } from "../base/LooseObject";
 import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
-import fi from "date-fns/esm/locale/fi";
 
 const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
     const fields = props.fieldBuilder.Build();
@@ -31,6 +30,14 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         },
         addError(field, error) {
             setValidation([...validation, { property: field, message: error }]);
+        },
+        setValue(field, value) {
+            const newEntity = {
+                ...entity,
+                [field]: value
+            };
+            setValidation(validation.filter(_ => _.property !== field));
+            setEntity(newEntity);
         }
     }));
 
@@ -54,10 +61,11 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             const valIsNull =
                 val === undefined ||
                 val === null ||
-                (typeof val === "string" && val === "");
+                (typeof val === "string" && val === "") ||
+                (Array.isArray(val) && val.length === 0);
 
             if (field.required && valIsNull) {
-                newValidation.push(new Validation(field.property, `Поле "${field.label}" обязательно для заполнения`));
+                newValidation.push(new Validation(field.property, `Поле обязательно для заполнения`));
             }
 
             if (field.validation !== null && !valIsNull) {
@@ -69,23 +77,34 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
 
             if (field.type === "date" && val !== null) {
                 if (field.maxDate !== null && new Date(val) > field.maxDate) {
-                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть больше ${field.maxDate.toLocaleDateString("ru-RU")}`))
+                    newValidation.push(new Validation(field.property, `Значение не может быть больше ${field.maxDate.toLocaleDateString("ru-RU")}`))
                 } else if (field.minDate !== null && new Date(val) < field.minDate) {
-                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть меньше ${field.minDate.toLocaleDateString("ru-RU")}`))
+                    newValidation.push(new Validation(field.property, `Значение не может быть меньше ${field.minDate.toLocaleDateString("ru-RU")}`))
+                }
+            }
+
+            if (field.type === "password" && val !== null) {
+                const legitPwd = /\d/.test(val) &&
+                    /[a-z]/.test(val) &&
+                    /[A-Z]/.test(val) &&
+                    /[!@#$%^&*()-+<>]/.test(val) &&
+                    val.length >= field.passwordLength;
+                if (!legitPwd) {
+                    newValidation.push(new Validation(field.property, `Пароль должен состоять из ${field.passwordLength} символов, включать цифру, нижний и верхний регистры и непрописной сивол (!@#$%^&*()-+<>)`))
                 }
             }
 
             if (field.type === "number" && val !== null) {
                 if (isNaN(+val)) {
                     newValidation.push(new Validation(field.property, `Некорректное числовое значение`))
-                } else if (!field.allowNegative && val.includes("-")) {
+                } else if (!field.allowNegative && +val < 0) {
                     newValidation.push(new Validation(field.property, `Значение должно быть больше 0`))
-                } else if (!field.allowDecimals && (val.includes(".") || val.includes(","))) {
+                } else if (!field.allowDecimals && !Number.isInteger(+val)) {
                     newValidation.push(new Validation(field.property, `Значение должно быть целым числом`))
                 } else  if (field.max !== null && +val > field.max) {
-                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть больше ${field.max}`))
+                    newValidation.push(new Validation(field.property, `Значение не может быть больше ${field.max}`))
                 } else if (field.min !== null && +val < field.min) {
-                    newValidation.push(new Validation(field.property, `Поле "${field.label}" не может быть меньше ${field.min}`))
+                    newValidation.push(new Validation(field.property, `Значение не может быть меньше ${field.min}`))
                 }
             }
         });
