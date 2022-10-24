@@ -42,6 +42,7 @@ export class FieldDescription implements LooseObject {
     defaultValue: any | null = null;
     selectApiUrl: string | null = null;
     disableNewPasswordGenerate: boolean = false;
+    enablePasswordCheck: boolean = false;
     searchAsType: boolean = false;
     autocompleteCreatable: boolean = false;
     onAutocompleteOptionAdded: ((value: string) => void) | null = null;

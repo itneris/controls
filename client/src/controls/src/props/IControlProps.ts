@@ -138,6 +138,7 @@ export default interface IControlProps {
     maxDate?: Date | null;
     /**
      * Generated password length control type password
+     * Default: 6
      * */
     passwordLength?: number;
     /**

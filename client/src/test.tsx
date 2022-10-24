@@ -44,8 +44,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
-            .File({ withImagePreview: true })
-            .Required();
+            .File({ withImagePreview: true });
 
         this.FieldFor(_ => _.name)
             .WithLabel("Имя")
@@ -67,7 +66,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.password)
             .WithLabel("Пароль")
-            .Password(true)
+            .Password(false, 3, true)
             .WithValidation((val) => {
                 const value = val as string;
                 if (value.length < 3) {
@@ -173,6 +172,10 @@ const TestComnonent = () => {
         }
     }, []);
 
+    const handleError = useCallback((data: any) => {
+        createFormRef.current!.addError("calcValue", data.detail)
+    }, []);
+
     return (
         <>
             <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
@@ -191,6 +194,7 @@ const TestComnonent = () => {
                 fieldBuilder={fieldBuilder}
                 footerContent={<b>Пример контента после контролов</b>}
                 onChange={handleCreateChange}
+                onError={handleError}
             />
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm

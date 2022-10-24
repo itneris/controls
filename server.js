@@ -111,6 +111,13 @@ app.get('/api/dicts/roles_auto', (req, res) => {
 });
 
 app.post('/api/test', async (req, res) => {
+    res.status(422);
+    res.send({
+        detail: "Next error(s) occured:* Нарушение уникального ключа IX_IterServices_Code\r\n",
+        status: 422,
+        title: "Something went wrong."
+    });
+    return;
     await snooze(1000);
     res.send({ result: "ok" });
 });

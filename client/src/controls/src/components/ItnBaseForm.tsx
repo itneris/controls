@@ -33,6 +33,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         },
         setEntity(newEntity: LooseObject) {
             setEntity(newEntity);
+            setValidation([]);
         }
     }));
 
@@ -78,7 +79,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 }
             }
 
-            if (field.type === "password" && val !== null) {
+            if (field.type === "password" && field.enablePasswordCheck && val !== null) {
                 const legitPwd = /\d/.test(val) &&
                     /[a-z]/.test(val) &&
                     /[A-Z]/.test(val) &&
