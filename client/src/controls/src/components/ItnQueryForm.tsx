@@ -160,7 +160,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                             _.searchAsType ? 
                             [
                                 ...response.data,
-                                { id: null, label: "Показаны не все опции", disabled: true }
+                                { id: null, label: "Вводите текст для поиска", disabled: true }
                             ] :
                             response.data;
 
@@ -265,7 +265,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             footerContent={props.footerContent}
             controlsLoading={controlsLoading}
             onAutocompleteInputChange={handleAutoCompleteInputChange}
-        />
+        >
+            {props.children}
+        </ItnBaseForm>
     );
 });
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
-import { Button } from "@mui/material";
+import { Button, Paper, Stack } from "@mui/material";
 
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl } from "controls/src";
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "controls/src";
 import IDrawerRef from "./controls/src/props/IDrawerRef";
 import IModalRef from "./controls/src/props/IModalRef";
 import { IFormRef } from "./controls/src/base/IFormRef";
@@ -221,6 +221,37 @@ const TestComnonent = () => {
                 fieldBuilder={fieldBuilder}
                 
             />
+
+            <PageTitle>Форма с кастомным расположением</PageTitle>
+            <ItnForm
+                ref={formRef}
+                entity={{
+                    id: "2",
+                    name: "Name",
+                    surname: "Surname",
+                    role: "1",
+                    blocked: true,
+                    middlename: "middlename",
+                    password: "password",
+                } as IUserDTO}
+                onSave={(en) => console.log("qwe")}
+                fieldBuilder={fieldBuilder}
+                hidePaper
+            >
+                <Stack gap={4}>
+                    <Paper>
+                        <PageTitle>Первый блок</PageTitle>
+                        <ItnFormControl field="name" />
+                        <ItnFormControl field="surname" />
+                    </Paper>
+                    <Paper>
+                        <PageTitle>Второй блок</PageTitle>
+                        <ItnFormControl field="password" />
+                        <ItnFormControl field="role" />
+                    </Paper>
+                </Stack>
+            </ItnForm>
+
             <EditDrawer
                 title="Тестовый дровер"
                 cancelBtnText="Отмена"

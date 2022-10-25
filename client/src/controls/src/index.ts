@@ -3,6 +3,7 @@ import ItnControl from "./components/ItnControl";
 import ItnModal from "./components/ItnModal";
 import EditDrawer from "./components/EditDrawer";
 import ItnForm from "./components/ItnBaseForm";
+import ItnFormControl from "./components/ItnFormControl";
 import ItnQueryForm from "./components/ItnQueryForm";
 import { DrawerBtnProp, DrawerTabProp } from "./props/IDrawerProps";
 import { ItnSelectOption } from "./props/IControlProps";
@@ -19,5 +20,6 @@ export {
     ItnQueryForm,
     AbstractFieldBuilder,
     ItnSelectOption,
-    ItnControl
+    ItnControl,
+    ItnFormControl
 };

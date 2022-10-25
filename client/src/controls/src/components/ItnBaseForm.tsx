@@ -6,6 +6,14 @@ import { Backspace, Delete, Save } from "@mui/icons-material";
 import { LooseObject } from "../base/LooseObject";
 import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
+import { FieldDescription } from "../base/FieldDescription";
+
+export interface IFormContext {
+    getField: (field: string) => React.ReactNode | null;
+}
+
+
+export const FormContext = React.createContext<IFormContext | null>(null);
 
 const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
     const fields = props.fieldBuilder.Build();
@@ -119,11 +127,93 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         props.onDelete && props.onDelete(entity!.id);
     }, [entity, props.onDelete, entity]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const renderField = useCallback((field: FieldDescription) => {
+        if (props.isLoading) {
+            return <Skeleton key={"fc-" + field.property} height="32px" />
+        } else if (field.custom) {
+            return <React.Fragment key={"fc-" + field.property}>
+                {
+                    field.custom(
+                        entity![field.property],
+                        (value) => handleChange(field.property, value),
+                        validation.find(_ => _.property === field.property) !== undefined,
+                        validation.find(_ => _.property === field.property)?.message,
+                        props.isSaving!,
+                        props.viewOnly!
+                    )
+                }
+            </React.Fragment>;
+        } else {
+            const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
+            if (controlHidden) {
+                return null;
+            }
+
+            const contolDefaultValue =
+                (["file", "date", "time"]).includes(field.type) ? null :
+                    field.type !== "select" && field.type !== "autocomplete" ? "" :
+                        field.multiple ? [] :
+                            null;
+
+            const controlValue = entity![field.property] ?? contolDefaultValue;
+            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity ?? {}) : field.disabled;
+
+            return <ItnControl
+                key={"fc-" + field.property}
+                type={field.type}
+                disableNewPasswordGenerate={field.disableNewPasswordGenerate}
+                variant={props.variant!}
+                onChange={(value) => handleChange(field.property, value)}
+                value={controlValue}
+                allowNullInSelect={field.allowNullInSelect}
+                selectNullLabel={field.selectNullLabel}
+                noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
+                passwordLength={field.passwordLength}
+                placeholder={field.placeholder}
+                disabled={controlDisabled || props.isSaving || props.viewOnly}
+                display={field.display}
+                error={validation.find(_ => _.property === field.property) !== undefined}
+                errorText={validation.find(_ => _.property === field.property)?.message}
+                items={field.items}
+                label={field.label}
+                max={field.max}
+                min={field.min}
+                allowDecimals={field.allowDecimals}
+                allowNegative={field.allowNegative}
+                maxDate={field.maxDate}
+                minDate={field.minDate}
+                tooltip={field.tooltip}
+                accept={field.accept}
+                cropImageToSize={field.cropImageToSize}
+                isAvatar={field.isAvatar}
+                maxFileSize={field.maxFileSize}
+                withImagePreview={field.withImagePreview}
+                multiline={field.multiline}
+                lines={field.lines}
+                maxLines={field.maxLines}
+                onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
+                autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
+                autocompleteCreatable={field.autocompleteCreatable}
+                onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
+                helperText={field.helperText}
+                multiple={field.multiple}
+            />
+        }
+    }, [props, validation, entity, handleChange])
+
+    const renderFieldByName = useCallback((name: string) => {
+        const field = fields.find(_ => _.property === name);
+        if (!field) {
+            return null;
+        }
+        return renderField(field);
+    }, [renderField, fields])
+
     return (
         <>
             <Paper
                 elevation={props.hidePaper ? 0 : undefined}
-                sx={props.hidePaper ? undefined : { paddingX: 2, paddingY: 2 }}
+                sx={props.hidePaper ? { backgroundColor: "transparent" } : { paddingX: 2, paddingY: 2 }}
             >
                 {
                     (props.header || props.onDelete) &&
@@ -159,84 +249,11 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                     {
                         props.errorLoading !== null ?
                             <Typography variant="body2">{props.errorLoading}</Typography> :
-                            fields.map((field) => {
-                                if (props.isLoading) {
-                                    return <Skeleton key={"fc-" + field.property} height="32px" />
-                                } else if (field.custom) {
-                                    return <React.Fragment key={"fc-" + field.property}>
-                                        {
-                                            field.custom(
-                                                entity![field.property],
-                                                (value) => handleChange(field.property, value),
-                                                validation.find(_ => _.property === field.property) !== undefined,
-                                                validation.find(_ => _.property === field.property)?.message,
-                                                props.isSaving!,
-                                                props.viewOnly!
-                                            )
-                                        }
-                                    </React.Fragment>;
-                                } /*else if (props.viewOnly) {
-                                    return <Box key={"fc-" + field.property} height="32px" display="flex" gap={2}>
-                                        <Typography variant="body2"><b>{field.label}</b></Typography>
-                                        <Typography variant="body2">{entity![field.property]}</Typography>
-                                    </Box>;
-                                } */else {
-                                    const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
-                                    if (controlHidden) {
-                                        return null;
-                                    }
-
-                                    const contolDefaultValue =
-                                        (["file", "date", "time"]).includes(field.type) ? null :
-                                            field.type !== "select" && field.type !== "autocomplete" ? "" :
-                                                field.multiple ? [] :
-                                                    null;
-
-                                    const controlValue = entity![field.property] ?? contolDefaultValue;
-                                    const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity ?? {}) : field.disabled;
-
-                                    return <ItnControl
-                                        key={"fc-" + field.property}
-                                        type={field.type}
-                                        disableNewPasswordGenerate={field.disableNewPasswordGenerate}
-                                        variant={props.variant!}
-                                        onChange={(value) => handleChange(field.property, value)}
-                                        value={controlValue}
-                                        allowNullInSelect={field.allowNullInSelect}
-                                        selectNullLabel={field.selectNullLabel}
-                                        noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
-                                        passwordLength={field.passwordLength}
-                                        placeholder={field.placeholder}
-                                        disabled={controlDisabled || props.isSaving || props.viewOnly}
-                                        display={field.display}
-                                        error={validation.find(_ => _.property === field.property) !== undefined}
-                                        errorText={validation.find(_ => _.property === field.property)?.message}
-                                        items={field.items}
-                                        label={field.label}
-                                        max={field.max}
-                                        min={field.min}
-                                        allowDecimals={field.allowDecimals}
-                                        allowNegative={field.allowNegative}
-                                        maxDate={field.maxDate}
-                                        minDate={field.minDate}
-                                        tooltip={field.tooltip}
-                                        accept={field.accept}
-                                        cropImageToSize={field.cropImageToSize}
-                                        isAvatar={field.isAvatar}
-                                        maxFileSize={field.maxFileSize}
-                                        withImagePreview={field.withImagePreview}
-                                        multiline={field.multiline}
-                                        lines={field.lines}
-                                        maxLines={field.maxLines}
-                                        onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
-                                        autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
-                                        autocompleteCreatable={field.autocompleteCreatable}
-                                        onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
-                                        helperText={field.helperText}
-                                        multiple={field.multiple}
-                                    />                                
-                                }
-                            })
+                                props.children === undefined ?
+                                    fields.map(renderField) :
+                                    <FormContext.Provider value={{ getField: renderFieldByName }}>
+                                        {props.children}
+                                    </FormContext.Provider>
                     }
                 </Box>
                 {

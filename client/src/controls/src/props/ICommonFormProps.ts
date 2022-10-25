@@ -69,4 +69,8 @@ export default interface ICommonFormProps {
      * Default: null
      * */
     footerContent?: React.ReactNode | null;
+    /*
+     * Children to render, supposed to be used with ItnFormControl
+     */
+    children?: React.ReactNode
 }
