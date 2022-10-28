@@ -48,7 +48,7 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
     }
 
     if (params.useFormData) {
-        const bodyFormData = new FormData();
+        const bodyFormData = objectToFormData(entity);
         for (let key in entity) {
             if (entity[key] === "" || entity[key] === null || entity[key] === undefined) {
                 continue;
@@ -81,13 +81,7 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
     }
 
     if (params.useFormData) {
-        const bodyFormData = new FormData();
-        for (let key in entity) {
-            if (entity[key] === "" || entity[key] === null || entity[key] === undefined) {
-                continue;
-            }
-            bodyFormData.append(key, entity[key]);
-        }
+        const bodyFormData = objectToFormData(entity);
         return await axios({
             method: "put",
             url: url,
@@ -116,3 +110,29 @@ export const deleteEntity = (apiName: string) => async (params: IFormDeleteParam
 export const getDictionary = (apiName: string) => async (): Promise<AxiosResponse<ItnSelectOption[]>> => {
     return await axios.put(`${apiName}`);
 }
+
+function objectToFormData(entity: LooseObject, formData: FormData = new FormData(), namespace: string = '') {
+    const fd = formData || new FormData();
+    let formKey;
+
+    for (const property in entity) {
+        if (entity.hasOwnProperty(property)) {
+            if (namespace) {
+                formKey = namespace + '[' + property + ']';
+            } else {
+                formKey = property;
+            }
+
+            // if the property is an object, but not a File,
+            // use recursivity.   
+            if (typeof entity[property] === 'object' && !(entity[property] instanceof File)) {
+                objectToFormData(entity[property], fd, formKey);
+            } else {
+                // if it's a string or a File object     
+                fd.append(formKey, entity[property]);
+            }
+        }
+    }
+
+    return fd;
+};

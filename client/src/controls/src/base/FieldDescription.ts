@@ -16,7 +16,7 @@ export class FieldDescription implements LooseObject {
     variant: "outlined" | "standard" | "filled" = "outlined";
     tooltip: string | null = null;
     helperText: string | null = null;
-    custom: ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean) => ReactNode) | null = null;
+    custom: ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean, entity: LooseObject) => ReactNode) | null = null;
     items: ItnSelectOption[] = [];
     min: number | null = null;
     max: number | null = null;

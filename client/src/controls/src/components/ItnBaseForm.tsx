@@ -139,7 +139,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                         validation.find(_ => _.property === field.property) !== undefined,
                         validation.find(_ => _.property === field.property)?.message,
                         props.isSaving!,
-                        props.viewOnly!
+                        props.viewOnly!,
+                        entity
                     )
                 }
             </React.Fragment>;
@@ -204,6 +205,10 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
     const renderFieldByName = useCallback((name: string) => {
         const field = fields.find(_ => _.property === name);
         if (!field) {
+            return null;
+        }
+        const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
+        if (controlHidden) {
             return null;
         }
         return renderField(field);
