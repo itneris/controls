@@ -49,12 +49,6 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
 
     if (params.useFormData) {
         const bodyFormData = objectToFormData(entity);
-        for (let key in entity) {
-            if (entity[key] === "" || entity[key] === null || entity[key] === undefined) {
-                continue;
-            }
-            bodyFormData.append(key, entity[key]);
-        }
         return await axios({
             method: "post",
             url: apiName,
