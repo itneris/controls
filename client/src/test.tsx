@@ -50,7 +50,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Имя")
             .WithDefaultValue("Ибраген")
             .WithHelperText("Не надо вводить сюда цифры")
-            .Required();
+            .Required()
+            .WithTooltip("Ничего не значащая подсказка");
 
         this.FieldFor(_ => _.surname)
             .WithLabel("Фамилия")

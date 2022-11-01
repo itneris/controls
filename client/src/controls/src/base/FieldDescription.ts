@@ -30,7 +30,7 @@ export class FieldDescription implements LooseObject {
     noOptionsText: string | null = null;
     display: boolean | (() => boolean) = true;
     validation: ((value: any, entity: LooseObject) => string | null) | null = null;
-    required: boolean = false;
+    required: boolean | ((entity: LooseObject) => boolean) = false;
     accept: string = "*";
     maxFileSize: number = 4096 * 1000;
     withImagePreview: boolean = false;

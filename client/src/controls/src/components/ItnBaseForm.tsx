@@ -140,7 +140,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                         validation.find(_ => _.property === field.property)?.message,
                         props.isSaving!,
                         props.viewOnly!,
-                        entity
+                        entity ?? {}
                     )
                 }
             </React.Fragment>;

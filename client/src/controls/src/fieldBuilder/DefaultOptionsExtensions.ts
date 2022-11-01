@@ -81,8 +81,9 @@ declare module "./FieldOptionsBuilder" {
 		Bool(): FieldOptionsBuilder<T>;
 		/**
 		 * Make the field required, in validation value will be checked on null, empty string and undefined
+		 * @param {boolean | (entity: LooseObject) => boolean} required sets control state or function for calculate control state dependent on current form values
 		 * */
-		Required(): FieldOptionsBuilder<T>;
+		Required(required?: boolean | ((entity: LooseObject) => boolean)): FieldOptionsBuilder<T>;
 		/**
 		 * Add validation to field by value
 		 * @param {(value: any) => string | null} validate Function that get current value as param and return errorMessage or null if value is valid
@@ -113,6 +114,11 @@ declare module "./FieldOptionsBuilder" {
 		 * @param {string} text text to render below control
 		* */
 		WithHelperText(text: string): FieldOptionsBuilder<T>;
+		/**
+		* Sets tooltip for the control
+		 * @param {string} text text to render in tooltip
+		* */
+		WithTooltip(tooltip: string): FieldOptionsBuilder<T>;
 	}
 }
 
@@ -187,9 +193,9 @@ FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(
 		.SetFieldProp("validation", validate) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>() {
+FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>(required: boolean | ((entity: LooseObject) => boolean) = true) {
 	return this
-		.SetFieldProp("required", true) as FieldOptionsBuilder<T>;
+		.SetFieldProp("required", required) as FieldOptionsBuilder<T>;
 
 }
 
@@ -255,6 +261,11 @@ FieldOptionsBuilder.prototype.WithHelperText = function <T extends LooseObject>(
 		.SetFieldProp("helperText", text) as FieldOptionsBuilder<T>;
 }
 
+FieldOptionsBuilder.prototype.WithTooltip = function <T extends LooseObject>(text: string) {
+	return this
+		.SetFieldProp("tooltip", text) as FieldOptionsBuilder<T>;
+}
+
 FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(
 	options: ItnSelectOption[],
 	creatable: boolean = false,
@@ -284,34 +295,3 @@ FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T extends LooseO
 		.SetFieldProp("multiple", multiple)
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
-
-/*
- * 
-	/// <summary>
-	/// Change field control to autocomplete
-	/// </summary>
-	/// <typeparam name="T">Type of object being validated</typeparam>
-	/// <typeparam name="TProperty">Type of property being validated</typeparam>
-	/// <param name="fieldBuilder">The column builder on which the rule should be defined</param>
-	/// <returns></returns>
-	public static IFieldBuilder<T, TProperty> Autocomplete<T, TProperty>(this IFieldBuilder<T, TProperty> fieldBuilder, Func<string, Task<IEnumerable<T>>> searchFunction)
-	{
-		return fieldBuilder
-			.SetFieldProp("IsAutocomplete", true)
-			.SetFieldProp("AutocompleteFunction", searchFunction);
-	}
-
-	/// <summary>
-	/// Sets the tooltip for control in quesion mark adornment
-	/// </summary>
-	/// <typeparam name="T">Type of object being validated</typeparam>
-	/// <typeparam name="TProperty">Type of property being validated</typeparam>
-	/// <param name="fieldBuilder">The column builder on which the rule should be defined</param>
-	/// <returns></returns>
-	public static IFieldBuilder<T, TProperty> WithHelpTooltip<T, TProperty>(this IFieldBuilder<T, TProperty> fieldBuilder, string tooltip, Placement placement = Placement.Bottom)
-	{
-		return fieldBuilder
-			.SetFieldProp("HelpTooltip", tooltip)
-			.SetFieldProp("TooltipPlacement", placement);
-    }
- */

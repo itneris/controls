@@ -23,6 +23,7 @@ import {
     AttachFile,
     CloudUpload,
     Delete,
+    HelpOutline,
     Loop,
     Refresh,
     Visibility,
@@ -503,8 +504,24 @@ function ItnControl(props: IControlProps) {
     }
 
     return (
-        <Box display="flex" alignItems="center" minHeight="32px">
+        <Box display="flex" alignItems="flex-start" minHeight="32px" gap={2}>
             {control}
+            {
+                props.tooltip !== null &&
+                    <Tooltip
+                        title={props.tooltip}
+                    >
+                        <HelpOutline
+                            sx={theme => ({
+                                cursor: "pointer",
+                                mt: 1,
+                                ":hover": {
+                                    color: theme.palette.secondary.main
+                                }
+                            })}
+                        />
+                    </Tooltip>
+            }
         </Box>
     );
 }
