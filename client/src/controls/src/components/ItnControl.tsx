@@ -59,6 +59,7 @@ const filter = createFilterOptions<ItnSelectOption>();
 function ItnControl(props: IControlProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const tmpId = useRef<number>(1);
 
     const handlePasswordGenerate = useCallback(() => {
         props.onChange && props.onChange(generatePassword(props.passwordLength!));
@@ -174,9 +175,18 @@ function ItnControl(props: IControlProps) {
                     loadingText={props.autocompleteLoadingText}
                     loading={props.autocompleteLoading}
                     onChange={(event, newValue) => {
-                        if (newValue.inputValue) {
+                        if (!props.multiple && newValue.inputValue) {
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
                             props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
+                        } else if (props.multiple && newValue.find((val: any) => !!val.inputValue)) {
+                            const newVal = newValue.find((val: any) => !!val.inputValue);
+                            props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newVal.inputValue);
+                            props.onChange && props.onChange(
+                                [
+                                    ...newValue.filter((val: any) => val.id !== "new"),
+                                    new ItnSelectOption(`new-${tmpId.current++}`, newVal.inputValue)
+                                ]
+                            );                                
                         } else {
                             props.onChange && props.onChange(newValue);
                         }

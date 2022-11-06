@@ -1,3 +1,5 @@
+import { LooseObject } from "../base/LooseObject";
+
 export default interface IControlProps {
     /**
      * Type of rendered control
@@ -203,6 +205,7 @@ export class ItnSelectOption {
     label: string;
     blocked?: boolean;
     inputValue?: string;
+    otherAttributes?: LooseObject = {};
 
     constructor(id: string, label: string, blocked: boolean = false) {
         this.id = id;
