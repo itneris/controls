@@ -112,7 +112,12 @@ function objectToFormData(entity: LooseObject, formData: FormData = new FormData
     for (const property in entity) {
         if (entity.hasOwnProperty(property)) {
             if (namespace) {
-                formKey = namespace + '[' + property + ']';
+              if (Array.isArray(entity)) {
+                formKey = `${namespace}[${property}]`;
+              }
+              else {
+                formKey = `${namespace}.${property}`;
+              }
             } else {
                 formKey = property;
             }
