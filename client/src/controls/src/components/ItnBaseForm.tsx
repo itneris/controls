@@ -210,7 +210,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         }
         const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
         if (controlHidden) {
-            return null;
+            return <></>;
         }
         return renderField(field);
     }, [renderField, fields])
