@@ -192,7 +192,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 multiline={field.multiline}
                 lines={field.lines}
                 maxLines={field.maxLines}
-                autocompleteInputValue={props.autoCompleteInputValues![field.property]}
+                autocompleteInputValue={props.autoCompleteInputValues ? props.autoCompleteInputValues[field.property] : undefined}
                 onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
                 autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
                 autocompleteCreatable={field.autocompleteCreatable}
@@ -321,8 +321,7 @@ ItnBaseForm.defaultProps = {
     headerContent: null,
     footerContent: null,
     onAutocompleteInputChange: () => { },
-    controlsLoading: {},
-    autoCompleteInputValues: {}
+    controlsLoading: {}
 }
 
 export default ItnBaseForm;

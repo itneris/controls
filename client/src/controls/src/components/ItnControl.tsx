@@ -161,7 +161,7 @@ function ItnControl(props: IControlProps) {
                 );
             case 'autocomplete':
                 return <Autocomplete
-                    inputValue={props.onAutocompleteInputChange ? (props.autocompleteInputValue ?? "") : undefined}
+                    inputValue={props.autocompleteInputValue ? (props.autocompleteInputValue ?? "") : undefined}
                     onInputChange={(event, value, reason) => props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason)}
                     getOptionLabel={option => option.label}
                     isOptionEqualToValue={(option, value) => {
