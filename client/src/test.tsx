@@ -63,7 +63,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             });
 
         this.FieldFor(_ => _.calcValue)
-            .WithLabel("Калькулируемое поле");
+            .WithLabel("Калькулируемое поле")
+            .Hide((_) => _.surname === 'dr. Hide');
 
         this.FieldFor(_ => _.password)
             .WithLabel("Пароль")
@@ -245,6 +246,7 @@ const TestComnonent = () => {
                         <PageTitle>Первый блок</PageTitle>
                         <ItnFormControl field="name" />
                         <ItnFormControl field="surname" />
+                        <ItnFormControl field="calcValue" />
                     </Paper>
                     <Paper>
                         <PageTitle>Второй блок</PageTitle>
