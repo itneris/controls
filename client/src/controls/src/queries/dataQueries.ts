@@ -51,7 +51,7 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
         const bodyFormData = objectToFormData(entity);
         return await axios({
             method: "post",
-            url: apiName,
+            url: url,
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" }
         });
