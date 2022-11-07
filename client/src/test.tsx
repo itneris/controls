@@ -85,6 +85,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.visitDate)
             .WithLabel("Дата записи")
             .DatePicker()
+            .Disable()
             .Required();
 
         this.FieldFor(_ => _.visitTime)
@@ -118,7 +119,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.roleValueArray)
             .WithLabel("Роли (autocomplete multiple)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true, null, true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true, null, true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")

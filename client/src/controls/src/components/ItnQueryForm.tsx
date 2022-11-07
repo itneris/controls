@@ -107,6 +107,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
     const [autocompleteValues, setAutocompleteValues] = useState<LooseObject>({});
+    const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
 
     const formWithFiles = useMemo(() => {
         return fieldBuilder.Build().some(_ => _.type === "file");
@@ -152,7 +153,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         queries: fieldBuilder.Build()
             .filter(_ => _.selectApiUrl !== null && _.type === "autocomplete")
             .map(_ => ({
-                queryKey: [_.selectApiUrl, !_.searchAsType ? null : (autocompleteValues[_.property] ?? "")],
+                queryKey: [_.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValues[_.property] ?? "")],
                 queryFn: getAutocompleteDict,
                 onSuccess: (response: AxiosResponse) => {
                     const options = response.data.length === 0 ?
@@ -230,16 +231,24 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     }, [deleteQuery, props.urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAutoCompleteInputChange = useCallback((prop: string, value: string, event: "input" | "clear" | "reset") => {
-        if (event === "input" || event === "reset") {
+        if (event === "input" || event === "clear") {
             if (autoCompleteTimeouts.current[prop] !== undefined) {
                 clearTimeout(autoCompleteTimeouts.current[prop]);
             }
-            autoCompleteTimeouts.current[prop] = setTimeout(() => setAutocompleteValues({
-                ...autocompleteValues,
+
+            setAutocompleteValues((oldValues) => ({
+                ...oldValues,
                 [prop]: value
-            }), 300);
+            }))
+
+            autoCompleteTimeouts.current[prop] = setTimeout(() => {
+                setAutocompleteSearchValues((oldValues) => ({
+                    ...oldValues,
+                    [prop]: value
+                }))
+            }, 300);
         }
-    }, [setAutocompleteValues, autocompleteValues]);
+    }, [setAutocompleteValues, setAutocompleteSearchValues]);
 
     return (
         <ItnBaseForm
@@ -264,6 +273,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             headerContent={props.headerContent}
             footerContent={props.footerContent}
             controlsLoading={controlsLoading}
+            autoCompleteInputValues={autocompleteValues}
             onAutocompleteInputChange={handleAutoCompleteInputChange}
         >
             {props.children}

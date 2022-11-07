@@ -161,6 +161,7 @@ function ItnControl(props: IControlProps) {
                 );
             case 'autocomplete':
                 return <Autocomplete
+                    inputValue={props.onAutocompleteInputChange ? (props.autocompleteInputValue ?? "") : undefined}
                     onInputChange={(event, value, reason) => props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason)}
                     getOptionLabel={option => option.label}
                     isOptionEqualToValue={(option, value) => {
@@ -181,6 +182,7 @@ function ItnControl(props: IControlProps) {
                         } else if (props.multiple && newValue.find((val: any) => !!val.inputValue)) {
                             const newVal = newValue.find((val: any) => !!val.inputValue);
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newVal.inputValue);
+                            props.onAutocompleteInputChange && props.onAutocompleteInputChange("", "input");
                             props.onChange && props.onChange(
                                 [
                                     ...newValue.filter((val: any) => val.id !== "new"),
@@ -198,7 +200,7 @@ function ItnControl(props: IControlProps) {
                     filterOptions={(options, params) => {
                         let filtered: ItnSelectOption[];
                         if (props.onAutocompleteInputChange !== null) {
-                            filtered = options;
+                            filtered = filter(options, params);
                         } else {
                             filtered = filter(options, params);
                         }
@@ -211,12 +213,12 @@ function ItnControl(props: IControlProps) {
                         const isExisting = options.some((option) => inputValue === option.title);
 
                         if (inputValue !== '' && !isExisting) {
-                            filtered.push({
+                            filtered = [{
                                 id: "new",
                                 label: `Добавить "${inputValue}"`,
                                 inputValue,
                                 blocked: false
-                            });
+                            }, ...filtered];
                         }
 
                         return filtered;
@@ -260,7 +262,8 @@ function ItnControl(props: IControlProps) {
                             if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
                                 props.onChange(val?.toISOString())
                             }
-                        }}  
+                        }}
+                        disabled={props.disabled}
                         renderInput={(params) =>
                             <TextField
                                 {...params}
@@ -269,7 +272,6 @@ function ItnControl(props: IControlProps) {
                                     placeholder: "дд.мм.гггг"
                                 }}
                                 size="small"
-                                disabled={props.disabled}
                                 fullWidth
                                 error={props.error}
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
@@ -286,7 +288,8 @@ function ItnControl(props: IControlProps) {
                             if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
                                 props.onChange(val?.toISOString())
                             }
-                        }}  
+                        }}
+                        disabled={props.disabled}
                         renderInput={(params) =>
                             <TextField
                                 {...params}
@@ -295,7 +298,6 @@ function ItnControl(props: IControlProps) {
                                     placeholder: "ЧЧ:ММ"
                                 }}
                                 size="small"
-                                disabled={props.disabled}
                                 fullWidth
                                 error={props.error}
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
@@ -312,7 +314,8 @@ function ItnControl(props: IControlProps) {
                             if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
                                 props.onChange(val?.toISOString())
                             }
-                        }}  
+                        }}
+                        disabled={props.disabled}
                         renderInput={(params) =>
                             <TextField
                                 {...params}
@@ -321,7 +324,6 @@ function ItnControl(props: IControlProps) {
                                     placeholder: "дд.мм.гггг ЧЧ:ММ"
                                 }}
                                 size="small"
-                                disabled={props.disabled}
                                 fullWidth
                                 error={props.error}
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}

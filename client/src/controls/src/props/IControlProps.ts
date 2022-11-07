@@ -67,6 +67,11 @@ export default interface IControlProps {
      * */
     onChange?: ((value: any) => void) | null;
     /**
+     * Autocomplete input value
+     * Default: null
+     * */
+    autocompleteInputValue?: string;
+    /**
      * Callback when autocomplete input changed
      * Function params: 
      *      value: string, current input value
