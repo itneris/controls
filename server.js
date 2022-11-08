@@ -110,6 +110,10 @@ app.get('/api/dicts/roles_auto', (req, res) => {
     res.send([...rolesValues]);
 });
 
+app.get('/api/dicts/roles_auto_create', (req, res) => {
+    res.send([...rolesValues]);
+});
+
 app.post('/api/test', async (req, res) => {
     res.status(422);
     res.send({

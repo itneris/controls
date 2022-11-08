@@ -38,11 +38,6 @@ export default interface IBaseFormProps extends ICommonFormProps {
      * */
     viewOnly?: boolean;
     /**
-     * Autocomplete current [prop]: values object
-     * Default: {}
-     * */
-    autoCompleteInputValues?: LooseObject;
-    /**
      * Callback when form autocomplete input changes
      * Default: () => {}
      * */

@@ -106,7 +106,6 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
-    const [autocompleteValues, setAutocompleteValues] = useState<LooseObject>({});
     const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
 
     const formWithFiles = useMemo(() => {
@@ -236,11 +235,6 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 clearTimeout(autoCompleteTimeouts.current[prop]);
             }
 
-            setAutocompleteValues((oldValues) => ({
-                ...oldValues,
-                [prop]: value
-            }))
-
             autoCompleteTimeouts.current[prop] = setTimeout(() => {
                 setAutocompleteSearchValues((oldValues) => ({
                     ...oldValues,
@@ -248,7 +242,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 }))
             }, 300);
         }
-    }, [setAutocompleteValues, setAutocompleteSearchValues]);
+    }, [setAutocompleteSearchValues]);
 
     return (
         <ItnBaseForm
@@ -273,7 +267,6 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             headerContent={props.headerContent}
             footerContent={props.footerContent}
             controlsLoading={controlsLoading}
-            autoCompleteInputValues={autocompleteValues}
             onAutocompleteInputChange={handleAutoCompleteInputChange}
         >
             {props.children}

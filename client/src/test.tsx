@@ -112,7 +112,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.roleValueWithSearch)
             .WithLabel("Роль (autocomplete with search)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true);
 
         this.FieldFor(_ => _.roleValue)
             .WithLabel("Роль (autocomplete)")
@@ -120,7 +120,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.roleValueArray)
             .WithLabel("Роли (autocomplete multiple)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true, null, true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")

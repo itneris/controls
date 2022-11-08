@@ -17,7 +17,8 @@ import {
     Button,
     Avatar,
     CircularProgress,
-    createFilterOptions
+    createFilterOptions,
+    AutocompleteInputChangeReason
 } from "@mui/material";
 import {
     AttachFile,
@@ -60,6 +61,8 @@ function ItnControl(props: IControlProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const tmpId = useRef<number>(1);
+
+    const [acInputValue, setAcInputValue] = useState<string>("");
 
     const handlePasswordGenerate = useCallback(() => {
         props.onChange && props.onChange(generatePassword(props.passwordLength!));
@@ -127,6 +130,14 @@ function ItnControl(props: IControlProps) {
         e.preventDefault();
     }, [props.onEnter, props.allowDecimals, props.allowNegative]);
 
+    const handleAutoCompleteInputChange = useCallback((event: React.SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
+        props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason);
+        if (props.onAutocompleteInputChange && reason === "reset") {
+            return;
+        }
+        setAcInputValue(value);
+    }, [setAcInputValue, props.onAutocompleteInputChange]);
+
     const control = useMemo(() => {
         switch (props.type) {
             case 'select':
@@ -161,8 +172,8 @@ function ItnControl(props: IControlProps) {
                 );
             case 'autocomplete':
                 return <Autocomplete
-                    inputValue={props.autocompleteInputValue ? (props.autocompleteInputValue ?? "") : undefined}
-                    onInputChange={(event, value, reason) => props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason)}
+                    inputValue={acInputValue}
+                    onInputChange={handleAutoCompleteInputChange}
                     getOptionLabel={option => option.label}
                     isOptionEqualToValue={(option, value) => {
                         return option.id === value.id;
@@ -176,7 +187,7 @@ function ItnControl(props: IControlProps) {
                     loadingText={props.autocompleteLoadingText}
                     loading={props.autocompleteLoading}
                     onChange={(event, newValue) => {
-                        if (!props.multiple && newValue.inputValue) {
+                        if (!props.multiple && newValue !== null && newValue.inputValue) {
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
                             props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
                         } else if (props.multiple && newValue.find((val: any) => !!val.inputValue)) {
@@ -191,6 +202,12 @@ function ItnControl(props: IControlProps) {
                             );                                
                         } else {
                             props.onChange && props.onChange(newValue);
+                        }
+
+                        if (props.multiple) {
+                            setAcInputValue("");
+                        } else {
+                            setAcInputValue(newValue.inputValue ?? newValue.label);
                         }
                     }}
                     renderOption={(props, option) => (
@@ -504,7 +521,9 @@ function ItnControl(props: IControlProps) {
         handleDeleteFile,
         handleNumberKeyPress,
         preview,
-        checkEnter
+        checkEnter,
+        acInputValue,
+        handleAutoCompleteInputChange
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {
