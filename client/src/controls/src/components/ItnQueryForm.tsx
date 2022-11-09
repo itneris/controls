@@ -101,12 +101,16 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
     let fieldBuilder = props.fieldBuilder;
 
-    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? null);
+    const [entity, setEntity] = useState<LooseObject | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
     const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
+
+    useEffect(() => {
+        setEntity(props.entity);
+    }, [props.entity])
 
     const formWithFiles = useMemo(() => {
         return fieldBuilder.Build().some(_ => _.type === "file");
