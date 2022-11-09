@@ -1,6 +1,6 @@
 {
   "name": "@itneris/controls",
-  "version": "2.3.12",
+  "version": "2.3.14",
   "description": "Custom ItNeris organization web-form and controls based on MaterialUI",
   "dependencies": {
     "@itneris/pickers": "^1.0.6",

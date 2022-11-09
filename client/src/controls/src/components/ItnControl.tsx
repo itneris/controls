@@ -138,6 +138,12 @@ function ItnControl(props: IControlProps) {
         setAcInputValue(value);
     }, [setAcInputValue, props.onAutocompleteInputChange]);
 
+    useEffect(() => {
+        if (props.type === "autocomplete" && !props.multiple) {
+            setAcInputValue(props.value?.label ?? "");
+        }
+    }, [props.value, props.type, props.multiple, setAcInputValue]);
+
     const control = useMemo(() => {
         switch (props.type) {
             case 'select':

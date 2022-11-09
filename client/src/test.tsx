@@ -219,6 +219,25 @@ const TestComnonent = () => {
                     blocked: true,
                     middlename: "middlename",
                     password: "password",
+                    roleValue:
+                    {
+                        id: "1",
+                        label: "Оператор ЭВМ",
+                    },
+                    roleValueArray: [
+                        {
+                            id: "1",
+                            label: "Оператор ЭВМ",
+                        },
+                        {
+                            id: "2",
+                            label: "Оператор установки",
+                        }],
+                    roleValueWithSearch:
+                    {
+                        id: "1",
+                        label: "Оператор ЭВМ",
+                    }
                 } as IUserDTO}
                 onSave={(en) => console.log("qwe")}
                 fieldBuilder={fieldBuilder}
