@@ -106,7 +106,7 @@ function ItnControl(props: IControlProps) {
         if (e.key === "Enter") {
             props.onEnter && props.onEnter();
         }
-    }, [props.onEnter]);
+    }, [props.onEnter]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleNumberKeyPress = useCallback((e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
@@ -128,7 +128,7 @@ function ItnControl(props: IControlProps) {
         }
 
         e.preventDefault();
-    }, [props.onEnter, props.allowDecimals, props.allowNegative]);
+    }, [props.onEnter, props.allowDecimals, props.allowNegative]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAutoCompleteInputChange = useCallback((event: React.SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
         props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason);
@@ -136,7 +136,7 @@ function ItnControl(props: IControlProps) {
             return;
         }
         setAcInputValue(value);
-    }, [setAcInputValue, props.onAutocompleteInputChange]);
+    }, [setAcInputValue, props.onAutocompleteInputChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (props.type === "autocomplete" && !props.multiple) {

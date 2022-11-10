@@ -109,7 +109,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
 
     useEffect(() => {
-        setEntity(props.entity);
+        setEntity(props.entity || null);
     }, [props.entity])
 
     const formWithFiles = useMemo(() => {
@@ -185,7 +185,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         if (Object.keys(controlsLoading).length === 0) {
             setControlsLoading(fieldBuilder.Build().filter(f => f.type === "autocomplete").map(f => ({ [f.property]: true })));
         }
-    }, [fieldBuilder]);
+    }, [fieldBuilder]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const createQuery = useMutation(createEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
