@@ -26,9 +26,9 @@ export const getAutocompleteDict = async (context: QueryFunctionContext): Promis
     let url = context.queryKey[0] as string;
     if (context.queryKey[1] !== null) {
         if (url.includes("?")) {
-            url += `&search=${context.queryKey[1]}`
+            url += `&search=${encodeURIComponent(context.queryKey[1] as string)}`
         } else {
-            url += `?search=${context.queryKey[1]}`
+            url += `?search=${encodeURIComponent(context.queryKey[1] as string)}`
         }
     }
 
