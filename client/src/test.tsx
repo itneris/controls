@@ -17,6 +17,7 @@ interface IUserDTO {
     visitTime: string;
     visitDateTime: string;
     role: string;
+    role_select_multiple: string;
     role_api: string;
     roleValue: {
         id: string,
@@ -44,7 +45,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
-            .File({ withImagePreview: true });
+            .File({ withImagePreview: true, isAvatar: true })
+            //.Required();
 
         this.FieldFor(_ => _.name)
             .WithLabel("Имя")
@@ -109,6 +111,14 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("2", "Пользователь"),
                 new ItnSelectOption("3", "Дата-менеджер"),
             ]);
+
+        this.FieldFor(_ => _.role_select_multiple)
+            .WithLabel("Роль (multiselect)")
+            .Select([
+                new ItnSelectOption("1", "Админ"),
+                new ItnSelectOption("2", "Пользователь"),
+                new ItnSelectOption("3", "Дата-менеджер"),
+            ], true);
 
         this.FieldFor(_ => _.roleValueWithSearch)
             .WithLabel("Роль (autocomplete with search)")

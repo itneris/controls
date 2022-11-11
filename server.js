@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors')
+const formidable = require('express-formidable');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -9,7 +10,8 @@ const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors())
+app.use(cors());
+app.use(formidable());
 
 const rolesValues = [
     {
@@ -60,7 +62,7 @@ app.get('/api/test/1', (req, res) => {
         role: "1",
         role_api: "2",
         blocked: true,
-        password: "qwerty",
+        password: "Qwerty123!",
         visitDate: date.toISOString(),
         visitTime: date.toISOString(),
         visitDateTime: date.toISOString(),
@@ -127,15 +129,15 @@ app.post('/api/test', async (req, res) => {
 });
 
 app.put('/api/test/:id', async (req, res) => {
-    res.status(422);
+    /*res.status(422);
     res.send({
         detail: "Next error(s) occured:* Нарушение уникального ключа IX_IterServices_Code\r\n",
         status: 422,
         title: "Something went wrong."
     });
     return;
-    await snooze(1000);
-    res.send({ result: "ok" });
+    await snooze(1000);*/
+    res.send({ result: "ok", data: req.fields.visitDateTime, field: "qwe" });
 });
 
 app.delete('/api/test', (req, res) => {

@@ -158,7 +158,7 @@ function ItnControl(props: IControlProps) {
                             size="small"
                             error={props.error}
                             disabled={props.disabled}
-                            value={props.value ?? ""}
+                            value={props.value ?? (props.multiple ? [] : "")}
                             onChange={event => props.onChange && props.onChange(event.target.value)}
                             multiple={props.multiple}
                         >
@@ -168,7 +168,7 @@ function ItnControl(props: IControlProps) {
                             {
                                 props.items!.map((item) => {
                                     return <MenuItem key={"opt-" + item.id} value={item.id}>
-                                        <Typography variant='body2'>{item.label}</Typography>
+                                        {item.label}
                                     </MenuItem>
                                 })
                             }
@@ -363,7 +363,8 @@ function ItnControl(props: IControlProps) {
                         <TextField
                             variant={props.variant}
                             fullWidth
-                            value={props.value}
+                            onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
+                            //value={props.value}
                             placeholder={props.placeholder ?? ""}
                             label={props.label}
                             size="small"
@@ -382,7 +383,7 @@ function ItnControl(props: IControlProps) {
                             }}
                             disabled={props.disabled}
                             onKeyPress={checkEnter}
-                            onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
+                            //onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />
                     </FormControl>
                     {
@@ -411,9 +412,10 @@ function ItnControl(props: IControlProps) {
                     disabled={props.disabled}
                     fullWidth
                     placeholder={props.placeholder ?? ""}
-                    value={props.value}
+                    onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
+                    //value={props.value}
                     label={props.label}
-                    onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
+                    //onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                     error={props.error}
                     size="small"
                     helperText={props.error ? props.errorText : (props.helperText ?? "")}
@@ -423,6 +425,7 @@ function ItnControl(props: IControlProps) {
                 />;
             case 'number':
                 return <TextField
+                    onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
                     label={props.label}
                     onKeyPress={handleNumberKeyPress}
                     fullWidth
@@ -431,14 +434,14 @@ function ItnControl(props: IControlProps) {
                     placeholder={props.placeholder ?? ""}
                     error={props.error}
                     helperText={props.error ? props.errorText : (props.helperText ?? "")}
-                    value={props.value}
+                    //value={props.value}
                     disabled={props.disabled}
-                    onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
+                    //onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
                     size="small"
                 />;
             case 'file':
                 return (<FormControl>
-                    <input ref={fileInputRef} type="file" hidden onChange={uploadFile} accept={props.accept} />
+                    <input disabled={props.disabled} ref={fileInputRef} type="file" hidden onChange={uploadFile} accept={props.accept} />
                     {
                         props.value === null ?
                             <>
@@ -457,10 +460,11 @@ function ItnControl(props: IControlProps) {
                                             backgroundColor: theme.palette.primary.main
                                         })}
                                     >
-                                        <Typography variant="h4">А</Typography>
+                                        <Typography color={theme => theme.palette.primary.contrastText} variant="h4">А</Typography>
                                     </Box>
                                 }
                                 <Button
+                                    disabled={props.disabled}
                                     variant="contained"
                                     color="secondary"
                                     startIcon={<CloudUpload />}
@@ -475,12 +479,12 @@ function ItnControl(props: IControlProps) {
                                     <AttachFile />
                                     <Typography style={{ flex: 1 }}>{(props.value as File).name}</Typography>
                                     <Tooltip placement="right-start" title="Заменить">
-                                        <IconButton color="secondary" onClick={handleUploadClick}>
+                                        <IconButton color="secondary" onClick={handleUploadClick} disabled={props.disabled}>
                                             <Refresh />
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip placement="right-start" title="Удалить">
-                                        <IconButton color="error" onClick={handleDeleteFile}>
+                                        <IconButton color="error" onClick={handleDeleteFile} disabled={props.disabled}>
                                             <Delete />
                                         </IconButton>
                                     </Tooltip>
@@ -502,12 +506,12 @@ function ItnControl(props: IControlProps) {
                                     }
                                     <Box display="flex" flexDirection="column" ml={2} justifyContent="space-between">
                                         <Tooltip placement="right-start" title="Заменить">
-                                            <IconButton color="secondary" onClick={handleUploadClick}>
+                                            <IconButton color="secondary" onClick={handleUploadClick} disabled={props.disabled}>
                                                 <Refresh />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip placement="right-start" title="Удалить">
-                                            <IconButton color="error" onClick={handleDeleteFile}>
+                                            <IconButton color="error" onClick={handleDeleteFile} disabled={props.disabled}>
                                                 <Delete />
                                             </IconButton>
                                         </Tooltip>

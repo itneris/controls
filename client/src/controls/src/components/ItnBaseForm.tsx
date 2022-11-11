@@ -68,7 +68,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 (typeof val === "string" && val === "") ||
                 (Array.isArray(val) && val.length === 0);
 
-            if (field.required && valIsNull) {
+            const fieldRequired = typeof field.required === "function" ? field.required(entity ?? {}) : field.required;
+            if (fieldRequired && valIsNull) {
                 newValidation.push(new Validation(field.property, `Поле обязательно для заполнения`));
             }
 
@@ -212,7 +213,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             return <></>;
         }
         return renderField(field);
-    }, [renderField, fields])
+    }, [renderField, fields, entity])
 
     return (
         <>
