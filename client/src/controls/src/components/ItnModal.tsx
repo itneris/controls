@@ -95,7 +95,7 @@ ItnModal.defaultProps = {
     title: null,
     contentText: null,
     onResult: null,
-    okButtonDisabled: false,
+    yesButtonDisabled: false,
     size: "md",
     yesBtnText: null,
     noBtnText: null,
