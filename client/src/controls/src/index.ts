@@ -5,6 +5,7 @@ import EditDrawer from "./components/EditDrawer";
 import ItnForm from "./components/ItnBaseForm";
 import ItnFormControl from "./components/ItnFormControl";
 import ItnQueryForm from "./components/ItnQueryForm";
+import { objectToFormData } from "./queries/dataQueries";
 import { DrawerBtnProp, DrawerTabProp } from "./props/IDrawerProps";
 import { ItnSelectOption } from "./props/IControlProps";
 import AbstractFieldBuilder from "./fieldBuilder/AbstractFieldBuilder";
@@ -21,5 +22,6 @@ export {
     AbstractFieldBuilder,
     ItnSelectOption,
     ItnControl,
-    ItnFormControl
+    ItnFormControl,
+    objectToFormData
 };

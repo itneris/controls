@@ -76,9 +76,10 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                         {
                             props.yesBtnText !== null &&
                             <Button
-                                    variant="text"
+                                variant="text"
                                 onClick={() => handleResult(true)}
                                 color="secondary"
+                                disabled={props.yesButtonDisabled}
                             >
                                 {props.yesBtnText}
                             </Button>

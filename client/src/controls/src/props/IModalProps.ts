@@ -32,7 +32,7 @@ export default interface IModalProps {
      * Disable ok button
      * Default: false
      * */
-    okButtonDisabled?: boolean;
+    yesButtonDisabled?: boolean;
     /**
      * Size of modal based on MaterialUI breakpoints
      * Default: "md"

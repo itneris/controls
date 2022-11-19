@@ -59,6 +59,7 @@ const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const textInputRef = useRef<HTMLInputElement | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const tmpId = useRef<number>(1);
 
@@ -85,6 +86,13 @@ function ItnControl(props: IControlProps) {
 
         return () => URL.revokeObjectURL(objectUrl);
     }, [props.value, props.withImagePreview, setPreview, props.type]);
+
+    /*useEffect(() => {
+        if (textInputRef.current === null) {
+            return;
+        }
+        textInputRef.current.value = props.value;
+    }, [props.value]);*/
 
     const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         //e.preventDefault();
@@ -149,7 +157,7 @@ function ItnControl(props: IControlProps) {
             case 'select':
                 return (
                     <FormControl size="small" fullWidth>
-                        <InputLabel id="sel">{props.label}</InputLabel>
+                        <InputLabel error={props.error} id="sel">{props.label}</InputLabel>
                         <Select
                             labelId="sel"
                             variant={props.variant}
@@ -173,7 +181,7 @@ function ItnControl(props: IControlProps) {
                                 })
                             }
                         </Select>
-                        <FormHelperText>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
+                        <FormHelperText error={props.error}>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
                     </FormControl>
                 );
             case 'autocomplete':
@@ -213,7 +221,7 @@ function ItnControl(props: IControlProps) {
                         if (props.multiple) {
                             setAcInputValue("");
                         } else {
-                            setAcInputValue(newValue.inputValue ?? newValue.label);
+                            setAcInputValue(newValue?.inputValue ?? newValue?.label ?? "");
                         }
                     }}
                     renderOption={(props, option) => (
@@ -361,10 +369,12 @@ function ItnControl(props: IControlProps) {
                         error={props.error}
                     >
                         <TextField
+                            ref={textInputRef}
                             variant={props.variant}
                             fullWidth
-                            onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
-                            //value={props.value}
+                            //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
+                            value={props.value}
+                            onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                             placeholder={props.placeholder ?? ""}
                             label={props.label}
                             size="small"
@@ -383,7 +393,6 @@ function ItnControl(props: IControlProps) {
                             }}
                             disabled={props.disabled}
                             onKeyPress={checkEnter}
-                            //onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                         />
                     </FormControl>
                     {
@@ -407,15 +416,16 @@ function ItnControl(props: IControlProps) {
                 />;*/
             case 'string':
                 return <TextField
+                    ref={textInputRef}
                     onKeyPress={checkEnter}
                     variant={props.variant}
                     disabled={props.disabled}
                     fullWidth
                     placeholder={props.placeholder ?? ""}
-                    onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
-                    //value={props.value}
+                    //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
+                    value={props.value}
+                    onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                     label={props.label}
-                    //onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
                     error={props.error}
                     size="small"
                     helperText={props.error ? props.errorText : (props.helperText ?? "")}
@@ -425,7 +435,10 @@ function ItnControl(props: IControlProps) {
                 />;
             case 'number':
                 return <TextField
-                    onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
+                    ref={textInputRef}
+                    value={props.value}
+                    onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
+                    //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
                     label={props.label}
                     onKeyPress={handleNumberKeyPress}
                     fullWidth
@@ -434,9 +447,7 @@ function ItnControl(props: IControlProps) {
                     placeholder={props.placeholder ?? ""}
                     error={props.error}
                     helperText={props.error ? props.errorText : (props.helperText ?? "")}
-                    //value={props.value}
                     disabled={props.disabled}
-                    //onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
                     size="small"
                 />;
             case 'file':

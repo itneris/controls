@@ -8,20 +8,8 @@ import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
 import { IQueryFormRef } from "../base/IQueryFormRef";
 import { LooseTimeoutObject } from "../base/LooseTimeoutObject";
+import { dataURLtoFile } from "../base/Helpers";
 
-const dataURLtoFile = (src: string, name: string) => {
-    const arr = src.split(',');
-    const mime = arr[0]!.match(/:(.*?);/)![1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    let u8arr = new Uint8Array(n);
-
-    while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new File([u8arr], name, { type: mime });
-}
 
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -146,6 +134,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             .map(_ => ({
                 queryKey: [_.selectApiUrl],
                 queryFn: getDict,
+                enabled: typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden,
                 onSuccess: (response: AxiosResponse) => {
                     fieldBuilder = fieldBuilder.SetSelectOptions(_.property, response.data);
                 }
@@ -156,8 +145,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         queries: fieldBuilder.Build()
             .filter(_ => _.selectApiUrl !== null && _.type === "autocomplete")
             .map(_ => ({
-                queryKey: [_.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValues[_.property] ?? "")],
+                queryKey: [_.property, _.selectApiUrl,!_.searchAsType ? null : (autocompleteSearchValues[_.property] ?? "")],
                 queryFn: getAutocompleteDict,
+                enabled: typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden,
                 onSuccess: (response: AxiosResponse) => {
                     const options = response.data.length === 0 ?
                         [] :

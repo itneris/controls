@@ -7,6 +7,7 @@ import { LooseObject } from "../base/LooseObject";
 import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
 import { FieldDescription } from "../base/FieldDescription";
+import { dataURLtoFile } from "../base/Helpers";
 
 export interface IFormContext {
     getField: (field: string) => React.ReactNode | null;
@@ -26,7 +27,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         return initEntity;
     }, [fields]);
 
-    const [entity, setEntity] = useState<LooseObject | null>(props.entity ?? getDefaultValues());
+    const [entity, setEntity] = useState<LooseObject | null>({});
     const [validation, setValidation] = useState<Validation[]>([]);
 
     useImperativeHandle(ref, () => ({
@@ -45,7 +46,15 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         }
     }));
 
-    useEffect(() => setEntity(props.entity ?? getDefaultValues()), [props.entity]); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        let newEntity = props.entity === null ? getDefaultValues() : { ...props.entity };
+        for (let key in newEntity) {
+            if (newEntity[key] !== null && newEntity[key] !== undefined && newEntity[key].name && newEntity[key].data) {
+                newEntity[key] = dataURLtoFile(newEntity[key].data, newEntity[key].name);
+            }
+        }
+        setEntity(newEntity);
+    }, [props.entity]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const handleChange = useCallback((field: string, value: any) => {

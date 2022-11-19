@@ -23,12 +23,12 @@ export const getDict = async (context: QueryFunctionContext): Promise<AxiosRespo
 }
 
 export const getAutocompleteDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
-    let url = context.queryKey[0] as string;
-    if (context.queryKey[1] !== null) {
+    let url = context.queryKey[1] as string;
+    if (context.queryKey[2] !== null) {
         if (url.includes("?")) {
-            url += `&search=${encodeURIComponent(context.queryKey[1] as string)}`
+            url += `&search=${encodeURIComponent(context.queryKey[2] as string)}`
         } else {
-            url += `?search=${encodeURIComponent(context.queryKey[1] as string)}`
+            url += `?search=${encodeURIComponent(context.queryKey[2] as string)}`
         }
     }
 
@@ -105,7 +105,7 @@ export const getDictionary = (apiName: string) => async (): Promise<AxiosRespons
     return await axios.put(`${apiName}`);
 }
 
-function objectToFormData(entity: LooseObject, formData: FormData = new FormData(), namespace: string = '') {
+export function objectToFormData(entity: LooseObject, formData: FormData = new FormData(), namespace: string = '') {
     const fd = formData || new FormData();
     let formKey;
 
@@ -130,6 +130,7 @@ function objectToFormData(entity: LooseObject, formData: FormData = new FormData
                 // if it's a string or a File object     
                 fd.append(formKey, entity[property]);
             }
+
         }
     }
 

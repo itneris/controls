@@ -34,7 +34,7 @@ interface IUserDTO {
     blocked: boolean;
     middlename: string;
     password: string;
-    avatar: string;
+    avatar: any;
     note: string;
     calcValue: string;
 }
@@ -165,6 +165,7 @@ const TestComnonent = () => {
     const modalRef = useRef<IModalRef | null>(null);
     const formRef = useRef<IFormRef | null>(null);
     const createFormRef = useRef<IQueryFormRef>(null);
+    const editFormRef = useRef<IQueryFormRef>(null);
 
     const handleCreateChange = useCallback((prop: string, value: any) => {
         if (prop === "name" || prop === "surname") {
@@ -187,6 +188,15 @@ const TestComnonent = () => {
 
     const handleError = useCallback((data: any) => {
         createFormRef.current!.addError("calcValue", data.detail)
+    }, []);
+
+    const handleResetAc = useCallback((prop: string, val: string) => {
+        if (prop === "roleValueWithSearch" || prop === "roleValueArray") {
+            let entity = { ...editFormRef.current!.getCurrentValues() };
+            entity.roleValueWithSearch = { id: 0, label: "" };
+            entity.roleValueArray = null;
+            editFormRef.current!.setEntity(entity);
+        }
     }, []);
 
     return (
@@ -217,6 +227,8 @@ const TestComnonent = () => {
                 onAfterLoad={(e) => console.log(e)}
                 urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
                 onError={e => console.log(e)}
+                onChange={handleResetAc}
+                ref={editFormRef}
             />
             <PageTitle>Тестовая форма без апи</PageTitle>
             <ItnForm                
