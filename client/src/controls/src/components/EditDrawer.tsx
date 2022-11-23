@@ -130,7 +130,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                     </Box>
                 }
                 <Box
-                    py={2}
+                    pb={2}
                     width="100%"
                     sx={{ overflowY: "auto" }}
                 >
@@ -140,17 +140,19 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                             <Box
                                 position="sticky"
                                 top={0}
-                                //sx={theme => ({ backgroundColor: theme.palette.grey[500] || "#eee" })}
+                                sx={theme => ({ backgroundColor: theme.palette.background.paper })}
                                 zIndex={1}
                                 pl={2}
+                                pt={2}
+                                mb={2}
                             >
                                 <Typography variant='h5'>{props.tabs!.length > 0 ? props.tabs![activeTab].title : props.title}</Typography>
                                 {
                                     (props.tabs!.length > 0 && props.tabs![activeTab].subtitle) &&
                                     <Typography variant='subtitle2'>{props.tabs![activeTab].subtitle}</Typography>
                                 }
+                                <Divider sx={{ mt: 2 }} />
                             </Box>
-                            <Divider sx={{ mt: 1, mb: 1 }} />
                         </>
                     }
                     <Box paddingX={2}>

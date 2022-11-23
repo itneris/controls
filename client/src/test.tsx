@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { Button, Paper, Stack } from "@mui/material";
+import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
 import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "controls/src";
 import IDrawerRef from "./controls/src/props/IDrawerRef";
@@ -307,7 +307,38 @@ const TestComnonent = () => {
                     }
                 }}
             >
-                Контент
+                <TableContainer component={Paper}>
+                <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Заголовок 1</TableCell>
+                                <TableCell>Заголовок 2</TableCell>                            
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Значение 1 Значение 1Значение 1Значение 1Значение 1Значение 1Значение 1Значение 1Значение 1</TableCell>
+                                <TableCell>Значение 2Значение 2Значение 2Значение 2Значение 2Значение 2Значение 2Значение 2Значение 2</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Значение 1</TableCell>
+                                <TableCell>Значение 2</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Значение 1</TableCell>
+                                <TableCell>Значение 2</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Значение 1</TableCell>
+                                <TableCell>Значение 2</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Значение 1</TableCell>
+                                <TableCell>Значение 2</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </EditDrawer>
             <ItnModal
                 ref={modalRef}

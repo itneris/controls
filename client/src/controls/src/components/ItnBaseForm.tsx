@@ -102,9 +102,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                     /[a-z]/.test(val) &&
                     /[A-Z]/.test(val) &&
                     /[!@#$%^&*()-+<>]/.test(val) &&
-                    val.length >= field.passwordLength;
+                    val.length >= field.passwordLength &&
+                    !/[а-я]/.test(val) &&
+                    !/[А-Я]/.test(val);
+
                 if (!legitPwd) {
-                    newValidation.push(new Validation(field.property, `Пароль должен состоять из ${field.passwordLength} символов, включать цифру, нижний и верхний регистры и непрописной сивол (!@#$%^&*()-+<>)`))
+                    newValidation.push(new Validation(field.property, `Пароль должен состоять из ${field.passwordLength} символов, включать цифру, нижний и верхний регистры латинского алфавита и непрописной символ (!@#$%^&*()-+<>)`))
                 }
             }
 
