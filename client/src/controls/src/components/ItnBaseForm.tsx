@@ -283,29 +283,31 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             </Paper>
             {
                 (props.onSave || props.onCancel) &&
-                <Box display="flex" mt={2} justifyContent={props.onSave && props.onCancel ? "space-between" : "flex-end"}>
+                <Box display="flex" mt={2} justifyContent="space-between">
                     {
-                        props.onCancel &&
-                        <Button
-                            startIcon={<Backspace />}
-                            disabled={props.isSaving}
-                            variant="contained"
-                            onClick={props.onCancel}
-                        >
-                            {props.cancelBtnText}
-                        </Button>
+                        props.onCancel ?
+                            <Button
+                                startIcon={<Backspace />}
+                                disabled={props.isSaving}
+                                variant="contained"
+                                onClick={props.onCancel}
+                            >
+                                {props.cancelBtnText}
+                            </Button> :
+                            <div></div>
                     }
                     {
-                        props.onSave &&
-                        <Button
-                            startIcon={<Save />}
-                            disabled={props.isSaving}
-                            variant="contained"
-                            color="secondary"
-                            onClick={handleSaveClick}
-                        >
-                            {props.saveBtnText}
-                        </Button>
+                        props.onSave ?
+                            <Button
+                                startIcon={<Save />}
+                                disabled={props.isSaving}
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleSaveClick}
+                            >
+                                {props.saveBtnText}
+                            </Button> :
+                            <div></div>
                     }
                 </Box>
             }

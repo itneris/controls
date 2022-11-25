@@ -177,18 +177,20 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         }
     }, [fieldBuilder]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const createQuery = useMutation(createEntity(props.apiUrl!), {
+    const createQuery = useMutation(createEntity(props.apiUrl!, props.sendAsMultipartFormData!), {
         onMutate: () => setIsSaving(true),
         onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => setIsSaving(false)
     });
-    const updateQuery = useMutation(updateEntity(props.apiUrl!), {
+
+    const updateQuery = useMutation(updateEntity(props.apiUrl!, props.sendAsMultipartFormData!), {
         onMutate: () => setIsSaving(true),
         onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => setIsSaving(false)
     });
+
     const deleteQuery = useMutation(deleteEntity(props.apiUrl!), {
         onMutate: () => setIsSaving(true),
         onSuccess: (response) => props.onAfterDelete && props.onAfterDelete(response.data),
@@ -285,7 +287,8 @@ ItnQueryForm.defaultProps = {
     saveBtnText: "Сохранить",
     cancelBtnText: "Отмена",
     urlParams: null,
-    onError: null
+    onError: null,
+    sendAsMultipartFormData: false
 }
 
 export default ItnQueryFormWrapper;

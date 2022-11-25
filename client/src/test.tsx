@@ -300,7 +300,7 @@ const TestComnonent = () => {
             <EditDrawer
                 title="Тестовый дровер"
                 cancelBtnText="Отмена"
-                ref={drawerRef}
+                ref={drawerRef}                
                 sx={{
                     '& .MuiDrawer-paper': {
                         backgroundColor: "white"

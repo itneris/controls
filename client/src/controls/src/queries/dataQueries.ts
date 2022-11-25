@@ -35,7 +35,7 @@ export const getAutocompleteDict = async (context: QueryFunctionContext): Promis
     return await axios.get(url);
 }
 
-export const createEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
+export const createEntity = (apiName: string, sendAsForm: boolean) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
     let url = apiName;
     if (params.urlParams !== null) {
@@ -47,7 +47,7 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
         url += paramsArr.join("&");
     }
 
-    if (params.useFormData) {
+    if (params.useFormData || sendAsForm) {
         const bodyFormData = objectToFormData(entity);
         return await axios({
             method: "post",
@@ -59,7 +59,7 @@ export const createEntity = (apiName: string) => async (params: IFormMutateParam
     return await axios.post(url, entity);
 }
 
-export const updateEntity = (apiName: string) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
+export const updateEntity = (apiName: string, sendAsForm: boolean) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
     let url = `${apiName}`;
     if (params.id) {
@@ -74,7 +74,7 @@ export const updateEntity = (apiName: string) => async (params: IFormMutateParam
         url += paramsArr.join("&");
     }
 
-    if (params.useFormData) {
+    if (params.useFormData || sendAsForm) {
         const bodyFormData = objectToFormData(entity);
         return await axios({
             method: "put",

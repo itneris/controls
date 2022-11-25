@@ -16,5 +16,6 @@ export default interface IQueryFormProps extends ICommonFormProps {
     disableSave?: boolean | null;
     disableDelete?: boolean | null;
     urlParams?: LooseObject | null;
-    queryClient?: QueryClient | null
+    queryClient?: QueryClient | null;
+    sendAsMultipartFormData?: boolean | null;
 }

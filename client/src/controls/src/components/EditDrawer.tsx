@@ -151,7 +151,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                                     (props.tabs!.length > 0 && props.tabs![activeTab].subtitle) &&
                                     <Typography variant='subtitle2'>{props.tabs![activeTab].subtitle}</Typography>
                                 }
-                                <Divider sx={{ mt: 2 }} />
+                                <Divider sx={{ ml: -2, mt: 2 }} />
                             </Box>
                         </>
                     }
