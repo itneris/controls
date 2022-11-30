@@ -1,4 +1,5 @@
 import { LooseObject } from "./LooseObject";
+import { Validation } from "./Validation";
 /**
  * Intreface for calling ItnForm methods
  * */
@@ -14,7 +15,7 @@ export interface IFormRef {
      * 
      * @returns {boolean} validation result
      * */
-    validate: () => boolean,
+    validate: (onErrors?: (validationErrors: Validation[]) => void) => boolean,
     /**
      * Add error text to specified form field
      * */

@@ -52,6 +52,423 @@ const rolesValues = [
     }
 ]
 
+const bigRolesValues = [
+    {
+        "id": "f868a556-28e2-471f-a8d8-f4191784ea9a",
+        "label": "Администраторы конфигураций",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "38edb632-6379-4c00-8c0b-022013b1046f",
+        "label": "Администраторы сервиса \"test ad sync service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "b08f89b0-a425-4029-9f03-d394f0eefc8d",
+        "label": "Администраторы мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "8deedef3-b02e-42fe-b1cb-2a546942e84c",
+        "label": "Участники мероприятия \"Новое мероприятие\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "2eb85a75-6f5d-4fef-ae99-284c8f041031",
+        "label": "Участники мероприятия \"Тест на слёт админа\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "a22c6b37-1af8-4e78-85ff-2be8bea50aef",
+        "label": "Администраторы мероприятия \"Новое мероприятие\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "d0f6b5f2-ad0a-415e-8e76-57e11b0cb2cc",
+        "label": "Участники мероприятия \"уцкцук\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "75d31798-9ded-493c-a3db-30c415e6661a",
+        "label": "Администраторы мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "172e85b5-91f0-47c4-a3c0-45ba249321f7",
+        "label": "Пользователи сервиса \"новый тестовый сервис\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "65c1ef37-6b7a-49df-b8bf-286273c53169",
+        "label": "Участники мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "aa06b1f1-033c-4639-b323-a4fe0451090c",
+        "label": "Участники мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "074f4d92-f1e5-4f12-8379-5c1564366fdf",
+        "label": "Модераторы контента",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "ca0f2632-440b-435c-9f70-fe92d7d6d524",
+        "label": "Внутренние менеджеры мероприятий",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "3e83c95d-82cc-4413-929e-c9ba912d5298",
+        "label": "Пользователи сервиса \"New service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "795da4bb-36bd-4939-be6d-73a7f9d37107",
+        "label": "Пользователи сервиса \"test ad sync service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "13e88db8-27bc-4b6f-9b18-7ac05a72743e",
+        "label": "Администраторы сервиса \"Very new service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "4b93bf62-e849-4d25-9596-22b9ea7500d1",
+        "label": "Администраторы сервиса \"VNS2\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "aaf55cbe-9af8-4fab-a310-89736ea92774",
+        "label": "Пользователи сервиса \"test for sync\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "41482802-3188-4a0a-a035-3d1b1468d55e",
+        "label": "Пользователи сервиса \"VNS2\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "3700b9d4-93fa-4869-9efe-10e3a06cf625",
+        "label": "Администраторы мероприятия \"тест на слёт админа\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "89b0ef03-324f-423b-95d7-ff0befc942dc",
+        "label": "Администраторы сервиса \"vns3\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "0b1bffa8-0c4f-4711-aa2d-61a213514e5d",
+        "label": "Администраторы сервиса \"test ad sync service 2\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "431f1942-4f0d-4ed0-8616-1903c7ba21b1",
+        "label": "Пользователи сервиса \"test ad sync service 2\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "ae37094d-25f5-4fbc-8e20-ddef0b509ba5",
+        "label": "Администраторы сервиса \"новый тестовый сервис\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "4bd7f05a-4232-4d3a-a793-b3d045438a86",
+        "label": "Администраторы мероприятия \"Тест на слёт админа\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "b41ef50e-2ba5-494e-93ae-ffec158b8863",
+        "label": "Администраторы мероприятия \"уцкцук\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "e51bdd2f-b930-4c75-9ee4-94875095d006",
+        "label": "Пользователи сервиса \"vns3\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "eb448fe9-1581-42a5-b19b-0a9076dfbc2a",
+        "label": "Администраторы сервиса \"Тестовый\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "a0abf6f1-dad4-40e9-b87b-3ee37cb63761",
+        "label": "Администраторы сервиса \"Тестовый сервис\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "67b33693-d6ab-4ffa-bacb-c12a52f1a267",
+        "label": "Администраторы сервиса \"less sad service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "a74bcc70-d4f4-40e3-8f8b-124a5db90ceb",
+        "label": "Пользователи сервиса \"less sad service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "03afec39-8a34-47cd-9e31-40e234e05365",
+        "label": "Участники мероприятия \"Тест\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "f96bd091-07a4-416d-b904-771c501b52fa",
+        "label": "Администраторы сервиса \"test no ad role\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "ca1c65c3-b075-4b34-afcf-736cd2572349",
+        "label": "Администраторы сервиса \"sad service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "c2525fe9-aa08-4882-8952-71e8848a4032",
+        "label": "Администраторы сервиса \"Тестовый\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "ec8f9650-c51c-490f-b8fd-a7794649e192",
+        "label": "Пользователи сервиса \"sad service\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "a5099389-601a-4725-9baf-2befde970619",
+        "label": "Пользователи сервиса \"Тестовый\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "714c5a9f-0a90-4feb-9ab6-29b7f2648380",
+        "label": "Участники мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "df8fcc54-62f0-4f58-adb5-f4956e26ffde",
+        "label": "Участники мероприятия \"Новое мероприятие\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "5d944236-91bc-4a35-bd15-0a8737618dea",
+        "label": "Администраторы мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "ade80412-fe7f-42a2-905e-bda520410e66",
+        "label": "Администраторы мероприятия \"мывпывпварцкрп\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "cc17f91b-566c-44f1-87ad-b62a6ff19bbe",
+        "label": "Администраторы мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "2fdd88bb-ad59-46d1-b54d-fc4f101fe600",
+        "label": "Участники мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "175c3357-833b-409f-bb25-28fc538ea7a7",
+        "label": "Администраторы мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "f70c088b-3a69-4c17-bcdb-099b44e5b2df",
+        "label": "Участники мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "47af312f-c521-4520-96b2-12ae055c27ea",
+        "label": "Администраторы мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "2d543a00-3fee-42cb-ae15-56b2a40c2bdf",
+        "label": "Участники мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "ce7cff9e-2ec2-4edd-998a-120bc3527bf2",
+        "label": "Администраторы мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "50f190c5-e8a9-4566-9764-eff4ff6f331c",
+        "label": "Участники мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "77ba7a4a-fbb8-4573-8240-332aa0b70302",
+        "label": "Администраторы мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "dbaeed1b-b982-445f-afa1-23cf7ec83d22",
+        "label": "Участники мероприятия \"фывыфвыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "8f832c5c-3f9d-4210-879b-104da16b89e4",
+        "label": "Участники мероприятия \"мывпывпварцкрп\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "3fdee2bf-4d71-4924-b4a8-a9c2a571f004",
+        "label": "Администраторы мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "8c4f9f66-d380-4b36-b14b-c16e2e8e75fc",
+        "label": "Администраторы мероприятия \"Новое мероприятие\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "cda5448c-4f5d-4826-99c0-0076d2ef1a8e",
+        "label": "Участники мероприятия \"Тест на группу участников\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "c3830547-4a6c-4372-a642-97eb85c2dd81",
+        "label": "Администраторы мероприятия \"ылфталдыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "7ace465f-9bf0-4ba5-87f6-5afc9a47c5d3",
+        "label": "Участники мероприятия \"ылфталдыф\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "5b97304d-bf2e-464f-9e5d-2aa746fcaab5",
+        "label": "Администраторы мероприятия \"Тест с Атемом\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "3318ef99-0f30-499f-845d-d965fcc63e1c",
+        "label": "Администраторы мероприятия \"тестич\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "0c9c716d-e3f5-4c00-874e-c2871efc8318",
+        "label": "Операторы пользователей и заявок",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "434f127c-c7e9-4ac9-b5fb-1f027a835da6",
+        "label": "Участники мероприятия \"тестич\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "bcd8c803-a2fd-4429-8ecf-9385f7e92a8a",
+        "label": "Администраторы мероприятия \"Семинар тест групп AD\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "3b9aa545-e921-49f6-afb6-c8948d7868cc",
+        "label": "Участники мероприятия \"Семинар тест групп AD\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "c7fcadac-9151-4cee-9810-bfe223dc372b",
+        "label": "Внешние обычные пользователи",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "5614174a-6c9e-4422-96d6-b7d0f7baedc7",
+        "label": "Пользователи сервиса \"Тестовый сервис для ролевой модели\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "7581036a-7f6b-4186-ae91-076ac55488d6",
+        "label": "Администраторы сервиса \"Тестовый сервис для ролевой модели\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "6f37cd0b-cdd4-4fb5-a96b-28cefc1b052c",
+        "label": "Администраторы мероприятия \"Конференция с датой в секциях\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "e76ceb8c-94d7-4b0f-8224-e24cc60b0698",
+        "label": "Участники мероприятия \"Конференция с датой в секциях\"",
+        "inputValue": null,
+        "otherAttributes": {}
+    },
+    {
+        "id": "17c17252-a67b-43b0-8134-15b9dcedd4ae",
+        "label": "Пользователи TrueConf",
+        "inputValue": null,
+        "otherAttributes": {}
+    }
+]
+
 app.get('/api/test/1', (req, res) => {
     const date = new Date();
     date.setDate(date.getDate() - 1);
@@ -114,7 +531,7 @@ app.get('/api/dicts/roles_auto', (req, res) => {
 });
 
 app.get('/api/dicts/roles_auto_create', (req, res) => {
-    res.send([...rolesValues]);
+    res.send([...bigRolesValues]);
 });
 
 app.post('/api/test', async (req, res) => {

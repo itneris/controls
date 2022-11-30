@@ -225,7 +225,7 @@ function ItnControl(props: IControlProps) {
                         }
                     }}
                     renderOption={(props, option) => (
-                        <li {...props}>{option.label}</li>
+                        <li {...props} key={"opt" + option.id} >{option.label}</li>
                     )}
                     getOptionDisabled={opt => opt.disabled === true}
                     filterOptions={(options, params) => {

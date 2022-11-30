@@ -128,9 +128,13 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Роль (autocomplete)")
             .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
 
-        this.FieldFor(_ => _.roleValueArray)
+        /*this.FieldFor(_ => _.roleValueArray)
             .WithLabel("Роли (autocomplete multiple)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);*/
+
+        this.FieldFor(_ => _.roleValueArray)
+            .WithLabel("Роли (autocomplete multiple without search as type)")
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
@@ -191,12 +195,12 @@ const TestComnonent = () => {
     }, []);
 
     const handleResetAc = useCallback((prop: string, val: string) => {
-        if (prop === "roleValueWithSearch" || prop === "roleValueArray") {
+        /*if (prop === "roleValueWithSearch" || prop === "roleValueArray") {
             let entity = { ...editFormRef.current!.getCurrentValues() };
             entity.roleValueWithSearch = { id: 0, label: "" };
             entity.roleValueArray = null;
             editFormRef.current!.setEntity(entity);
-        }
+        }*/
     }, []);
 
     return (
@@ -209,7 +213,8 @@ const TestComnonent = () => {
                 onEnter={() => console.log("enter Pressed")}
             />
 
-            <ItnQueryForm
+            {
+                /*<ItnQueryForm
                 ref={createFormRef}
                 header="Форма создания"
                 headerContent={<b>Пример контента после заголовка</b>}
@@ -218,7 +223,9 @@ const TestComnonent = () => {
                 footerContent={<b>Пример контента после контролов</b>}
                 onChange={handleCreateChange}
                 onError={handleError}
-            />
+            />*/
+            }
+            
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
@@ -230,6 +237,8 @@ const TestComnonent = () => {
                 onChange={handleResetAc}
                 ref={editFormRef}
             />
+            {
+                /*
             <PageTitle>Тестовая форма без апи</PageTitle>
             <ItnForm                
                 ref={formRef}
@@ -295,7 +304,8 @@ const TestComnonent = () => {
                         <ItnFormControl field="role" />
                     </Paper>
                 </Stack>
-            </ItnForm>
+            </ItnForm>*/
+            }
 
             <EditDrawer
                 title="Тестовый дровер"

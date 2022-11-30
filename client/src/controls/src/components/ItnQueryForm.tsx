@@ -27,8 +27,8 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
         getCurrentValues() {
             return form.current!.getCurrentValues();
         },
-        validate() {
-            return form.current!.validate();
+        validate(onErrors) {
+            return form.current!.validate(onErrors);
         },
         saveEntity(urlParams) {
             form.current!.saveEntity(urlParams);
@@ -58,8 +58,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         getCurrentValues() {
             return baseFormRef.current!.getCurrentValues();
         },
-        validate() {
-            return baseFormRef.current!.validate();
+        validate(onErrors) {
+            return baseFormRef.current!.validate(onErrors);
         }, 
         saveEntity(urlParams) {
             handleSave(baseFormRef.current!.getCurrentValues(), urlParams);

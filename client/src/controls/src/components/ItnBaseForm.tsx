@@ -34,8 +34,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         getCurrentValues() {
             return entity!;
         },
-        validate() {
-            return validateControls();
+        validate(onErrors) {
+            return validateControls(onErrors);
         },
         addError(field, error) {
             setValidation([...validation, { property: field, message: error }]);
@@ -67,7 +67,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         props.onChange && props.onChange(field, value);
     }, [props.onChange, entity, setEntity, validation]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const validateControls = useCallback(() => {
+    const validateControls = useCallback((onErrors?: (validationErrors: Validation[]) => void) => {
         let newValidation: Validation[] = []; 
         fields.forEach(field => {
             const val = entity![field.property];
@@ -126,7 +126,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             }
         });
         setValidation(newValidation);
-        return newValidation.length === 0;
+
+        const valid = newValidation.length === 0;
+        if (!valid) {
+            onErrors && onErrors(newValidation);
+        }
+        return valid;
     }, [fields, entity]);
 
     const handleSaveClick = useCallback(() => {
@@ -269,9 +274,9 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                             <Typography variant="body2">{props.errorLoading}</Typography> :
                                 props.children === undefined ?
                                     fields.map(renderField) :
-                                    <FormContext.Provider value={{ getField: renderFieldByName }}>
-                                        {props.children}
-                                    </FormContext.Provider>
+                                        <FormContext.Provider value={{ getField: renderFieldByName }}>
+                                            {props.children}
+                                        </FormContext.Provider>
                     }
                 </Box>
                 {
