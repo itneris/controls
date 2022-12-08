@@ -75,16 +75,20 @@ function ItnControl(props: IControlProps) {
         if (props.type !== "file") {
             return;
         }
-
-        if (!props.value) {
+        if (!props.value || !(props.value instanceof File)) {
             props.withImagePreview && setPreview(null);
             return;
         }
 
-        const objectUrl = URL.createObjectURL(props.value as File);
-        setPreview(objectUrl);
+        let objectUrl: string | null = null;
+        if (props.withImagePreview) {
+          objectUrl = URL.createObjectURL(props.value as File);
+          setPreview(objectUrl);
+        }
 
-        return () => URL.revokeObjectURL(objectUrl);
+        return () => {
+          objectUrl && URL.revokeObjectURL(objectUrl);
+        };
     }, [props.value, props.withImagePreview, setPreview, props.type]);
 
     /*useEffect(() => {
