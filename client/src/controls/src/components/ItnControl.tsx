@@ -72,7 +72,7 @@ function ItnControl(props: IControlProps) {
     const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
-        if (props.type !== "file") {
+        if (props.type !== "file" || !props.isAvatar || !props.withImagePreview) {
             return;
         }
 
