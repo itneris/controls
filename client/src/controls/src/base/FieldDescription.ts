@@ -47,6 +47,7 @@ export class FieldDescription implements LooseObject {
     autocompleteCreatable: boolean = false;
     onAutocompleteOptionAdded: ((value: string) => void) | null = null;
     multiple: boolean = false;
+    onEnterKeyPress: () => void = () => { };
 
     constructor(order: number, property: string) {
         this.property = property;

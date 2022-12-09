@@ -119,7 +119,17 @@ declare module "./FieldOptionsBuilder" {
 		 * @param {string} text text to render in tooltip
 		* */
 		WithTooltip(tooltip: string): FieldOptionsBuilder<T>;
+		/**
+		* Execites function on enter press
+		 * @param {string} text text to render in tooltip
+		* */
+		OnEnter(onEnterKeyPress: () => void): FieldOptionsBuilder<T>;
 	}
+}
+
+FieldOptionsBuilder.prototype.OnEnter = function <T extends LooseObject>(onEnterKeyPress: () => void) {
+	return this
+		.SetFieldProp("onEnterKeyPress", onEnterKeyPress) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.WithLabel = function<T extends LooseObject>(label: string) {

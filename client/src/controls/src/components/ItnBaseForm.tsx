@@ -216,6 +216,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
                 helperText={field.helperText}
                 multiple={field.multiple}
+                onEnter={field.onEnterKeyPress}
             />
         }
     }, [props, validation, entity, handleChange])
