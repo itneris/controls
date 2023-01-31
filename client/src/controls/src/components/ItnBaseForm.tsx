@@ -1,4 +1,4 @@
-import React, { useCallback, useImperativeHandle, useState, useEffect } from "react";
+import React, { useCallback, useImperativeHandle, useState, useEffect, useRef } from "react";
 import ItnControl from "./ItnControl";
 import { IFormRef } from "../base/IFormRef";
 import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
@@ -18,6 +18,7 @@ export const FormContext = React.createContext<IFormContext | null>(null);
 
 const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
     const fields = props.fieldBuilder.Build();
+    const entity = useRef<LooseObject | null>({});
 
     const getDefaultValues = useCallback(() => {
         let initEntity: LooseObject = {};
@@ -27,12 +28,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         return initEntity;
     }, [fields]);
 
-    const [entity, setEntity] = useState<LooseObject | null>({});
     const [validation, setValidation] = useState<Validation[]>([]);
+    const [, forceUpdate] = useState<any>({});
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
-            return entity!;
+            return entity.current!;
         },
         validate(onErrors) {
             return validateControls(onErrors);
@@ -41,7 +42,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             setValidation([...validation, { property: field, message: error }]);
         },
         setEntity(newEntity: LooseObject) {
-            setEntity(newEntity);
+            entity.current = newEntity;
             setValidation([]);
         }
     }));
@@ -53,37 +54,38 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 newEntity[key] = dataURLtoFile(newEntity[key].data, newEntity[key].name);
             }
         }
-        setEntity(newEntity);
+        entity.current = newEntity;
+        forceUpdate({});
     }, [props.entity]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const handleChange = useCallback((field: string, value: any) => {
         const newEntity = {
-            ...entity,
+            ...entity.current,
             [field]: value
         };
         setValidation(validation.filter(_ => _.property !== field));
-        setEntity(newEntity);
+        entity.current = newEntity;
         props.onChange && props.onChange(field, value);
-    }, [props.onChange, entity, setEntity, validation]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [props.onChange, validation]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const validateControls = useCallback((onErrors?: (validationErrors: Validation[]) => void) => {
         let newValidation: Validation[] = []; 
         fields.forEach(field => {
-            const val = entity![field.property];
+            const val = entity.current![field.property];
             const valIsNull =
                 val === undefined ||
                 val === null ||
                 (typeof val === "string" && val === "") ||
                 (Array.isArray(val) && val.length === 0);
 
-            const fieldRequired = typeof field.required === "function" ? field.required(entity ?? {}) : field.required;
+            const fieldRequired = typeof field.required === "function" ? field.required(entity.current ?? {}) : field.required;
             if (fieldRequired && valIsNull) {
                 newValidation.push(new Validation(field.property, `Поле обязательно для заполнения`));
             }
 
             if (field.validation !== null && !valIsNull) {
-                const error = field.validation(val, entity ?? {});
+                const error = field.validation(val, entity.current ?? {});
                 if (error !== null) {
                     newValidation.push(new Validation(field.property, error))
                 }
@@ -132,18 +134,18 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             onErrors && onErrors(newValidation);
         }
         return valid;
-    }, [fields, entity]);
+    }, [fields]);
 
     const handleSaveClick = useCallback(() => {
         if (!validateControls()) {
             return;
         }
-        props.onSave && props.onSave(entity!);
-    }, [entity, validateControls, props.onSave]); // eslint-disable-line react-hooks/exhaustive-deps
+        props.onSave && props.onSave(entity.current!);
+    }, [validateControls, props.onSave]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleDeleteClick = useCallback(() => {
-        props.onDelete && props.onDelete(entity!.id);
-    }, [entity, props.onDelete, entity]); // eslint-disable-line react-hooks/exhaustive-deps
+        props.onDelete && props.onDelete(entity.current!.id);
+    }, [props.onDelete]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const renderField = useCallback((field: FieldDescription) => {
         if (props.isLoading) {
@@ -152,13 +154,13 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
             return <React.Fragment key={"fc-" + field.property}>
                 {
                     field.custom(
-                        entity![field.property],
+                        entity.current![field.property],
                         (value) => handleChange(field.property, value),
                         validation.find(_ => _.property === field.property) !== undefined,
                         validation.find(_ => _.property === field.property)?.message,
                         props.isSaving!,
                         props.viewOnly!,
-                        entity ?? {}
+                        entity.current ?? {}
                     )
                 }
             </React.Fragment>;
@@ -174,8 +176,8 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                         field.multiple ? [] :
                             null;
 
-            const controlValue = entity![field.property] ?? contolDefaultValue;
-            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity ?? {}) : field.disabled;
+            const controlValue = entity.current![field.property] ?? contolDefaultValue;
+            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity.current ?? {}) : field.disabled;
 
             return <ItnControl
                 key={"fc-" + field.property}
@@ -219,7 +221,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 onEnter={field.onEnterKeyPress}
             />
         }
-    }, [props, validation, entity, handleChange])
+    }, [props, validation, handleChange])
 
     const renderFieldByName = useCallback((name: string) => {
         const field = fields.find(_ => _.property === name);

@@ -1,14 +1,16 @@
 import React, { useCallback, useRef } from "react";
-import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "controls/src";
 import IDrawerRef from "./controls/src/props/IDrawerRef";
 import IModalRef from "./controls/src/props/IModalRef";
 import { IFormRef } from "./controls/src/base/IFormRef";
 import { IQueryFormRef } from "./controls/src/base/IQueryFormRef";
+import ContentEditor from "./MdEditor";
 //import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer } from "@itneris/controls";
 
 interface IUserDTO {
+    description: string;
     id: string;
     name: string;
     surname: string;
@@ -42,6 +44,22 @@ interface IUserDTO {
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
     constructor() {
         super();
+        
+        this.FieldFor(_ => _.description)
+            .WithLabel("MD описание")
+            .WithCustomControl((val, onChange, isError, errorMessage, isSaving, viewOnly, entity) => {
+                return <Stack gap={1}>
+                    {
+                        isError &&
+                        <Typography color="error">Поле обязательно для заполнения</Typography>
+                    }
+                    {
+                        <ContentEditor value={val} onChange={onChange} />
+                        //<MdRenderer content={val} />
+                    }
+                </Stack>
+            })
+            .WithDefaultValue("");
         
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
@@ -214,16 +232,18 @@ const TestComnonent = () => {
             />
 
             {
-                /*<ItnQueryForm
-                ref={createFormRef}
-                header="Форма создания"
-                headerContent={<b>Пример контента после заголовка</b>}
-                apiUrl="http://localhost:5000/api/test"
-                fieldBuilder={fieldBuilder}
-                footerContent={<b>Пример контента после контролов</b>}
-                onChange={handleCreateChange}
-                onError={handleError}
-            />*/
+                
+                <ItnQueryForm
+                    ref={createFormRef}
+                    header="Форма создания"
+                    headerContent={<b>Пример контента после заголовка</b>}
+                    apiUrl="http://localhost:5000/api/test"
+                    fieldBuilder={fieldBuilder}
+                    footerContent={<b>Пример контента после контролов</b>}
+                    onChange={handleCreateChange}
+                    onError={handleError}
+                />
+                
             }
             
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
