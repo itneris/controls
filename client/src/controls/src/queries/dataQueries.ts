@@ -19,7 +19,7 @@ export const getEntity = <T>(apiName: string, id: string) => async (): Promise<A
 }
 
 export const getDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
-    return await axios.get(context.queryKey[0] as string);
+    return await axios.get(context.queryKey[1] as string);
 }
 
 export const getAutocompleteDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {

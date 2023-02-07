@@ -165,7 +165,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 }
             </React.Fragment>;
         } else {
-            const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
+            const controlHidden = typeof field.hidden === "function" ? field.hidden(entity.current ?? {}) : field.hidden;
             if (controlHidden) {
                 return null;
             }
@@ -213,7 +213,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 lines={field.lines}
                 maxLines={field.maxLines}
                 onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
-                autocompleteLoading={field.searchAsType ? props.controlsLoading![field.property] === true : undefined}
+                autocompleteLoading={props.controlsLoading![field.property] === true}
                 autocompleteCreatable={field.autocompleteCreatable}
                 onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
                 helperText={field.helperText}
@@ -228,7 +228,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         if (!field) {
             return null;
         }
-        const controlHidden = typeof field.hidden === "function" ? field.hidden(entity ?? {}) : field.hidden;
+        const controlHidden = typeof field.hidden === "function" ? field.hidden(entity.current ?? {}) : field.hidden;
         if (controlHidden) {
             return <></>;
         }

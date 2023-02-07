@@ -1,5 +1,5 @@
 import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, useEffect } from "react";
-import { QueryClient, QueryClientProvider, useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { LooseObject } from "../base/LooseObject";
 import { createEntity, deleteEntity, getDict, getEntity, updateEntity, getAutocompleteDict } from "../queries/dataQueries";
@@ -94,7 +94,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
-    const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
+    const [autocompleteSearchValue, setAutocompleteSearchValue] = useState<{ prop: string, value: string } | null>(null);
+    const [queriesEnabled, setQueriesEnabled] = useState<string[]>([]);
 
     useEffect(() => {
         setEntity(props.entity || null);
@@ -128,26 +129,17 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         }
     );
 
-    const dictQueries = useQueries({
-        queries: fieldBuilder.Build()
-            .filter(_ => _.selectApiUrl !== null && _.type === "select")
-            .map(_ => ({
-                queryKey: [_.selectApiUrl],
-                queryFn: getDict,
-                enabled: typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden,
-                onSuccess: (response: AxiosResponse) => {
-                    fieldBuilder = fieldBuilder.SetSelectOptions(_.property, response.data);
-                }
-            }))
-    });
-
     const autocompleteQueries = useQueries({
         queries: fieldBuilder.Build()
-            .filter(_ => _.selectApiUrl !== null && _.type === "autocomplete")
+            .filter(_ =>
+                _.selectApiUrl !== null &&
+                (_.type === "autocomplete" || _.type === "select") &&
+                (typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden)
+            )
             .map(_ => ({
-                queryKey: [_.property, _.selectApiUrl,!_.searchAsType ? null : (autocompleteSearchValues[_.property] ?? "")],
-                queryFn: getAutocompleteDict,
-                enabled: typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden,
+                queryKey: [_.property, _.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValue?.value ?? "")],
+                queryFn: _.type === "autocomplete" ? getAutocompleteDict : getDict,
+                enabled: queriesEnabled.includes(_.property),
                 onSuccess: (response: AxiosResponse) => {
                     const options = response.data.length === 0 ?
                         [] :
@@ -161,19 +153,25 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                     fieldBuilder = fieldBuilder.SetSelectOptions(_.property, options);
                 },
                 onSettled: () => {
-                    setControlsLoading({
-                        ...controlsLoading,
+                    setQueriesEnabled(oldState => [...oldState, _.property]);
+                    setControlsLoading((oldState) => ({
+                        ...oldState,
                         [_.property]: false
-                    });
+                    }));
                 }
             }))
     });
 
     useEffect(() => {
-        dictQueries.forEach(_ => _.refetch());
         autocompleteQueries.forEach(_ => _.refetch());
         if (Object.keys(controlsLoading).length === 0) {
-            setControlsLoading(fieldBuilder.Build().filter(f => f.type === "autocomplete").map(f => ({ [f.property]: true })));
+            let loadingState: LooseObject = {};
+            fieldBuilder.Build()
+                .filter(f => f.selectApiUrl !== null)
+                .forEach(f => loadingState[f.property] = true);
+            
+
+            setControlsLoading(loadingState);
         }
     }, [fieldBuilder]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -232,13 +230,18 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             }
 
             autoCompleteTimeouts.current[prop] = setTimeout(() => {
-                setAutocompleteSearchValues((oldValues) => ({
-                    ...oldValues,
-                    [prop]: value
-                }))
+                //autocompleteQueries.forEach(_ => _.refetch());
+                setControlsLoading((oldState) => ({
+                    ...oldState,
+                    [prop]: true
+                }));
+                setAutocompleteSearchValue({
+                    prop: prop,
+                    value: value
+                });
             }, 300);
         }
-    }, [setAutocompleteSearchValues]);
+    }, []);
 
     return (
         <ItnBaseForm

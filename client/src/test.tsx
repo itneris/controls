@@ -45,7 +45,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
     constructor() {
         super();
         
-        this.FieldFor(_ => _.description)
+        /*this.FieldFor(_ => _.description)
             .WithLabel("MD описание")
             .WithCustomControl((val, onChange, isError, errorMessage, isSaving, viewOnly, entity) => {
                 return <Stack gap={1}>
@@ -59,9 +59,9 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                     }
                 </Stack>
             })
-            .WithDefaultValue("");
+            .WithDefaultValue("");*/
         
-        this.FieldFor(_ => _.avatar)
+        /*this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
             .File({ withImagePreview: true, isAvatar: true })
             //.Required();
@@ -120,7 +120,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")
             .Bool()
-            .Hide((e) => e.role === "1");
+            .Hide((e) => e.role === "1");*/
 
         this.FieldFor(_ => _.role)
             .WithLabel("Роль")
@@ -146,19 +146,19 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Роль (autocomplete)")
             .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
 
-        /*this.FieldFor(_ => _.roleValueArray)
-            .WithLabel("Роли (autocomplete multiple)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);*/
-
         this.FieldFor(_ => _.roleValueArray)
+            .WithLabel("Роли (autocomplete multiple)")
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
+
+        /*this.FieldFor(_ => _.roleValueArray)
             .WithLabel("Роли (autocomplete multiple without search as type)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);*/
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
             .SelectWithQuery("http://localhost:5000/api/dicts/roles");
 
-        this.FieldFor(_ => _.note)
+        /*this.FieldFor(_ => _.note)
             .WithLabel("Примечание")
             .TextArea({ lines: 3 });
 
@@ -176,7 +176,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                     {isError ? errorMessage : "Пока ошибки нет"}
                 </div>
             })
-            .WithValidation(_ => _.length > 10 ? "Too much" : null);
+            .WithValidation(_ => _.length > 10 ? "Too much" : null);*/
     }
 }
 
@@ -245,7 +245,10 @@ const TestComnonent = () => {
                 />
                 
             }
-            
+
+            {
+                /*
+                 
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
@@ -257,6 +260,8 @@ const TestComnonent = () => {
                 onChange={handleResetAc}
                 ref={editFormRef}
             />
+                 */
+            }
             {
                 /*
             <PageTitle>Тестовая форма без апи</PageTitle>

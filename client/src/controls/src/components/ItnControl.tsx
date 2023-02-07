@@ -172,10 +172,15 @@ function ItnControl(props: IControlProps) {
                             disabled={props.disabled}
                             value={props.value ?? (props.multiple ? [] : "")}
                             onChange={event => props.onChange && props.onChange(event.target.value)}
-                            multiple={props.multiple}
+                            multiple={props.multiple}                            
                         >
                             <MenuItem disabled={props.allowNullInSelect ? false : true} value="">
-                                <Typography variant='body2'>{props.selectNullLabel || `Выберите ${props.label}`}</Typography>
+                                <Typography variant='body2'>
+                                    {
+                                        props.autocompleteLoading ? "Загрузка..." :
+                                            props.selectNullLabel || `Выберите ${props.label}`
+                                    }
+                                </Typography>
                             </MenuItem>
                             {
                                 props.items!.map((item) => {
