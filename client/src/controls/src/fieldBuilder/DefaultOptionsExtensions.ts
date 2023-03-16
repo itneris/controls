@@ -10,7 +10,7 @@ declare module "./FieldOptionsBuilder" {
 		 * Defines a label for control
 		 * @param {string} label Label to render
 		 * */
-		WithLabel(label: string): FieldOptionsBuilder<T>;
+		WithLabel(label: string | ((entity: LooseObject) => string)): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'select' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in select
@@ -132,7 +132,7 @@ FieldOptionsBuilder.prototype.OnEnter = function <T extends LooseObject>(onEnter
 		.SetFieldProp("onEnterKeyPress", onEnterKeyPress) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithLabel = function<T extends LooseObject>(label: string) {
+FieldOptionsBuilder.prototype.WithLabel = function <T extends LooseObject>(label: string | ((entity: LooseObject) => string)) {
 	return this
 		.SetFieldProp("label", label) as FieldOptionsBuilder<T>;
 }

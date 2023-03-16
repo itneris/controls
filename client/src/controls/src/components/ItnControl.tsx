@@ -309,7 +309,7 @@ function ItnControl(props: IControlProps) {
                                 {...params}
                                 inputProps={{
                                     ...params.inputProps,
-                                    placeholder: "дд.мм.гггг"
+                                    placeholder: "ДД.ММ.ГГГГ"
                                 }}
                                 size="small"
                                 fullWidth
@@ -361,7 +361,7 @@ function ItnControl(props: IControlProps) {
                                 {...params}
                                 inputProps={{
                                     ...params.inputProps,
-                                    placeholder: "дд.мм.гггг ЧЧ:ММ"
+                                    placeholder: "ДД.ММ.ГГГГ ЧЧ:ММ"
                                 }}
                                 size="small"
                                 fullWidth

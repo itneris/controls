@@ -67,6 +67,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         setValidation(validation.filter(_ => _.property !== field));
         entity.current = newEntity;
         props.onChange && props.onChange(field, value);
+        //forceUpdate({});
     }, [props.onChange, validation]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const validateControls = useCallback((onErrors?: (validationErrors: Validation[]) => void) => {
@@ -196,7 +197,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 error={validation.find(_ => _.property === field.property) !== undefined}
                 errorText={validation.find(_ => _.property === field.property)?.message}
                 items={field.items}
-                label={field.label}
+                label={typeof (field.label) === "function" ? field.label(entity.current || {}) : field.label}
                 max={field.max}
                 min={field.min}
                 allowDecimals={field.allowDecimals}

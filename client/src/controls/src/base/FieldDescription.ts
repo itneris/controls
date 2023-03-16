@@ -11,7 +11,7 @@ export class FieldDescription implements LooseObject {
     placeholder: string | null = null;
     error: boolean = false;
     errorText: string | null = null;
-    label: string | null = null;
+    label: string | ((entity: LooseObject) => string) | null = null;
     onClick: (() => void) | null = null;
     variant: "outlined" | "standard" | "filled" = "outlined";
     tooltip: string | null = null;

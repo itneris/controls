@@ -57,7 +57,9 @@ const bigRolesValues = [
         "id": "f868a556-28e2-471f-a8d8-f4191784ea9a",
         "label": "Администраторы конфигураций",
         "inputValue": null,
-        "otherAttributes": {}
+        "otherAttributes": {
+            "custom": "somestring"
+        }
     },
     {
         "id": "38edb632-6379-4c00-8c0b-022013b1046f",
@@ -535,7 +537,7 @@ app.get('/api/dicts/roles_auto', async (req, res) => {
 });
 
 app.get('/api/dicts/roles_auto_create', async (req, res) => {
-    await snooze(3000);
+    //await snooze(3000);
     res.send([...bigRolesValues]);
 });
 

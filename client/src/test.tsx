@@ -123,7 +123,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .Hide((e) => e.role === "1");*/
 
         this.FieldFor(_ => _.role)
-            .WithLabel("Роль")
+            .WithLabel(_ => "Роль" + _.role)
             .Select([
                 new ItnSelectOption("1", "Админ"),
                 new ItnSelectOption("2", "Пользователь"),
@@ -231,8 +231,9 @@ const TestComnonent = () => {
                 onEnter={() => console.log("enter Pressed")}
             />
 
+
             {
-                
+
                 <ItnQueryForm
                     ref={createFormRef}
                     header="Форма создания"
@@ -243,9 +244,8 @@ const TestComnonent = () => {
                     onChange={handleCreateChange}
                     onError={handleError}
                 />
-                
-            }
 
+            }
             {
                 /*
                  

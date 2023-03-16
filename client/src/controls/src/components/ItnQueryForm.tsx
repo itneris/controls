@@ -94,8 +94,8 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
-    const [autocompleteSearchValue, setAutocompleteSearchValue] = useState<{ prop: string, value: string } | null>(null);
-    const [queriesEnabled, setQueriesEnabled] = useState<string[]>([]);
+    const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
+    //const [queriesEnabled, setQueriesEnabled] = useState<string[]>([]);
 
     useEffect(() => {
         setEntity(props.entity || null);
@@ -109,7 +109,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         [props.apiUrl, props.id],
         getEntity(props.apiUrl ?? "/", props.id ?? ""),
         {
-            enabled: formType !== "create" && props.entity == null,
+            enabled: formType !== "create" && props.entity == null && !!props.apiUrl,
             onError: (err) => {
                 setErrorLoading(`Ошибка загрузки данных: ${err.message}`);
             },
@@ -137,9 +137,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 (typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden)
             )
             .map(_ => ({
-                queryKey: [_.property, _.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValue?.value ?? "")],
+                queryKey: [_.property, _.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValues[_.property] || "")],
                 queryFn: _.type === "autocomplete" ? getAutocompleteDict : getDict,
-                enabled: queriesEnabled.includes(_.property),
+                //enabled: queriesEnabled.includes(_.property),
                 onSuccess: (response: AxiosResponse) => {
                     const options = response.data.length === 0 ?
                         [] :
@@ -153,7 +153,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                     fieldBuilder = fieldBuilder.SetSelectOptions(_.property, options);
                 },
                 onSettled: () => {
-                    setQueriesEnabled(oldState => [...oldState, _.property]);
+                    //setQueriesEnabled(oldState => [...oldState, _.property]);
                     setControlsLoading((oldState) => ({
                         ...oldState,
                         [_.property]: false
@@ -235,10 +235,10 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                     ...oldState,
                     [prop]: true
                 }));
-                setAutocompleteSearchValue({
-                    prop: prop,
-                    value: value
-                });
+                setAutocompleteSearchValues(oldValue => ({
+                    ...oldValue,
+                    [prop]: value
+                }));
             }, 300);
         }
     }, []);
