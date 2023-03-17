@@ -104,7 +104,7 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 const legitPwd = /\d/.test(val) &&
                     /[a-z]/.test(val) &&
                     /[A-Z]/.test(val) &&
-                    /[!@#$%^&*()-+<>]/.test(val) &&
+                    /[!@#$%^&*()\-+<>]/.test(val) &&
                     val.length >= field.passwordLength &&
                     !/[а-я]/.test(val) &&
                     !/[А-Я]/.test(val);

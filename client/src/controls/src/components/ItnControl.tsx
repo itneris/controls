@@ -48,7 +48,7 @@ const generatePassword = (length: number): string => {
         pass += chars.charAt(charPos);
     }
 
-    if (/\d/.test(pass) && /[a-z]/.test(pass) && /[A-Z]/.test(pass) && /[!@#$%^&*()-+<>]/.test(pass)) {
+    if (/\d/.test(pass) && /[a-z]/.test(pass) && /[A-Z]/.test(pass) && /[!@#$%^&*()\-+<>]/.test(pass)) {
         return pass;
     } else {
         return generatePassword(length);
