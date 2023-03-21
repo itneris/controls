@@ -26,4 +26,9 @@ export interface IPageTitleProps {
      * Default: null
      * */
     tooltip?: React.ReactNode | null;
+    /**
+     * Callback when "Back" button click, "Back" button will not be rendered if not set
+     * Default: null
+     * */
+    onBack?: (() => void) | null;
 }

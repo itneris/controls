@@ -223,6 +223,8 @@ const TestComnonent = () => {
 
     return (
         <>
+            <PageTitle>Тестовый заголовок</PageTitle>
+            <PageTitle onBack={() => alert('B button clicked')}>Тестовый заголовок с кнопкой назад</PageTitle>
             <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
             <Button variant="contained" onClick={() => modalRef.current!.open()}>Открыть Modal</Button>
             <ItnControl
