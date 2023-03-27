@@ -486,6 +486,8 @@ app.get('/api/test/1', (req, res) => {
         visitDate: date.toISOString(),
         visitTime: date.toISOString(),
         visitDateTime: date.toISOString(),
+        role_select_multiple: ["1", "2"],
+        role_select_multiple_api: ["1", "2"],
         visitCount: 3,
         avatar: {
             id: "qweqweqwe",
@@ -527,7 +529,7 @@ app.get('/api/dicts/roles', async (req, res) => {
 });
 
 app.get('/api/dicts/roles_auto_with_search', async (req, res) => {
-    await snooze(3000);
+    //await snooze(3000);
     res.send([...rolesValues].filter(r => r.label.toLowerCase().includes(req.query["search"].toLowerCase())).splice(0, 2));
 });
 

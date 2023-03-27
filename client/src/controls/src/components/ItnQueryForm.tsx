@@ -133,6 +133,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         queries: fieldBuilder.Build()
             .filter(_ =>
                 _.selectApiUrl !== null &&
+                (props.type !== "view" || _.type === "select") &&
                 (_.type === "autocomplete" || _.type === "select") &&
                 (typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden) &&
                 (typeof (_.disabled) === "function" ? !_.disabled(entity ?? {}) : !_.hidden)
@@ -140,7 +141,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             .map(_ => ({
                 queryKey: [_.property, _.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValues[_.property] || "")],
                 queryFn: _.type === "autocomplete" ? getAutocompleteDict : getDict,
-                //enabled: queriesEnabled.includes(_.property),
+                enabled: props.type !== "view",
                 onSuccess: (response: AxiosResponse) => {
                     const options = response.data.length === 0 ?
                         [] :

@@ -19,7 +19,8 @@ interface IUserDTO {
     visitTime: string;
     visitDateTime: string;
     role: string;
-    role_select_multiple: string;
+    role_select_multiple: string[];
+    role_select_multiple_api: string[];
     role_api: string;
     roleValue: {
         id: string,
@@ -143,17 +144,21 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("3", "Дата-менеджер"),
             ], true);
 
+        this.FieldFor(_ => _.role_select_multiple_api)
+            .WithLabel("Роль (multiselect)")
+            .SelectWithQuery("http://localhost:5000/api/dicts/roles", true);
+
         this.FieldFor(_ => _.roleValueWithSearch)
             .WithLabel("Роль (autocomplete with search)")
             .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true);
 
-        this.FieldFor(_ => _.roleValue)
-            .WithLabel("Роль (autocomplete)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
+        //this.FieldFor(_ => _.roleValue)
+        //    .WithLabel("Роль (autocomplete)")
+        //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
 
-        this.FieldFor(_ => _.roleValueArray)
-            .WithLabel("Роли (autocomplete multiple)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
+        //this.FieldFor(_ => _.roleValueArray)
+        //    .WithLabel("Роли (autocomplete multiple)")
+        //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
 
         /*this.FieldFor(_ => _.roleValueArray)
             .WithLabel("Роли (autocomplete multiple without search as type)")
@@ -211,6 +216,12 @@ const TestComnonent = () => {
 
             createFormRef.current?.setEntity(values);
         }
+
+        if (prop === "roleValueWithSearch") {
+            const values = { ...createFormRef.current!.getCurrentValues() };
+            values.roleValueWithSearch = { id: 0, label: "" };
+            createFormRef.current?.setEntity(values);
+        }
     }, []);
 
     const handleError = useCallback((data: any) => {
@@ -240,7 +251,7 @@ const TestComnonent = () => {
 
 
             {
-
+                /*
                 <ItnQueryForm
                     ref={createFormRef}
                     header="Форма создания"
@@ -251,13 +262,14 @@ const TestComnonent = () => {
                     onChange={handleCreateChange}
                     onError={handleError}
                 />
-
+                */
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
                 fieldBuilder={fieldBuilder}
                 id="1"
+                type="view"
                 onAfterLoad={(e) => console.log(e)}
                 urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
                 onError={e => console.log(e)}
