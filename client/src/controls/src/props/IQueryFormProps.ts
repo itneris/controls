@@ -18,4 +18,5 @@ export default interface IQueryFormProps extends ICommonFormProps {
     urlParams?: LooseObject | null;
     queryClient?: QueryClient | null;
     sendAsMultipartFormData?: boolean | null;
+    onSavingStateChange?: (isStart: boolean) => void;
 }

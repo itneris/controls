@@ -177,24 +177,42 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     }, [fieldBuilder]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const createQuery = useMutation(createEntity(props.apiUrl!, props.sendAsMultipartFormData!), {
-        onMutate: () => setIsSaving(true),
+        onMutate: () => {
+            setIsSaving(true);
+            props.onSavingStateChange!(true);
+        },
         onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
-        onSettled: () => setIsSaving(false)
+        onSettled: () => {
+            setIsSaving(false);
+            props.onSavingStateChange!(true);
+        }
     });
 
     const updateQuery = useMutation(updateEntity(props.apiUrl!, props.sendAsMultipartFormData!), {
-        onMutate: () => setIsSaving(true),
+        onMutate: () => {
+            setIsSaving(true);
+            props.onSavingStateChange!(true);
+        },
         onSuccess: (response) => props.onAfterSave && props.onAfterSave(response.data),
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
-        onSettled: () => setIsSaving(false)
+        onSettled: () => {
+            setIsSaving(false);
+            props.onSavingStateChange!(true);
+        }
     });
 
     const deleteQuery = useMutation(deleteEntity(props.apiUrl!), {
-        onMutate: () => setIsSaving(true),
+        onMutate: () => {
+            setIsSaving(true);
+            props.onSavingStateChange!(true);
+        },
         onSuccess: (response) => props.onAfterDelete && props.onAfterDelete(response.data),
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
-        onSettled: () => setIsSaving(false)
+        onSettled: () => {
+            setIsSaving(false);
+            props.onSavingStateChange!(true);
+        }
     });
 
     const handleSave = useCallback((newEntity: LooseObject, urlParams: LooseObject | null = null) => {
@@ -292,7 +310,8 @@ ItnQueryForm.defaultProps = {
     cancelBtnText: "Отмена",
     urlParams: null,
     onError: null,
-    sendAsMultipartFormData: false
+    sendAsMultipartFormData: false,
+    onSavingStateChange: () => { }
 }
 
 export default ItnQueryFormWrapper;

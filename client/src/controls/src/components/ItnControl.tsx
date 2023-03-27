@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
     TextField,
     Box,
@@ -64,6 +64,7 @@ function ItnControl(props: IControlProps) {
     const tmpId = useRef<number>(1);
 
     const [acInputValue, setAcInputValue] = useState<string>("");
+    const [fileError, setFileError] = useState<string | null>(null);
 
     const handlePasswordGenerate = useCallback(() => {
         props.onChange && props.onChange(generatePassword(props.passwordLength!));
@@ -100,6 +101,7 @@ function ItnControl(props: IControlProps) {
 
     const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         //e.preventDefault();
+        setFileError(null);
         fileInputRef.current!.click();
     }, []);
 
@@ -111,8 +113,28 @@ function ItnControl(props: IControlProps) {
             return;
         }
 
+        let file = e.target.files![0];
+        if (props.maxFileSize && (file.size > props.maxFileSize)) {
+            let size = props.maxFileSize;
+            let unit = "Б";
+            if (size > 1024) {
+                size = Math.round(size / 10) / 100;
+                unit = "Кб"
+            }
+            if (size > 1024) {
+                size = Math.round(size / 10) / 100;
+                unit = "Мб"
+            }
+            if (size > 1024) {
+                size = Math.round(size / 10) / 100;
+                unit = "Гб"
+            }
+            setFileError(`Размер файла не должен превышать ${size}${unit}`);
+            return;
+        }
+
         props.onChange && props.onChange(e.target.files![0]);
-    }, [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [props.onChange, props.maxFileSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const checkEnter = useCallback((e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
@@ -461,7 +483,14 @@ function ItnControl(props: IControlProps) {
                 />;
             case 'file':
                 return (<FormControl>
-                    <input disabled={props.disabled} ref={fileInputRef} type="file" hidden onChange={uploadFile} accept={props.accept} />
+                    <input
+                        disabled={props.disabled}
+                        ref={fileInputRef}
+                        type="file"
+                        hidden
+                        onChange={uploadFile}
+                        accept={props.accept}
+                    />
                     {
                         props.value === null ?
                             <>
@@ -539,6 +568,10 @@ function ItnControl(props: IControlProps) {
                                 </Box> 
                     }
                     <FormHelperText error={props.error}>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
+                    {
+                        fileError &&
+                        <FormHelperText error>{fileError}</FormHelperText>
+                    }
                 </FormControl>);
             default: throw new Error();
         }
@@ -553,7 +586,8 @@ function ItnControl(props: IControlProps) {
         preview,
         checkEnter,
         acInputValue,
-        handleAutoCompleteInputChange
+        handleAutoCompleteInputChange,
+        fileError
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {

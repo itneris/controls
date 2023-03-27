@@ -60,7 +60,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 </Stack>
             })
             .WithDefaultValue("");*/
-        
+
         /*this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
             .File({ withImagePreview: true, isAvatar: true })
@@ -121,6 +121,11 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Заблокирован")
             .Bool()
             .Hide((e) => e.role === "1");*/
+
+        this.FieldFor(_ => _.avatar)
+            .WithLabel("Аватар")
+            .File({ maxSizeKb: 1000 * 10 })
+            //.Required();
 
         this.FieldFor(_ => _.role)
             .WithLabel(_ => "Роль" + _.role)
@@ -248,9 +253,6 @@ const TestComnonent = () => {
                 />
 
             }
-            {
-                /*
-                 
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
             <ItnQueryForm
                 apiUrl="http://localhost:5000/api/test"
@@ -262,8 +264,6 @@ const TestComnonent = () => {
                 onChange={handleResetAc}
                 ref={editFormRef}
             />
-                 */
-            }
             {
                 /*
             <PageTitle>Тестовая форма без апи</PageTitle>
