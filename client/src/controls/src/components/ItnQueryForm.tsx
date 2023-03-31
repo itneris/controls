@@ -186,7 +186,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => {
             setIsSaving(false);
-            props.onSavingStateChange!(true);
+            props.onSavingStateChange!(false);
         }
     });
 
@@ -199,7 +199,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => {
             setIsSaving(false);
-            props.onSavingStateChange!(true);
+            props.onSavingStateChange!(false);
         }
     });
 
@@ -212,7 +212,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         onError: (error) => props.onError && props.onError((error as AxiosError)?.response?.data),
         onSettled: () => {
             setIsSaving(false);
-            props.onSavingStateChange!(true);
+            props.onSavingStateChange!(false);
         }
     });
 
