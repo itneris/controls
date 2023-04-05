@@ -251,7 +251,7 @@ const TestComnonent = () => {
 
 
             {
-                /*
+                
                 <ItnQueryForm
                     ref={createFormRef}
                     header="Форма создания"
@@ -262,20 +262,24 @@ const TestComnonent = () => {
                     onChange={handleCreateChange}
                     onError={handleError}
                 />
-                */
+                
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
-            <ItnQueryForm
-                apiUrl="http://localhost:5000/api/test"
-                fieldBuilder={fieldBuilder}
-                id="1"
-                type="view"
-                onAfterLoad={(e) => console.log(e)}
-                urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
-                onError={e => console.log(e)}
-                onChange={handleResetAc}
-                ref={editFormRef}
-            />
+
+            {/*
+                <ItnQueryForm
+                    apiUrl="http://localhost:5000/api/test"
+                    fieldBuilder={fieldBuilder}
+                    id="1"
+                    //type="view"
+                    onAfterLoad={(e) => console.log(e)}
+                    urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
+                    onError={e => console.log(e)}
+                    onChange={handleResetAc}
+                    ref={editFormRef}
+                />
+                */
+            }
             {
                 /*
             <PageTitle>Тестовая форма без апи</PageTitle>

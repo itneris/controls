@@ -529,7 +529,7 @@ app.get('/api/dicts/roles', async (req, res) => {
 });
 
 app.get('/api/dicts/roles_auto_with_search', async (req, res) => {
-    //await snooze(3000);
+    //await snooze(1000);
     res.send([...rolesValues].filter(r => r.label.toLowerCase().includes(req.query["search"].toLowerCase())).splice(0, 2));
 });
 

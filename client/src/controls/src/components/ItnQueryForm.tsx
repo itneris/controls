@@ -53,6 +53,7 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
 const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, ref) => {
     const baseFormRef = useRef<IFormRef | null>(null);
     const autoCompleteTimeouts = useRef<LooseTimeoutObject>({});
+    const controlsLoading = useRef<LooseObject>({});
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
@@ -93,7 +94,6 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     const [isLoading, setIsLoading] = useState<boolean>(formType !== "create" && props.entity === null);
     const [errorLoading, setErrorLoading] = useState<string | null>(null); 
     const [isSaving, setIsSaving] = useState<boolean>(false);
-    const [controlsLoading, setControlsLoading] = useState<LooseObject>({});
     const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<LooseObject>({});
     //const [queriesEnabled, setQueriesEnabled] = useState<string[]>([]);
 
@@ -156,26 +156,26 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 },
                 onSettled: () => {
                     //setQueriesEnabled(oldState => [...oldState, _.property]);
-                    setControlsLoading((oldState) => ({
-                        ...oldState,
+                    controlsLoading.current = {
+                        ...controlsLoading.current,
                         [_.property]: false
-                    }));
+                    };
                 }
             }))
     });
 
     useEffect(() => {
         autocompleteQueries.forEach(_ => _.refetch());
-        if (Object.keys(controlsLoading).length === 0) {
+        if (Object.keys(controlsLoading.current).length === 0) {
             let loadingState: LooseObject = {};
             fieldBuilder.Build()
-                .filter(f => f.selectApiUrl !== null)
+                .filter(f => f.selectApiUrl !== null && (props.type !== "view" || f.type === "select"))
                 .forEach(f => loadingState[f.property] = true);
             
 
-            setControlsLoading(loadingState);
+            controlsLoading.current = loadingState;
         }
-    }, [fieldBuilder]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [fieldBuilder, props.type]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const createQuery = useMutation(createEntity(props.apiUrl!, props.sendAsMultipartFormData!), {
         onMutate: () => {
@@ -244,6 +244,14 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
     }, [deleteQuery, props.urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAutoCompleteInputChange = useCallback((prop: string, value: string, event: "input" | "clear" | "reset") => {
+        if (props.type === "view") {
+            return;
+        }
+
+        if ((autocompleteSearchValues[prop] ?? "") === value) {
+            return;
+        }
+
         if (event === "input" || event === "clear") {
             if (autoCompleteTimeouts.current[prop] !== undefined) {
                 clearTimeout(autoCompleteTimeouts.current[prop]);
@@ -251,17 +259,17 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
 
             autoCompleteTimeouts.current[prop] = setTimeout(() => {
                 //autocompleteQueries.forEach(_ => _.refetch());
-                setControlsLoading((oldState) => ({
-                    ...oldState,
+                controlsLoading.current = {
+                    ...controlsLoading.current,
                     [prop]: true
-                }));
+                };
                 setAutocompleteSearchValues(oldValue => ({
                     ...oldValue,
                     [prop]: value
                 }));
             }, 300);
         }
-    }, []);
+    }, [props.type, autocompleteSearchValues]);
 
     return (
         <ItnBaseForm
@@ -285,7 +293,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             variant={props.variant}
             headerContent={props.headerContent}
             footerContent={props.footerContent}
-            controlsLoading={controlsLoading}
+            controlsLoading={controlsLoading.current}
             onAutocompleteInputChange={handleAutoCompleteInputChange}
         >
             {props.children}

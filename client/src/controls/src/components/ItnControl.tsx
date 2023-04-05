@@ -182,11 +182,10 @@ function ItnControl(props: IControlProps) {
     const control = useMemo(() => {
         switch (props.type) {
             case 'select':
-                const defaultValue = !props.autocompleteLoading ? "" :
-                    !props.multiple ? props.value || "" :
-                        props.value.length > 0 ? props.value[0] :
-                            "";
-                
+                const currentValue = props.autocompleteLoading ?
+                    (props.multiple ? ["null"] : "null") :
+                    (props.value ?? (props.multiple ? [] : ""));
+
                 return (
                     <FormControl size="small" fullWidth>
                         <InputLabel error={props.error} id="sel">{props.label}</InputLabel>
@@ -198,17 +197,15 @@ function ItnControl(props: IControlProps) {
                             size="small"
                             error={props.error}
                             disabled={props.disabled}
-                            value={props.value ?? (props.multiple ? [] : "")}
+                            value={currentValue}
                             onChange={event => props.onChange && props.onChange(event.target.value)}
                             multiple={props.multiple}                            
                         >
-                            <MenuItem disabled={props.allowNullInSelect ? false : true} value={defaultValue}>
-                                <Typography variant='body2'>
-                                    {
-                                        props.autocompleteLoading ? "Загрузка..." :
-                                            props.selectNullLabel || `Выберите ${props.label}`
-                                    }
-                                </Typography>
+                            <MenuItem disabled={props.allowNullInSelect ? false : true} value={props.autocompleteLoading ? "null" : ""}>
+                                {
+                                    props.autocompleteLoading ? "Загрузка..." :
+                                        (props.selectNullLabel || `Выберите ${props.label}`)
+                                }
                             </MenuItem>
                             {
                                 props.items!.map((item) => {
