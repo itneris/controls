@@ -396,6 +396,7 @@ const TestComnonent = () => {
             <ItnModal
                 ref={modalRef}
                 yesBtnText="Да"
+                fullScreen
                 noBtnText="Нет"
                 onResult={(res: boolean | null) => {
                     if (res === true) {

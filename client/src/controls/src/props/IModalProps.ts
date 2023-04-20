@@ -34,6 +34,11 @@ export default interface IModalProps {
      * */
     yesButtonDisabled?: boolean;
     /**
+     * Show modal on fullscreen
+     * Default: false
+     * */
+    fullScreen?: boolean;
+    /**
      * Size of modal based on MaterialUI breakpoints
      * Default: "md"
      * */

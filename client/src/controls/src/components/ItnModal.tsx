@@ -29,6 +29,7 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
             onClose={() => handleResult(null)}
             maxWidth={props.size}
             fullWidth
+            fullScreen={props.fullScreen}
         >
             {
                 (props.title !== null || props.titleComponent !== null) &&
