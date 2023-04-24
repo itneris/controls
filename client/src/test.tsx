@@ -11,6 +11,7 @@ import ContentEditor from "./MdEditor";
 
 interface IUserDTO {
     description: string;
+    wysiwyg: string;
     id: string;
     name: string;
     surname: string;
@@ -103,7 +104,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Число посещений")
             .Number()
             .Required();
-
+            */
         this.FieldFor(_ => _.visitDate)
             .WithLabel("Дата записи")
             .DatePicker()
@@ -121,7 +122,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")
             .Bool()
-            .Hide((e) => e.role === "1");*/
+            .Hide((e) => e.role === "1");
 
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
@@ -167,6 +168,10 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
             .SelectWithQuery("http://localhost:5000/api/dicts/roles");
+
+        this.FieldFor(_ => _.wysiwyg)
+            .WithLabel("Wysiwyg описание")
+            .Wysiwyg();
 
         /*this.FieldFor(_ => _.note)
             .WithLabel("Примечание")
@@ -266,7 +271,7 @@ const TestComnonent = () => {
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
 
-            {/*
+            {
                 <ItnQueryForm
                     apiUrl="http://localhost:5000/api/test"
                     fieldBuilder={fieldBuilder}
@@ -278,7 +283,7 @@ const TestComnonent = () => {
                     onChange={handleResetAc}
                     ref={editFormRef}
                 />
-                */
+                
             }
             {
                 /*

@@ -480,6 +480,7 @@ app.get('/api/test/1', (req, res) => {
         name: "Тест",
         middlename: "Тестович",
         role: "1",
+        wysiwyg: '<div style="font-size: 44px">Qwerty</div>',
         role_api: "2",
         blocked: true,
         password: "Qwerty123!",

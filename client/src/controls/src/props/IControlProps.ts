@@ -4,7 +4,7 @@ export default interface IControlProps {
     /**
      * Type of rendered control
      * */
-    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime";
+    type: "select" | "autocomplete" | "number" | "string" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime" | "wysiwyg";
     /**
      * Controlled value of control
      * */
@@ -203,6 +203,19 @@ export default interface IControlProps {
      * Default: null
      * */
     onEnter?: () => void;
+
+
+    //Wysiwyg props
+    /**
+     * Props for wysiwig
+     * Default: null
+     * */
+    wysiwygEditorProps?: {
+        availableFonts?: string[];
+        minHeight?: string;
+        buttonList?: any[];
+    } | null,
+    onWysiwygImageSave?: (data: File) => Promise<string> | null
 }
 
 export class ItnSelectOption {

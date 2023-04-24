@@ -220,6 +220,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 helperText={field.helperText}
                 multiple={field.multiple}
                 onEnter={field.onEnterKeyPress}
+                onWysiwygImageSave={field.onWysiwygImageSave}
+                wysiwygEditorProps={{
+                    availableFonts: field.availableFonts,
+                    buttonList: field.buttonList,
+                    minHeight: field.minHeight
+                }}
             />
         }
     }, [props, validation, handleChange])

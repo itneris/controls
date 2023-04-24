@@ -3,6 +3,7 @@ import { ItnSelectOption } from "../props/IControlProps";
 import { FieldOptionsBuilder } from "./FieldOptionsBuilder";
 import IFileControlProps from "../props/IFileControlProps";
 import ITextAreaControlProps from "../props/ITextAreaControlProps";
+import { ISunEditorProps } from "../components/wysiwygEditor/IWysiwygEditorProps";
 
 declare module "./FieldOptionsBuilder" {
 	interface FieldOptionsBuilder<T extends LooseObject> {
@@ -120,11 +121,25 @@ declare module "./FieldOptionsBuilder" {
 		* */
 		WithTooltip(tooltip: string): FieldOptionsBuilder<T>;
 		/**
-		* Execites function on enter press
+		* Executes function on enter press
 		 * @param {string} text text to render in tooltip
 		* */
 		OnEnter(onEnterKeyPress: () => void): FieldOptionsBuilder<T>;
+		/**
+		* Change input type to wysiwyg redactor
+		 * @param {string} text text to render in tooltip
+		* */
+		Wysiwyg(onImageSave?: (data: File) => Promise<string>, props?: ISunEditorProps): FieldOptionsBuilder<T>;
 	}
+}
+
+FieldOptionsBuilder.prototype.Wysiwyg = function <T extends LooseObject>(onImageSave?: (data: File) => Promise<string>, props?: ISunEditorProps) {
+	return this
+		.SetFieldProp("type", "wysiwyg")
+		.SetFieldProp("onWysiwygImageSave", onImageSave)
+		.SetFieldProp("minHeight", props?.minHeight)
+		.SetFieldProp("buttonList", props?.buttonList)
+		.SetFieldProp("availableFonts", props?.availableFonts) as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.OnEnter = function <T extends LooseObject>(onEnterKeyPress: () => void) {

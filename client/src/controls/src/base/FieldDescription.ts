@@ -5,7 +5,7 @@ import { LooseObject } from "./LooseObject";
 export class FieldDescription implements LooseObject {
     property: string;
     order: number;
-    type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime" = "string";
+    type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime" | "wysiwyg" = "string";
     disabled: boolean | ((entity: LooseObject) => boolean) = false;
     hidden: boolean | ((entity: LooseObject) => boolean) = false;
     placeholder: string | null = null;
@@ -48,6 +48,12 @@ export class FieldDescription implements LooseObject {
     onAutocompleteOptionAdded: ((value: string) => void) | null = null;
     multiple: boolean = false;
     onEnterKeyPress: () => void = () => { };
+
+    //Content-editor
+    availableFonts?: string[];
+    minHeight?: string;
+    buttonList?: any[];
+    onWysiwygImageSave?: (data: File) => Promise<string>;
 
     constructor(order: number, property: string) {
         this.property = property;

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     TextField,
     Box,
@@ -34,6 +34,8 @@ import IControlProps, { ItnSelectOption } from "../props/IControlProps";
 import { DatePicker, DateTimePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ru } from "date-fns/locale";
+import WysiwygViewer from "./wysiwygViewer/WysiwygViewer";
+import WysiwygEditor from "./wysiwygEditor/WysiwygEditor";
 
 const generatePassword = (length: number): string => {
     const small = "abcdefghijklmnopqrstuvwxyz";
@@ -59,7 +61,6 @@ const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const textInputRef = useRef<HTMLInputElement | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const tmpId = useRef<number>(1);
 
@@ -91,13 +92,6 @@ function ItnControl(props: IControlProps) {
 
         return () => URL.revokeObjectURL(objectUrl);
     }, [props.value, props.withImagePreview, setPreview, props.type]);
-
-    /*useEffect(() => {
-        if (textInputRef.current === null) {
-            return;
-        }
-        textInputRef.current.value = props.value;
-    }, [props.value]);*/
 
     const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         //e.preventDefault();
@@ -330,9 +324,12 @@ function ItnControl(props: IControlProps) {
                         }}
                         disabled={props.disabled}
                         renderInput={(params) =>
+                            //@ts-ignore
                             <TextField
+                                 //@ts-ignore
                                 {...params}
                                 inputProps={{
+                                    //@ts-ignore
                                     ...params.inputProps,
                                     placeholder: "ДД.ММ.ГГГГ"
                                 }}
@@ -356,10 +353,12 @@ function ItnControl(props: IControlProps) {
                         }}
                         disabled={props.disabled}
                         renderInput={(params) =>
+                            //@ts-ignore
                             <TextField
+                                //@ts-ignore
                                 {...params}
                                 inputProps={{
-                                    ...params.inputProps,
+                                    //@ts-ignore
                                     placeholder: "ЧЧ:ММ"
                                 }}
                                 size="small"
@@ -382,10 +381,12 @@ function ItnControl(props: IControlProps) {
                         }}
                         disabled={props.disabled}
                         renderInput={(params) =>
+                            //@ts-ignore
                             <TextField
+                                //@ts-ignore
                                 {...params}
                                 inputProps={{
-                                    ...params.inputProps,
+                                    //@ts-ignore
                                     placeholder: "ДД.ММ.ГГГГ ЧЧ:ММ"
                                 }}
                                 size="small"
@@ -403,7 +404,6 @@ function ItnControl(props: IControlProps) {
                         error={props.error}
                     >
                         <TextField
-                            ref={textInputRef}
                             variant={props.variant}
                             fullWidth
                             //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
@@ -450,7 +450,6 @@ function ItnControl(props: IControlProps) {
                 />;*/
             case 'string':
                 return <TextField
-                    ref={textInputRef}
                     onKeyPress={checkEnter}
                     variant={props.variant}
                     disabled={props.disabled}
@@ -469,7 +468,6 @@ function ItnControl(props: IControlProps) {
                 />;
             case 'number':
                 return <TextField
-                    ref={textInputRef}
                     value={props.value}
                     onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
                     //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
@@ -484,6 +482,20 @@ function ItnControl(props: IControlProps) {
                     disabled={props.disabled}
                     size="small"
                 />;
+            case 'wysiwyg':
+                if (props.disabled) {
+                    return <WysiwygViewer
+                        content={props.value}
+                    />
+                } else {
+                    return <WysiwygEditor
+                        value={props.value}
+                        onChange={props.onChange}
+                        buttonList={props?.wysiwygEditorProps?.buttonList}
+                        availableFonts={props?.wysiwygEditorProps?.availableFonts}
+                        minHeight={props?.wysiwygEditorProps?.minHeight}
+                    />
+                };
             case 'file':
                 return (<FormControl>
                     <input
@@ -661,7 +673,9 @@ ItnControl.defaultProps = {
     helperText: null,
     allowNegative: false,
     allowDecimals: false,
-    multiple: false
+    multiple: false,
+    wysiwygEditorProps: null,
+    onWysiwygImageSave: null
 }
 
 export default ItnControl;
