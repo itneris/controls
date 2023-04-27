@@ -108,7 +108,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.visitDate)
             .WithLabel("Дата записи")
             .DatePicker()
-            .Disable()
+            .WithDefaultValue(new Date().toISOString())
+            //.Disable()
             .Required();
 
         this.FieldFor(_ => _.visitTime)
@@ -135,7 +136,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("1", "Админ"),
                 new ItnSelectOption("2", "Пользователь"),
                 new ItnSelectOption("3", "Дата-менеджер"),
-            ]);
+            ], false, { allowNull: true, nullLabel: "Без роли" });
 
         this.FieldFor(_ => _.role_select_multiple)
             .WithLabel("Роль (multiselect)")

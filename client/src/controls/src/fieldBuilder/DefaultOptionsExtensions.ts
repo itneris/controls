@@ -4,6 +4,7 @@ import { FieldOptionsBuilder } from "./FieldOptionsBuilder";
 import IFileControlProps from "../props/IFileControlProps";
 import ITextAreaControlProps from "../props/ITextAreaControlProps";
 import { ISunEditorProps } from "../components/wysiwygEditor/IWysiwygEditorProps";
+import ISelectControlProps from "../props/ISelectControlProps";
 
 declare module "./FieldOptionsBuilder" {
 	interface FieldOptionsBuilder<T extends LooseObject> {
@@ -16,7 +17,7 @@ declare module "./FieldOptionsBuilder" {
 		 * Changes control type to 'select' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in select
 		 * */
-		Select(options: ItnSelectOption[], multiple?: boolean): FieldOptionsBuilder<T>;
+		Select(options: ItnSelectOption[], multiple?: boolean, props?: ISelectControlProps): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'autocomplete' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in autocomplete
@@ -58,7 +59,7 @@ declare module "./FieldOptionsBuilder" {
 		 * Changes control type to 'select' and defines api url for get options
 		 * @param {string} apiUrl API address that return array of ItnSelectOption
 		 * */
-		SelectWithQuery(apiUrl: string, multiple?: boolean): FieldOptionsBuilder<T>;
+		SelectWithQuery(apiUrl: string, multiple?: boolean, props?: ISelectControlProps): FieldOptionsBuilder<T>;
 		/**
 		 * Disables control
 		 * @param {boolean | (entity: LooseObject) => boolean} disabled sets control state or function for calculate control state dependent on current form values
@@ -152,17 +153,21 @@ FieldOptionsBuilder.prototype.WithLabel = function <T extends LooseObject>(label
 		.SetFieldProp("label", label) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Select = function <T extends LooseObject>(options: ItnSelectOption[], multiple: boolean = false) {
+FieldOptionsBuilder.prototype.Select = function <T extends LooseObject>(options: ItnSelectOption[], multiple: boolean = false, props: ISelectControlProps = {}) {
 	return this
 		.SetFieldProp("type", "select")
 		.SetFieldProp("multiple", multiple)
+		.SetFieldProp("selectNullLabel", props.nullLabel ?? null)
+		.SetFieldProp("allowNullInSelect", props.allowNull ?? false)
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string, multiple: boolean = false) {
+FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string, multiple: boolean = false, props: ISelectControlProps = {}) {
 	return this
 		.SetFieldProp("type", "select")
 		.SetFieldProp("multiple", multiple)
+		.SetFieldProp("selectNullLabel", props.nullLabel ?? null)
+		.SetFieldProp("allowNullInSelect", props.allowNull ?? false)
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 
