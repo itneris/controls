@@ -167,9 +167,9 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Роли (autocomplete multiple without search as type)")
             .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);*/
 
-        /*this.FieldFor(_ => _.role_api)
+        this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
-            .SelectWithQuery("http://localhost:5000/api/dicts/roles");*/
+            .SelectWithQuery("http://localhost:5000/api/dicts/roles");
 
         this.FieldFor(_ => _.wysiwyg)
             .WithLabel("Wysiwyg описание")
