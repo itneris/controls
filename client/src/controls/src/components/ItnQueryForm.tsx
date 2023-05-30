@@ -169,7 +169,11 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         if (Object.keys(controlsLoading.current).length === 0) {
             let loadingState: LooseObject = {};
             fieldBuilder.Build()
-                .filter(f => f.selectApiUrl !== null && (props.type !== "view" || f.type === "select"))
+                .filter(f =>
+                    f.selectApiUrl !== null &&
+                    (props.type !== "view" || f.type === "select") &&
+                    (typeof (f.disabled) === "function" ? !f.disabled(entity ?? {}) : !f.disabled)
+                )
                 .forEach(f => loadingState[f.property] = true);
             
 
@@ -248,6 +252,12 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
             return;
         }
 
+        const disabledProp = fieldBuilder.Build().find(_ => _.property === prop)?.disabled;
+        const isDisabled = typeof (disabledProp) === "function" ? disabledProp(entity ?? {}) : disabledProp;
+        if (isDisabled) {
+            return;
+        }
+
         if ((autocompleteSearchValues[prop] ?? "") === value) {
             return;
         }
@@ -269,7 +279,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 }));
             }, 300);
         }
-    }, [props.type, autocompleteSearchValues]);
+    }, [props.type, autocompleteSearchValues, fieldBuilder]);
 
     return (
         <ItnBaseForm
