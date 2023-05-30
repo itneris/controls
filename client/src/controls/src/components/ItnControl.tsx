@@ -323,13 +323,27 @@ function ItnControl(props: IControlProps) {
                             }
                         }}
                         disabled={props.disabled}
-                        renderInput={(params) =>
-                            //@ts-ignore
+                        slotProps={{
+                            textField: {
+                                placeholder: "ДД.ММ.ГГГГ",
+                                size: "small",
+                                fullWidth: true,
+                                error: props.error,
+                                helperText: props.error ? props.errorText : (props.helperText ?? "")
+                            }
+                        }}
+                        localeText={{
+                            fieldDayPlaceholder: () => "ДД",
+                            fieldHoursPlaceholder: () => "ЧЧ",
+                            fieldMinutesPlaceholder: () => "ММ",
+                            fieldMonthPlaceholder: () => "ММ",
+                            fieldSecondsPlaceholder: () => "CC",
+                            fieldYearPlaceholder: () => "ГГГГ"
+                        }}
+                        /*renderInput={(params) =>
                             <TextField
-                                 //@ts-ignore
                                 {...params}
                                 inputProps={{
-                                    //@ts-ignore
                                     ...params.inputProps,
                                     placeholder: "ДД.ММ.ГГГГ"
                                 }}
@@ -338,7 +352,7 @@ function ItnControl(props: IControlProps) {
                                 error={props.error}
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
-                        }
+                        }*/
                     />
                 </LocalizationProvider>;
             case 'time':
@@ -352,13 +366,27 @@ function ItnControl(props: IControlProps) {
                             }
                         }}
                         disabled={props.disabled}
-                        renderInput={(params) =>
-                            //@ts-ignore
+                        slotProps={{
+                            textField: {
+                                placeholder: "ЧЧ:ММ",
+                                size: "small",
+                                fullWidth: true,
+                                error: props.error,
+                                helperText: props.error ? props.errorText : (props.helperText ?? "")
+                            }
+                        }}
+                        localeText={{
+                            fieldDayPlaceholder: () => "ДД",
+                            fieldHoursPlaceholder: () => "ЧЧ",
+                            fieldMinutesPlaceholder: () => "ММ",
+                            fieldMonthPlaceholder: () => "ММ",
+                            fieldSecondsPlaceholder: () => "CC",
+                            fieldYearPlaceholder: () => "ГГГГ"
+                        }}
+                        /*renderInput={(params) =>
                             <TextField
-                                //@ts-ignore
                                 {...params}
                                 inputProps={{
-                                    //@ts-ignore
                                     placeholder: "ЧЧ:ММ"
                                 }}
                                 size="small"
@@ -366,7 +394,7 @@ function ItnControl(props: IControlProps) {
                                 error={props.error}
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
-                        }
+                        }*/
                     />
                 </LocalizationProvider>;
             case 'datetime':
@@ -380,13 +408,27 @@ function ItnControl(props: IControlProps) {
                             }
                         }}
                         disabled={props.disabled}
-                        renderInput={(params) =>
-                            //@ts-ignore
+                        slotProps={{
+                            textField: {
+                                placeholder: "ДД.ММ.ГГГГ ЧЧ:ММ",
+                                size: "small",
+                                fullWidth: true,
+                                error: props.error,
+                                helperText: props.error ? props.errorText : (props.helperText ?? "")
+                            }
+                        }}
+                        localeText={{
+                            fieldDayPlaceholder: () => "ДД",
+                            fieldHoursPlaceholder: () => "ЧЧ",
+                            fieldMinutesPlaceholder: () => "ММ",
+                            fieldMonthPlaceholder: () => "ММ",
+                            fieldSecondsPlaceholder: () => "CC",
+                            fieldYearPlaceholder: () => "ГГГГ"
+                        }}
+                        /*renderInput={(params) =>
                             <TextField
-                                //@ts-ignore
                                 {...params}
                                 inputProps={{
-                                    //@ts-ignore
                                     placeholder: "ДД.ММ.ГГГГ ЧЧ:ММ"
                                 }}
                                 size="small"
@@ -394,7 +436,7 @@ function ItnControl(props: IControlProps) {
                                 error={props.error}
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
-                        }
+                        }*/
                     />
                 </LocalizationProvider>;
             case 'password':

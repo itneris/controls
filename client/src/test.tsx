@@ -146,13 +146,14 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 new ItnSelectOption("3", "Дата-менеджер"),
             ], true);
 
-        this.FieldFor(_ => _.role_select_multiple_api)
+        /*this.FieldFor(_ => _.role_select_multiple_api)
             .WithLabel("Роль (multiselect)")
-            .SelectWithQuery("http://localhost:5000/api/dicts/roles", true);
+            .SelectWithQuery("http://localhost:5000/api/dicts/roles", true);*/
 
         this.FieldFor(_ => _.roleValueWithSearch)
             .WithLabel("Роль (autocomplete with search)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true);
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true)
+            .Disable();
 
         //this.FieldFor(_ => _.roleValue)
         //    .WithLabel("Роль (autocomplete)")
@@ -166,9 +167,9 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Роли (autocomplete multiple without search as type)")
             .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);*/
 
-        this.FieldFor(_ => _.role_api)
+        /*this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
-            .SelectWithQuery("http://localhost:5000/api/dicts/roles");
+            .SelectWithQuery("http://localhost:5000/api/dicts/roles");*/
 
         this.FieldFor(_ => _.wysiwyg)
             .WithLabel("Wysiwyg описание")
@@ -257,7 +258,7 @@ const TestComnonent = () => {
 
 
             {
-                
+                /*
                 <ItnQueryForm
                     ref={createFormRef}
                     header="Форма создания"
@@ -268,7 +269,7 @@ const TestComnonent = () => {
                     onChange={handleCreateChange}
                     onError={handleError}
                 />
-                
+                */
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
 

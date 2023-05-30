@@ -136,7 +136,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
                 (props.type !== "view" || _.type === "select") &&
                 (_.type === "autocomplete" || _.type === "select") &&
                 (typeof (_.hidden) === "function" ? !_.hidden(entity ?? {}) : !_.hidden) &&
-                (typeof (_.disabled) === "function" ? !_.disabled(entity ?? {}) : !_.hidden)
+                (typeof (_.disabled) === "function" ? !_.disabled(entity ?? {}) : !_.disabled)
             )
             .map(_ => ({
                 queryKey: [_.property, _.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValues[_.property] || "")],
