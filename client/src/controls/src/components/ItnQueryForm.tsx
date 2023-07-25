@@ -41,6 +41,9 @@ const ItnQueryFormWrapper = React.forwardRef<IQueryFormRef, IQueryFormProps>((pr
         },
         setEntity(entity) {
             form.current!.setEntity(entity);
+        },
+        refetch() {
+            form.current!.refetch();
         }
     }));
 
@@ -73,6 +76,9 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         },
         setEntity(entity) {
             baseFormRef.current!.setEntity(entity);
+        },
+        refetch() {
+            formDataQuery.refetch();
         }
     }));
 
@@ -105,7 +111,7 @@ const ItnQueryForm = React.forwardRef<IQueryFormRef, IQueryFormProps>((props, re
         return fieldBuilder.Build().some(_ => _.type === "file");
     }, [fieldBuilder]);
 
-    useQuery<AxiosResponse<LooseObject>, AxiosError>(
+    const formDataQuery = useQuery<AxiosResponse<LooseObject>, AxiosError>(
         [props.apiUrl, props.id],
         getEntity(props.apiUrl ?? "/", props.id ?? ""),
         {

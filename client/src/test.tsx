@@ -169,7 +169,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")
-            .SelectWithQuery("http://localhost:5000/api/dicts/roles");
+            .SelectWithQuery("http://localhost:5000/api/dicts/roles")
+            .Disable();
 
         this.FieldFor(_ => _.wysiwyg)
             .WithLabel("Wysiwyg описание")

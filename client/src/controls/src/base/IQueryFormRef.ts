@@ -12,4 +12,8 @@ export interface IQueryFormRef extends IFormRef {
      * Starts form delete flow
      * */
     deleteEntity: (urlParams: LooseObject) => void
+    /**
+     * Execute get request to server
+     * */
+    refetch: () => void
 }
