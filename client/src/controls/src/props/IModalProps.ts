@@ -1,4 +1,4 @@
-﻿import { Breakpoint } from "@mui/material";
+﻿import { Breakpoint, SxProps } from "@mui/material";
 import React from "react";
 
 export default interface IModalProps {
@@ -63,4 +63,9 @@ export default interface IModalProps {
      * Default: null
      * */
     titleComponent?: React.ReactNode | null;
+    /**
+     * Replaces title and renders react node in title
+     * Default: null
+     * */
+    contentStyle?: SxProps;
 }

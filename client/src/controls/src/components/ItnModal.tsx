@@ -41,7 +41,7 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
                     }
                 </DialogTitle>
             }
-            <DialogContent>
+            <DialogContent sx={props.contentStyle}>
                 {
                     props.contentText != null &&
                     <DialogContentText mb={props.children !== null ? 2 : 0}>

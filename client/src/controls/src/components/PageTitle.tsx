@@ -1,6 +1,6 @@
 import React from 'react';
 import { Add,  ArrowBack,  HelpOutline } from "@mui/icons-material";
-import { Box, Button, Fab, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Fab, IconButton, Tooltip, Typography } from '@mui/material';
 import { IPageTitleProps } from '../props/IPageTitleProps';
 
 const PageTitle = (props: IPageTitleProps) => {
@@ -13,15 +13,15 @@ const PageTitle = (props: IPageTitleProps) => {
         <Box display='flex' gap={2} alignItems='center'>
             {
                 props.onBack !== null &&
-                <Fab
+                <IconButton
                     onClick={props.onBack}
                     size="small"
                     title="Назад"
                 >
                     <ArrowBack />
-                </Fab>
+                </IconButton>
             }
-            <Typography variant='h5'>{props.children}</Typography>
+            <Typography variant={props.textVariant!}>{props.children}</Typography>
             {
                 props.tooltip !== null &&
                 <Tooltip
@@ -60,7 +60,8 @@ PageTitle.defaultProps = {
     onBack: null,
     headerComponent: null,
     tooltip: null,
-    btnVariant: 'contained'
+    btnVariant: 'contained',
+    textVariant: "h5"
 }
 
 export default PageTitle;
