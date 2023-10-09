@@ -1,7 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useCallback } from 'react';
-import { AxiosError } from 'axios';
-import { useMutation } from '@tanstack/react-query';
 
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -39,7 +37,7 @@ function WysiwygEditor(props: IWysiwygEditorProps) {
 
     const updateText = useCallback((text: string) => {
         props.onChange && props.onChange(text);
-    }, [props.onChange]);
+    }, [props]);
 
     const handleUploadImage = useCallback(async (data: File): Promise<string> => {
         if (props.onImageSave) {
@@ -47,7 +45,34 @@ function WysiwygEditor(props: IWysiwygEditorProps) {
         }
 
         return "";
-    }, [props.onImageSave]);
+    }, [props]);
+
+    const btnList = useMemo(() => {
+        if (props.buttonList) {
+            return props.buttonList;
+        }
+
+        return [
+            ["undo", "redo"],
+            ["font", "fontSize"],
+            [
+                "bold",
+                "underline",
+                "italic",
+                "strike",
+                "subscript",
+                "superscript"
+            ],
+            ["fontColor", "hiliteColor"],
+            ["align", "list", "lineHeight"],
+            ["outdent", "indent"],
+
+            props.onImageSave ? ["table", "link", "image"] : ["table", "link"],
+            ["math"], //You must add the 'katex' library at options to use the 'math' plugin.
+            ["removeFormat"]
+
+        ]
+    }, [props.onImageSave, props.buttonList]);
 
     const handleImageUploadBefore = useCallback((files: File[], info: Object, uploadHandler: Function) => {
         handleUploadImage(files[0])
@@ -141,9 +166,9 @@ function WysiwygEditor(props: IWysiwygEditorProps) {
                 autoFocus={false}
                 onChange={updateText}
                 onPaste={onPaste}
-                onImageUploadBefore={handleImageUploadBefore}
+                onImageUploadBefore={props.onImageSave ? handleImageUploadBefore : undefined}
                 setOptions={{
-                    buttonList: props.buttonList,
+                    buttonList: btnList,
                     defaultTag: "div",
                     minHeight: props.minHeight!,
                     showPathLabel: false,
@@ -159,28 +184,7 @@ function WysiwygEditor(props: IWysiwygEditorProps) {
 
 WysiwygEditor.defaultProps = {
     availableFonts: EditorFonts,
-    minHeight: "300px",
-    
-    buttonList: [
-        ["undo", "redo"],
-        ["font", "fontSize"],
-        [
-            "bold",
-            "underline",
-            "italic",
-            "strike",
-            "subscript",
-            "superscript"
-        ],
-        ["fontColor", "hiliteColor"],
-        ["align", "list", "lineHeight"],
-        ["outdent", "indent"],
-
-        ["table", "link", "image"],
-        ["math"], //You must add the 'katex' library at options to use the 'math' plugin.
-        ["removeFormat"]
-
-    ]
+    minHeight: "300px"
 }
 
 export default WysiwygEditor;

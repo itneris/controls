@@ -91,7 +91,7 @@ function ItnControl(props: IControlProps) {
         setPreview(objectUrl);
 
         return () => URL.revokeObjectURL(objectUrl);
-    }, [props.value, props.withImagePreview, setPreview, props.type]);
+    }, [props]);
 
     const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         //e.preventDefault();
@@ -171,7 +171,7 @@ function ItnControl(props: IControlProps) {
             setAcInputValue(props.value?.label ?? "");
             props.onAutocompleteInputChange && props.onAutocompleteInputChange(props.value?.label ?? "", "input");
         }
-    }, [props.value, props.type, props.multiple, setAcInputValue]);
+    }, [props, setAcInputValue]);
 
     const control = useMemo(() => {
         switch (props.type) {
@@ -536,6 +536,7 @@ function ItnControl(props: IControlProps) {
                         buttonList={props?.wysiwygEditorProps?.buttonList}
                         availableFonts={props?.wysiwygEditorProps?.availableFonts}
                         minHeight={props?.wysiwygEditorProps?.minHeight}
+                        onImageSave={props?.onWysiwygImageSave ?? undefined}
                     />
                 };
             case 'file':

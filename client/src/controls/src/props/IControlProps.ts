@@ -215,7 +215,7 @@ export default interface IControlProps {
         minHeight?: string;
         buttonList?: any[];
     } | null,
-    onWysiwygImageSave?: (data: File) => Promise<string> | null
+    onWysiwygImageSave?: ((data: File) => Promise<string>) | null
 }
 
 export class ItnSelectOption {
