@@ -1,22 +1,21 @@
 import { ReactNode } from "react";
-import { ItnSelectOption } from "../props/IControlProps";
-import { LooseObject } from "./LooseObject";
+import { ItnSelectOption } from "..";
 
-export class FieldDescription implements LooseObject {
-    property: string;
+export class FieldDescription<T> {
+    property: keyof T;
     order: number;
     type: "string" | "number" | "select" | "autocomplete" | "date" | "checkbox" | "chip" | "password" | "file" | "time" | "datetime" | "wysiwyg" = "string";
-    disabled: boolean | ((entity: LooseObject) => boolean) = false;
-    hidden: boolean | ((entity: LooseObject) => boolean) = false;
+    disabled: boolean | ((entity: T) => boolean) = false;
+    hidden: boolean | ((entity: T) => boolean) = false;
     placeholder: string | null = null;
     error: boolean = false;
     errorText: string | null = null;
-    label: string | ((entity: LooseObject) => string) | null = null;
+    label: string | ((entity: T) => string) | null = null;
     onClick: (() => void) | null = null;
     variant: "outlined" | "standard" | "filled" = "outlined";
     tooltip: string | null = null;
     helperText: string | null = null;
-    custom: ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean, entity: LooseObject) => ReactNode) | null = null;
+    custom: ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean, entity: T) => ReactNode) | null = null;
     items: ItnSelectOption[] = [];
     min: number | null = null;
     max: number | null = null;
@@ -29,8 +28,8 @@ export class FieldDescription implements LooseObject {
     selectNullLabel: string | null = null;
     noOptionsText: string | null = null;
     display: boolean | (() => boolean) = true;
-    validation: ((value: any, entity: LooseObject) => string | null) | null = null;
-    required: boolean | ((entity: LooseObject) => boolean) = false;
+    validation: ((value: any, entity: T) => string | null) | null = null;
+    required: boolean | ((entity: T) => boolean) = false;
     accept: string = "*";
     maxFileSize: number = 4096 * 1000;
     withImagePreview: boolean = false;
@@ -55,7 +54,7 @@ export class FieldDescription implements LooseObject {
     buttonList?: any[];
     onWysiwygImageSave?: (data: File) => Promise<string>;
 
-    constructor(order: number, property: string) {
+    constructor(order: number, property: keyof T) {
         this.property = property;
         this.order = order;
     }

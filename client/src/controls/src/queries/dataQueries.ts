@@ -1,28 +1,31 @@
-import { LooseObject } from "@itneris/controls/dist/base/LooseObject";
 import { QueryFunctionContext } from "@tanstack/react-query";
 import axios, {  AxiosResponse } from "axios";
-import { ItnSelectOption } from "../props/IControlProps";
+import { ItnSelectOption } from "..";
+import { UrlParams } from "../base/UrlParams";
+import ItnFormFile from "../props/ItnFormFile";
 
-export interface IFormDeleteParams {
+export interface IFormDeleteParams<T> {
     id?: string | null,
-    urlParams?: LooseObject | null
+    urlParams?: UrlParams | null
 }
 
-export interface IFormMutateParams extends IFormDeleteParams {
+export interface IFormMutateParams<T> extends IFormDeleteParams<T> {
     id?: string | null,
-    entity: LooseObject,
+    entity: T,
     useFormData: boolean
 }
 
-export const getEntity = <T>(apiName: string, id: string) => async (): Promise<AxiosResponse<T>> => {
-    return await axios.get(`${apiName}/${id}`);
+export const getEntity = <T>(apiName: string, id: string) => async () => {
+    const response = await axios.get(`${apiName}/${id}`);
+    return response.data as T;
 }
 
-export const getDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
-    return await axios.get(context.queryKey[1] as string);
+export const getDict = async (context: QueryFunctionContext) => {
+    const response = await axios.get(context.queryKey[1] as string);
+    return response.data as ItnSelectOption[];
 }
 
-export const getAutocompleteDict = async (context: QueryFunctionContext): Promise<AxiosResponse<ItnSelectOption[]>> => {
+export const getAutocompleteDict = async (context: QueryFunctionContext) => {
     let url = context.queryKey[1] as string;
     if (context.queryKey[2] !== null) {
         if (url.includes("?")) {
@@ -32,10 +35,11 @@ export const getAutocompleteDict = async (context: QueryFunctionContext): Promis
         }
     }
 
-    return await axios.get(url);
+    const response = await axios.get(url);
+    return response.data as ItnSelectOption[];
 }
 
-export const createEntity = (apiName: string, sendAsForm: boolean) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
+export const createEntity = <T,>(apiName: string, sendAsForm: boolean) => async (params: IFormMutateParams<T>): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
     let url = apiName;
     if (params.urlParams !== null) {
@@ -59,7 +63,7 @@ export const createEntity = (apiName: string, sendAsForm: boolean) => async (par
     return await axios.post(url, entity);
 }
 
-export const updateEntity = (apiName: string, sendAsForm: boolean) => async (params: IFormMutateParams): Promise<AxiosResponse<string>> => {
+export const updateEntity = <T,>(apiName: string, sendAsForm: boolean) => async (params: IFormMutateParams<T>): Promise<AxiosResponse<string>> => {
     const entity = params.entity;
     let url = `${apiName}`;
     if (params.id) {
@@ -87,7 +91,7 @@ export const updateEntity = (apiName: string, sendAsForm: boolean) => async (par
     return await axios.put(url, entity);
 }
 
-export const deleteEntity = (apiName: string) => async (params: IFormDeleteParams): Promise<AxiosResponse<string>> => {
+export const deleteEntity = <T,>(apiName: string) => async (params: IFormDeleteParams<T>): Promise<AxiosResponse<string>> => {
     let url = `${apiName}/${params.id}`;
     if (params.urlParams !== null) {
         url += "?";
@@ -105,12 +109,12 @@ export const getDictionary = (apiName: string) => async (): Promise<AxiosRespons
     return await axios.put(`${apiName}`);
 }
 
-export function objectToFormData(entity: LooseObject, formData: FormData = new FormData(), namespace: string = '') {
+export function objectToFormData<T>(entity: T, formData: FormData = new FormData(), namespace: string = '') {
     const fd = formData || new FormData();
     let formKey;
 
     for (const property in entity) {
-        if (entity.hasOwnProperty(property)) {
+        if ((entity as Object).hasOwnProperty(property)) {
             if (namespace) {
               if (Array.isArray(entity)) {
                 formKey = `${namespace}[${property}]`;
@@ -121,14 +125,17 @@ export function objectToFormData(entity: LooseObject, formData: FormData = new F
             } else {
                 formKey = property;
             }
-
             // if the property is an object, but not a File,
             // use recursivity.   
-            if (typeof entity[property] === 'object' && !(entity[property] instanceof File)) {
+            if (typeof entity[property] === 'object' && !(entity[property] instanceof ItnFormFile)) {
                 objectToFormData(entity[property], fd, formKey);
+            } else if (entity[property] instanceof ItnFormFile) {
+                if ((entity[property] as ItnFormFile)!.file) {
+                    fd.append(`${formKey}.file`, (entity[property] as ItnFormFile)!.file!);
+                    fd.append(`${formKey}.changed`, ((entity[property] as ItnFormFile)!.fileWasChanged ?? false).toString())
+                };
             } else {
-                // if it's a string or a File object     
-                fd.append(formKey, entity[property]);
+                fd.append(formKey, entity[property] as string);
             }
 
         }

@@ -1,9 +1,9 @@
-import { LooseObject } from "../base/LooseObject";
+import { FieldDescription } from "../base/FieldDescription";
 
-export interface IFieldBuilderInitial<T extends LooseObject> extends IFieldBuilder<T> {
+export interface IFieldBuilderInitial<T> extends IFieldBuilder<T> {
 
 }
 
-export interface IFieldBuilder<T extends LooseObject> {
-    SetFieldProp(name: string, value: any): IFieldBuilder<T>;
+export interface IFieldBuilder<T> {
+    SetFieldProp(name: keyof FieldDescription<T>, value: any): IFieldBuilder<T>;
 }

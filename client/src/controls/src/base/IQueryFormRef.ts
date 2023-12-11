@@ -1,17 +1,17 @@
 import { IFormRef } from "./IFormRef";
-import { LooseObject } from "./LooseObject";
+import { UrlParams } from "./UrlParams";
 /**
  * Intreface for calling ItnQueryForm methods
  * */
-export interface IQueryFormRef extends IFormRef {
+export interface IQueryFormRef<T> extends IFormRef<T> {
     /**
      * Starts form validation and saving flow
      * */
-    saveEntity: (urlParams: LooseObject) => void
+    saveEntity: (urlParams: UrlParams) => void
     /**
      * Starts form delete flow
      * */
-    deleteEntity: (urlParams: LooseObject) => void
+    deleteEntity: (urlParams: UrlParams) => void
     /**
      * Execute get request to server
      * */

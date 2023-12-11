@@ -1,27 +1,26 @@
-import { LooseObject } from "./LooseObject";
 import { Validation } from "./Validation";
 /**
  * Intreface for calling ItnForm methods
  * */
-export interface IFormRef {
+export interface IFormRef<T> {
     /**
      * Get current edited values in form
      * 
-     * @returns {LooseObject} object with values
+     * @returns {T} object with values
      * */
-    getCurrentValues: () => LooseObject,
+    getCurrentValues: () => T,
     /**
      * Start the form validation with hightlighting controls and returs the result of validation
      * 
      * @returns {boolean} validation result
      * */
-    validate: (onErrors?: (validationErrors: Validation[]) => void) => boolean,
+    validate: (onErrors?: (validationErrors: Validation<T>[]) => void) => boolean,
     /**
      * Add error text to specified form field
      * */
-    addError: (field: string, message: string) => void
+    addError: (field: keyof T, message: string) => void
     /**
      * Sets new entity
      * */
-    setEntity: (entity: LooseObject) => void
+    setEntity: (entity: T) => void
 }

@@ -1,5 +1,4 @@
 import { SxProps, Theme } from "@mui/material";
-import React from "react";
 
 export default interface IDrawerProps {
     /**

@@ -1,4 +1,4 @@
-import { LooseObject } from "../base/LooseObject";
+import { ItnSelectOption } from "../base/ItnSelectOption";
 
 export default interface IControlProps {
     /**
@@ -203,31 +203,4 @@ export default interface IControlProps {
      * Default: null
      * */
     onEnter?: () => void;
-
-
-    //Wysiwyg props
-    /**
-     * Props for wysiwig
-     * Default: null
-     * */
-    wysiwygEditorProps?: {
-        availableFonts?: string[];
-        minHeight?: string;
-        buttonList?: any[];
-    } | null,
-    onWysiwygImageSave?: ((data: File) => Promise<string>) | null
-}
-
-export class ItnSelectOption {
-    id: string;
-    label: string;
-    blocked?: boolean;
-    inputValue?: string;
-    otherAttributes?: LooseObject = {};
-
-    constructor(id: string, label: string, blocked: boolean = false) {
-        this.id = id;
-        this.label = label;
-        this.blocked = blocked;
-    }
 }

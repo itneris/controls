@@ -1,19 +1,18 @@
-﻿import { LooseObject } from "../base/LooseObject";
-import AbstractFieldBuilder from "../fieldBuilder/AbstractFieldBuilder";
+﻿import AbstractFieldBuilder from "../fieldBuilder/AbstractFieldBuilder";
 
-export default interface ICommonFormProps {
+export default interface ICommonFormProps<T> {
     /**
      * Class with fields rules and descriptions
      * */
-    fieldBuilder: AbstractFieldBuilder<LooseObject>;
+    fieldBuilder: AbstractFieldBuilder<T>;
     /**
      * Callback when form values changed
      * Default: null
      * Function params:
-     *      prop: string, property name of edited field
+     *      prop: keyof T, property name of edited field
      *      value: any, value of edited field
      * */
-    onChange?: ((prop: string, value: any) => void) | null;
+    onChange?: ((prop: keyof T, value: any) => void) | null;
     /**
      * Disabled paddings for current form
      * Default: false
@@ -28,7 +27,7 @@ export default interface ICommonFormProps {
      * Initial entity for editing, form will not call GET api if set
      * Default: null
      * */
-    entity?: LooseObject | null;
+    entity?: T | null;
     /**
      * Hides paper for form and sets noPadding to true
      * Default: false

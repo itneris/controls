@@ -1,18 +1,16 @@
-import { LooseObject } from "../base/LooseObject";
-import { ItnSelectOption } from "../props/IControlProps";
 import { FieldOptionsBuilder } from "./FieldOptionsBuilder";
 import IFileControlProps from "../props/IFileControlProps";
 import ITextAreaControlProps from "../props/ITextAreaControlProps";
-import { ISunEditorProps } from "../components/wysiwygEditor/IWysiwygEditorProps";
 import ISelectControlProps from "../props/ISelectControlProps";
+import { ItnSelectOption } from "@itneris/controls";
 
 declare module "./FieldOptionsBuilder" {
-	interface FieldOptionsBuilder<T extends LooseObject> {
+	interface FieldOptionsBuilder<T> {
 		/**
 		 * Defines a label for control
 		 * @param {string} label Label to render
 		 * */
-		WithLabel(label: string | ((entity: LooseObject) => string)): FieldOptionsBuilder<T>;
+		WithLabel(label: string | ((entity: T) => string)): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'select' and defines options
 		 * @param {ItnSelectOption[]} options Array of opitons to render in select
@@ -64,12 +62,12 @@ declare module "./FieldOptionsBuilder" {
 		 * Disables control
 		 * @param {boolean | (entity: LooseObject) => boolean} disabled sets control state or function for calculate control state dependent on current form values
 		 * */
-		Disable(disabled?: boolean | ((entity: LooseObject) => boolean)): FieldOptionsBuilder<T>;
+		Disable(disabled?: boolean | ((entity: T) => boolean)): FieldOptionsBuilder<T>;
 		/**
 		 * Hides control
 		 * @param {boolean | (entity: LooseObject) => boolean} visible sets control state or function for calculate control state dependent on current form values
 		 * */
-		Hide(hidden?: boolean | ((entity: LooseObject) => boolean)): FieldOptionsBuilder<T>;
+		Hide(hidden?: boolean | ((entity: T) => boolean)): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to password
 		 * @param {boolean} disableNewPasswordGenerate hide button for generate new password
@@ -85,17 +83,17 @@ declare module "./FieldOptionsBuilder" {
 		 * Make the field required, in validation value will be checked on null, empty string and undefined
 		 * @param {boolean | (entity: LooseObject) => boolean} required sets control state or function for calculate control state dependent on current form values
 		 * */
-		Required(required?: boolean | ((entity: LooseObject) => boolean)): FieldOptionsBuilder<T>;
+		Required(required?: boolean | ((entity: T) => boolean)): FieldOptionsBuilder<T>;
 		/**
 		 * Add validation to field by value
 		 * @param {(value: any) => string | null} validate Function that get current value as param and return errorMessage or null if value is valid
 		 * */
-		WithValidation(validate: (value: any, entity: LooseObject) => string | null): FieldOptionsBuilder<T>;
+		WithValidation(validate: (value: any, entity: T) => string | null): FieldOptionsBuilder<T>;
 		 /**
 		 * Renders custom control
 		 * @param {(value: any, onChange: (value: any) => void) => React.ReactNode, isError, errorMessage, isSaving, viewOnly, entity} control Function that receives as paramteres entity current value, onChange function. Also current state as isSaving and viewOnly
 		 * */
-		WithCustomControl(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean, entity: LooseObject) => React.ReactNode): FieldOptionsBuilder<T>;
+		WithCustomControl(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean, entity: T) => React.ReactNode): FieldOptionsBuilder<T>;
 		/** 
 		* Change input type to file and set options
 		* @param {{ accept = "*", maxSizeKb = 4096,withImagePreview = false,isAvatar = false,cropImageToSize = null}} fileOptions File input configuring options 
@@ -126,34 +124,19 @@ declare module "./FieldOptionsBuilder" {
 		 * @param {string} text text to render in tooltip
 		* */
 		OnEnter(onEnterKeyPress: () => void): FieldOptionsBuilder<T>;
-		/**
-		* Change input type to wysiwyg redactor
-		 * @param {string} text text to render in tooltip
-		* */
-		Wysiwyg(onImageSave?: (data: File) => Promise<string>, props?: ISunEditorProps): FieldOptionsBuilder<T>;
 	}
 }
-
-FieldOptionsBuilder.prototype.Wysiwyg = function <T extends LooseObject>(onImageSave?: (data: File) => Promise<string>, props?: ISunEditorProps) {
-	return this
-		.SetFieldProp("type", "wysiwyg")
-		.SetFieldProp("onWysiwygImageSave", onImageSave)
-		.SetFieldProp("minHeight", props?.minHeight)
-		.SetFieldProp("buttonList", props?.buttonList)
-		.SetFieldProp("availableFonts", props?.availableFonts) as FieldOptionsBuilder<T>;
-}
-
-FieldOptionsBuilder.prototype.OnEnter = function <T extends LooseObject>(onEnterKeyPress: () => void) {
+FieldOptionsBuilder.prototype.OnEnter = function <T>(onEnterKeyPress: () => void) {
 	return this
 		.SetFieldProp("onEnterKeyPress", onEnterKeyPress) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithLabel = function <T extends LooseObject>(label: string | ((entity: LooseObject) => string)) {
+FieldOptionsBuilder.prototype.WithLabel = function <T>(label: string | ((entity: T) => string)) {
 	return this
 		.SetFieldProp("label", label) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Select = function <T extends LooseObject>(options: ItnSelectOption[], multiple: boolean = false, props: ISelectControlProps = {}) {
+FieldOptionsBuilder.prototype.Select = function <T>(options: ItnSelectOption[], multiple: boolean = false, props: ISelectControlProps = {}) {
 	return this
 		.SetFieldProp("type", "select")
 		.SetFieldProp("multiple", multiple)
@@ -162,7 +145,7 @@ FieldOptionsBuilder.prototype.Select = function <T extends LooseObject>(options:
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>(apiUrl: string, multiple: boolean = false, props: ISelectControlProps = {}) {
+FieldOptionsBuilder.prototype.SelectWithQuery = function <T>(apiUrl: string, multiple: boolean = false, props: ISelectControlProps = {}) {
 	return this
 		.SetFieldProp("type", "select")
 		.SetFieldProp("multiple", multiple)
@@ -171,32 +154,32 @@ FieldOptionsBuilder.prototype.SelectWithQuery = function <T extends LooseObject>
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.DatePicker = function <T extends LooseObject>() {
+FieldOptionsBuilder.prototype.DatePicker = function <T>() {
 	return this
 		.SetFieldProp("type", "date") as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.TimePicker = function <T extends LooseObject>() {
+FieldOptionsBuilder.prototype.TimePicker = function <T>() {
 	return this
 		.SetFieldProp("type", "time") as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.DateTimePicker = function <T extends LooseObject>() {
+FieldOptionsBuilder.prototype.DateTimePicker = function <T>() {
 	return this
 		.SetFieldProp("type", "datetime") as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Disable = function <T extends LooseObject>(disabled: boolean | ((entity: LooseObject) => boolean) = true) {
+FieldOptionsBuilder.prototype.Disable = function <T>(disabled: boolean | ((entity: T) => boolean) = true) {
 	return this
 		.SetFieldProp("disabled", disabled) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Hide = function <T extends LooseObject>(hidden: boolean | ((entity: LooseObject) => boolean) = true) {
+FieldOptionsBuilder.prototype.Hide = function <T>(hidden: boolean | ((entity: T) => boolean) = true) {
 	return this
 		.SetFieldProp("hidden", hidden) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Password = function <T extends LooseObject>(
+FieldOptionsBuilder.prototype.Password = function <T>(
 	disableNewPasswordGenerate: boolean = false,
 	length: number = 6,
 	enableCheck: boolean = false
@@ -208,28 +191,28 @@ FieldOptionsBuilder.prototype.Password = function <T extends LooseObject>(
 		.SetFieldProp("disableNewPasswordGenerate", disableNewPasswordGenerate) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Bool = function <T extends LooseObject>() {
+FieldOptionsBuilder.prototype.Bool = function <T>() {
 	return this
 		.SetFieldProp("type", "checkbox") as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithCustomControl = function <T extends LooseObject>(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean, entity: LooseObject) => React.ReactNode) {
+FieldOptionsBuilder.prototype.WithCustomControl = function <T>(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean, entity: T) => React.ReactNode) {
 	return this
 		.SetFieldProp("custom", control) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithValidation = function <T extends LooseObject>(validate: (value: any, entity: LooseObject) => string | null) {
+FieldOptionsBuilder.prototype.WithValidation = function <T>(validate: (value: any, entity: T) => string | null) {
 	return this
 		.SetFieldProp("validation", validate) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Required = function <T extends LooseObject>(required: boolean | ((entity: LooseObject) => boolean) = true) {
+FieldOptionsBuilder.prototype.Required = function <T>(required: boolean | ((entity: T) => boolean) = true) {
 	return this
 		.SetFieldProp("required", required) as FieldOptionsBuilder<T>;
 
 }
 
-FieldOptionsBuilder.prototype.Number = function <T extends LooseObject>(
+FieldOptionsBuilder.prototype.Number = function <T>(
 	allowDecimals: boolean = false,
 	allowNegative: boolean = false,
 	min: number | null = null,
@@ -243,7 +226,7 @@ FieldOptionsBuilder.prototype.Number = function <T extends LooseObject>(
 		.SetFieldProp("min", min) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.File = function <T extends LooseObject>({
+FieldOptionsBuilder.prototype.File = function <T>({
 	accept = "*",
 	maxSizeKb = 4096,
 	withImagePreview = false,
@@ -265,7 +248,7 @@ FieldOptionsBuilder.prototype.File = function <T extends LooseObject>({
 	return fieldBuilder as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.TextArea = function <T extends LooseObject>(textAreaOptions?: ITextAreaControlProps) {
+FieldOptionsBuilder.prototype.TextArea = function <T>(textAreaOptions?: ITextAreaControlProps) {
 	let fieldBuilder = this
 		.SetFieldProp("multiline", true) as FieldOptionsBuilder<T>;
 
@@ -281,22 +264,22 @@ FieldOptionsBuilder.prototype.TextArea = function <T extends LooseObject>(textAr
 	return fieldBuilder as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithDefaultValue = function <T extends LooseObject>(value: any) {
+FieldOptionsBuilder.prototype.WithDefaultValue = function <T>(value: any) {
 	return this
 		.SetFieldProp("defaultValue", value) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithHelperText = function <T extends LooseObject>(text: string) {
+FieldOptionsBuilder.prototype.WithHelperText = function <T>(text: string) {
 	return this
 		.SetFieldProp("helperText", text) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.WithTooltip = function <T extends LooseObject>(text: string) {
+FieldOptionsBuilder.prototype.WithTooltip = function <T>(text: string) {
 	return this
 		.SetFieldProp("tooltip", text) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(
+FieldOptionsBuilder.prototype.Autocomplete = function <T>(
 	options: ItnSelectOption[],
 	creatable: boolean = false,
 	onOptionAdded: ((value: string) => void) | null = null,
@@ -310,7 +293,7 @@ FieldOptionsBuilder.prototype.Autocomplete = function <T extends LooseObject>(
 		.SetFieldProp("items", options) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T extends LooseObject>(
+FieldOptionsBuilder.prototype.AutocompleteWithQuery = function <T>(
 	apiUrl: string,
 	searchAsType: boolean = false,
 	creatable: boolean = false,

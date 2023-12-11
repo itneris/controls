@@ -1,8 +1,7 @@
-﻿import { QueryClient } from "@tanstack/react-query";
-import { LooseObject } from "../base/LooseObject";
-import ICommonFormProps from "./ICommonFormProps";
+﻿import ICommonFormProps from "./ICommonFormProps";
+import { UrlParams } from "../base/UrlParams";
 
-export default interface IQueryFormProps extends ICommonFormProps {
+export default interface IQueryFormProps<T> extends ICommonFormProps<T> {
     /**
      * Url with get|post|put|delete methods form form data
      * */
@@ -15,8 +14,7 @@ export default interface IQueryFormProps extends ICommonFormProps {
     id?: string | null;
     disableSave?: boolean | null;
     disableDelete?: boolean | null;
-    urlParams?: LooseObject | null;
-    queryClient?: QueryClient | null;
+    urlParams?: UrlParams | null;
     sendAsMultipartFormData?: boolean | null;
     onSavingStateChange?: (isStart: boolean) => void;
 }

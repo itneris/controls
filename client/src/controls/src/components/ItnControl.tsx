@@ -30,12 +30,12 @@ import {
     Visibility,
     VisibilityOff
 } from "@mui/icons-material";
-import IControlProps, { ItnSelectOption } from "../props/IControlProps";
+import IControlProps from "../props/IControlProps";
 import { DatePicker, DateTimePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ru } from "date-fns/locale";
-import WysiwygViewer from "./wysiwygViewer/WysiwygViewer";
-import WysiwygEditor from "./wysiwygEditor/WysiwygEditor";
+import { ItnSelectOption } from "..";
+import ItnFormFile from "../props/ItnFormFile";
 
 const generatePassword = (length: number): string => {
     const small = "abcdefghijklmnopqrstuvwxyz";
@@ -82,24 +82,26 @@ function ItnControl(props: IControlProps) {
             return;
         }
 
-        if (!props.value) {
+        if (!props.value?.file) {
             props.withImagePreview && setPreview(null);
             return;
         }
 
-        const objectUrl = URL.createObjectURL(props.value as File);
+        const objectUrl = URL.createObjectURL(props.value.file as File);
         setPreview(objectUrl);
 
         return () => URL.revokeObjectURL(objectUrl);
     }, [props]);
 
-    const handleUploadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleUploadClick = useCallback(() => {
         //e.preventDefault();
         setFileError(null);
         fileInputRef.current!.click();
     }, []);
 
-    const handleDeleteFile = useCallback(() => props.onChange && props.onChange(null), [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
+    const handleDeleteFile = useCallback(() => {
+        props.onChange && props.onChange(new ItnFormFile(null));
+    }, [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const uploadFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !e.target.files.length) {
@@ -127,7 +129,39 @@ function ItnControl(props: IControlProps) {
             return;
         }
 
-        props.onChange && props.onChange(e.target.files![0]);
+        if (props.cropImageToSize) {
+            try {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const image = new Image();
+                    image.onload = function () {
+                        const canvas = document.createElement("canvas");
+                        const ctx = canvas.getContext("2d")!;
+                        canvas.width = props.cropImageToSize![0];
+                        canvas.height = props.cropImageToSize![1];;
+                        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                        const dataurl = canvas.toDataURL(file.type);
+
+                        canvas.toBlob((blob) => {
+                            const resFile = new File([blob!], file.name);
+                            props.onChange && props.onChange(new ItnFormFile(resFile));
+                        }, "image/jpeg", 1);
+
+                        setPreview(dataurl);
+                        canvas.remove();
+                    }
+                    image.src = e.target!.result as string;
+                }
+                reader.readAsDataURL(e.target.files![0]);
+                e.target.value = "";
+            } catch (e) {
+                setFileError(`Мы не смогли пожать файл, попробуйте загрузить что-то другое`);
+                console.log(e);
+            }
+        } else {
+            props.onChange && props.onChange(new ItnFormFile(e.target.files![0]));
+            e.target.value = "";
+        }
     }, [props.onChange, props.maxFileSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const checkEnter = useCallback((e: React.KeyboardEvent) => {
@@ -468,7 +502,7 @@ function ItnControl(props: IControlProps) {
                                 </InputAdornment>
                             }}
                             disabled={props.disabled}
-                            onKeyPress={checkEnter}
+                            onKeyUp={checkEnter}
                         />
                     </FormControl>
                     {
@@ -492,7 +526,7 @@ function ItnControl(props: IControlProps) {
                 />;*/
             case 'string':
                 return <TextField
-                    onKeyPress={checkEnter}
+                    onKeyUp={checkEnter}
                     variant={props.variant}
                     disabled={props.disabled}
                     fullWidth
@@ -514,7 +548,7 @@ function ItnControl(props: IControlProps) {
                     onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
                     //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
                     label={props.label}
-                    onKeyPress={handleNumberKeyPress}
+                    onKeyUp={handleNumberKeyPress}
                     fullWidth
                     variant={props.variant}
                     type="number"
@@ -524,21 +558,6 @@ function ItnControl(props: IControlProps) {
                     disabled={props.disabled}
                     size="small"
                 />;
-            case 'wysiwyg':
-                if (props.disabled) {
-                    return <WysiwygViewer
-                        content={props.value}
-                    />
-                } else {
-                    return <WysiwygEditor
-                        value={props.value}
-                        onChange={props.onChange}
-                        buttonList={props?.wysiwygEditorProps?.buttonList}
-                        availableFonts={props?.wysiwygEditorProps?.availableFonts}
-                        minHeight={props?.wysiwygEditorProps?.minHeight}
-                        onImageSave={props?.onWysiwygImageSave ?? undefined}
-                    />
-                };
             case 'file':
                 return (<FormControl>
                     <input
@@ -550,36 +569,37 @@ function ItnControl(props: IControlProps) {
                         accept={props.accept}
                     />
                     {
-                        props.value === null ?
+                        props.value === null || !props.value.file ?
                             <>
                                 {
-                                    props.isAvatar &&
-                                    <Box
-                                        borderRadius="50%"
-                                        height={70}
-                                        width={70}
-                                        display="flex"
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        marginRight={3}
-                                        sx={theme => ({
-                                            cursor: "initial",
-                                            backgroundColor: theme.palette.primary.main
-                                        })}
-                                    >
-                                        <Typography color={theme => theme.palette.primary.contrastText} variant="h4">А</Typography>
-                                    </Box>
+                                    props.isAvatar ?
+                                        <Box
+                                            borderRadius="50%"
+                                            height={70}
+                                            width={70}
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            mr={3}
+                                            onClick={handleUploadClick}
+                                            sx={theme => ({
+                                                cursor: "pointer",
+                                                backgroundColor: theme.palette.primary.main
+                                            })}
+                                        >
+                                            <CloudUpload color="inherit" />
+                                        </Box> :
+                                        <Button
+                                            disabled={props.disabled}
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<CloudUpload />}
+                                            onClick={handleUploadClick}
+                                            style={{ alignSelf: "start" }}
+                                        >
+                                            {props.label}
+                                        </Button>
                                 }
-                                <Button
-                                    disabled={props.disabled}
-                                    variant="contained"
-                                    color="secondary"
-                                    startIcon={<CloudUpload />}
-                                    onClick={handleUploadClick}
-                                    style={{ alignSelf: "start" }}
-                                >
-                                    {props.label}
-                                </Button>
                             </> :
                             !props.withImagePreview ?
                                 <Box display="flex" alignItems="center" width="100%">

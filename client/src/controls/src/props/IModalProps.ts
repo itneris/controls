@@ -3,6 +3,14 @@ import React from "react";
 
 export default interface IModalProps {
     /**
+     * Is modal open
+     * */
+    open: boolean;
+    /**
+     * Fires when modal closes
+     * */
+    onClose: () => void;
+    /**
      * Modal dialog title
      * Default: null
      * */
@@ -27,7 +35,7 @@ export default interface IModalProps {
      *          null: "Cancel" button clicked or dialog hidden another way
      * Return boolean, should modal be closed after button click
      * */
-    onResult?: ((result: boolean | null) => boolean | undefined) | null;
+    onResult?: ((result: boolean | null) => boolean | void) | null;
     /**
      * Disable ok button
      * Default: false

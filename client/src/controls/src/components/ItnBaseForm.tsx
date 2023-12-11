@@ -1,39 +1,65 @@
-import React, { useCallback, useImperativeHandle, useState, useEffect, useRef } from "react";
+import React, { useCallback, useImperativeHandle, useState, useEffect, useRef, useMemo, forwardRef } from "react";
 import ItnControl from "./ItnControl";
 import { IFormRef } from "../base/IFormRef";
 import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
 import { Backspace, Delete, Save } from "@mui/icons-material";
-import { LooseObject } from "../base/LooseObject";
 import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
 import { FieldDescription } from "../base/FieldDescription";
-import { dataURLtoFile } from "../base/Helpers";
+import FormContext from "../context/FormContext";
 
-export interface IFormContext {
-    getField: (field: string) => React.ReactNode | null;
+declare module "react" {
+    function forwardRef<T, P = {}>(
+        render: (props: P, ref: React.Ref<T>) => React.ReactNode | null
+    ): (props: P & React.RefAttributes<T>) => React.ReactNode | null;
 }
 
+function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<IFormRef<T>>) {
+    const {
+        onChange = () => {},
+        noPadding = false,
+        onSave = null,
+        onDelete = null,
+        onCancel = null,
+        entity = null,
+        hidePaper = false,
+        header = null,
+        variant = "outlined",
+        isLoading = false,
+        isSaving = false,
+        errorLoading = null,
+        deleteBtnText = "Удалить",
+        saveBtnText = "Сохранить",
+        cancelBtnText = "Отмена",
+        viewOnly = false,
+        headerContent = null,
+        footerContent = null,
+        onAutocompleteInputChange = () => { },
+        controlsLoading = {},
+        fieldBuilder,
+        children
+    } = props;
 
-export const FormContext = React.createContext<IFormContext | null>(null);
+    const fields = useMemo(() => {
+        return fieldBuilder.Build();
+    }, [fieldBuilder]);
 
-const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
-    const fields = props.fieldBuilder.Build();
-    const entity = useRef<LooseObject | null>({});
+    const entityRef = useRef<T | null>({} as T);
 
     const getDefaultValues = useCallback(() => {
-        let initEntity: LooseObject = {};
+        let initEntity: T = {} as T;
         fields.forEach(f => {
             initEntity[f.property] = f.defaultValue ?? null;
         });
         return initEntity;
     }, [fields]);
 
-    const [validation, setValidation] = useState<Validation[]>([]);
+    const [validation, setValidation] = useState<Validation<T>[]>([]);
     const [, forceUpdate] = useState<any>({});
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
-            return entity.current!;
+            return entityRef.current!;
         },
         validate(onErrors) {
             return validateControls(onErrors);
@@ -41,80 +67,75 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         addError(field, error) {
             setValidation([...validation, { property: field, message: error }]);
         },
-        setEntity(newEntity: LooseObject) {
-            entity.current = newEntity;
+        setEntity(newEntity: T) {
+            entityRef.current = newEntity;
             setValidation([]);
         }
     }));
 
     useEffect(() => {
-        let newEntity = props.entity === null ? getDefaultValues() : { ...props.entity };
-        for (let key in newEntity) {
-            if (newEntity[key] !== null && newEntity[key] !== undefined && newEntity[key].name && newEntity[key].data) {
-                newEntity[key] = dataURLtoFile(newEntity[key].data, newEntity[key].name);
-            }
-        }
-        entity.current = newEntity;
+        let newEntity = entity === null ? getDefaultValues() : { ...entity };
+        entityRef.current = newEntity;
         forceUpdate({});
-    }, [props.entity]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [entity]);
 
 
-    const handleChange = useCallback((field: string, value: any) => {
+    const handleChange = useCallback((field: keyof T, value: any) => {
         const newEntity = {
-            ...entity.current,
+            ...entityRef.current,
             [field]: value
-        };
+        } as T;
         setValidation(validation.filter(_ => _.property !== field));
-        entity.current = newEntity;
-        props.onChange && props.onChange(field, value);
-        //forceUpdate({});
-    }, [props.onChange, validation]); // eslint-disable-line react-hooks/exhaustive-deps
+        entityRef.current = newEntity;
+        onChange && onChange(field, value);
+    }, [onChange, validation]); 
 
-    const validateControls = useCallback((onErrors?: (validationErrors: Validation[]) => void) => {
-        let newValidation: Validation[] = []; 
+    const validateControls = useCallback((onErrors?: (validationErrors: Validation<T>[]) => void) => {
+        let newValidation: Validation<T>[] = []; 
         fields.forEach(field => {
-            const val = entity.current![field.property];
+            const val = entityRef.current![field.property];
             const valIsNull =
                 val === undefined ||
                 val === null ||
                 (typeof val === "string" && val === "") ||
                 (Array.isArray(val) && val.length === 0);
 
-            const fieldRequired = typeof field.required === "function" ? field.required(entity.current ?? {}) : field.required;
+            const fieldRequired = typeof field.required === "function" ? field.required(entityRef.current ?? {} as T) : field.required;
             if (fieldRequired && valIsNull) {
                 newValidation.push(new Validation(field.property, `Поле обязательно для заполнения`));
             }
 
             if (field.validation !== null && !valIsNull) {
-                const error = field.validation(val, entity.current ?? {});
+                const error = field.validation(val, entityRef.current ?? {} as T);
                 if (error !== null) {
                     newValidation.push(new Validation(field.property, error))
                 }
             }
 
             if (field.type === "date" && val !== null) {
-                if (field.maxDate !== null && new Date(val) > field.maxDate) {
+                if (field.maxDate !== null && new Date(val as Date) > field.maxDate) {
                     newValidation.push(new Validation(field.property, `Значение не может быть больше ${field.maxDate.toLocaleDateString("ru-RU")}`))
-                } else if (field.minDate !== null && new Date(val) < field.minDate) {
+                } else if (field.minDate !== null && new Date(val as Date) < field.minDate) {
                     newValidation.push(new Validation(field.property, `Значение не может быть меньше ${field.minDate.toLocaleDateString("ru-RU")}`))
                 }
             }
 
             if (field.type === "password" && field.enablePasswordCheck && val !== null) {
-                const legitPwd = /\d/.test(val) &&
-                    /[a-z]/.test(val) &&
-                    /[A-Z]/.test(val) &&
-                    /[!@#$%^&*()\-+<>]/.test(val) &&
-                    val.length >= field.passwordLength &&
-                    !/[а-я]/.test(val) &&
-                    !/[А-Я]/.test(val);
+                const pwd = val as string;
+                const legitPwd = /\d/.test(pwd) &&
+                    /[a-z]/.test(pwd) &&
+                    /[A-Z]/.test(pwd) &&
+                    /[!@#$%^&*()\-+<>]/.test(pwd) &&
+                    pwd.length >= field.passwordLength &&
+                    !/[а-я]/.test(pwd) &&
+                    !/[А-Я]/.test(pwd);
 
                 if (!legitPwd) {
                     newValidation.push(new Validation(field.property, `Пароль должен состоять из ${field.passwordLength} символов, включать цифру, нижний и верхний регистры латинского алфавита и непрописной символ (!@#$%^&*()-+<>)`))
                 }
             }
 
-            if (field.type === "number" && val !== null) {
+            if (field.type === "number" && val !== null && val !== undefined) {
                 if (isNaN(+val)) {
                     newValidation.push(new Validation(field.property, `Некорректное числовое значение`))
                 } else if (!field.allowNegative && +val < 0) {
@@ -141,32 +162,34 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
         if (!validateControls()) {
             return;
         }
-        props.onSave && props.onSave(entity.current!);
-    }, [validateControls, props.onSave]); // eslint-disable-line react-hooks/exhaustive-deps
+        onSave && onSave(entityRef.current!);
+    }, [validateControls, onSave]);
 
     const handleDeleteClick = useCallback(() => {
-        props.onDelete && props.onDelete(entity.current!.id);
-    }, [props.onDelete]); // eslint-disable-line react-hooks/exhaustive-deps
+        const id = entityRef.current!["id" as keyof T] as string;
+        onDelete && onDelete(id);
+    }, [onDelete]); 
 
-    const renderField = useCallback((field: FieldDescription) => {
-        if (props.isLoading) {
-            return <Skeleton key={"fc-" + field.property} height="32px" />
+    const renderField = useCallback((field: FieldDescription<T>) => {
+        const prop = field.property as string;
+        if (isLoading) {
+            return <Skeleton key={"fc-" + prop} height="32px" />
         } else if (field.custom) {
-            return <React.Fragment key={"fc-" + field.property}>
+            return <React.Fragment key={"fc-" + prop}>
                 {
                     field.custom(
-                        entity.current![field.property],
+                        entityRef.current![field.property],
                         (value) => handleChange(field.property, value),
                         validation.find(_ => _.property === field.property) !== undefined,
                         validation.find(_ => _.property === field.property)?.message,
-                        props.isSaving!,
-                        props.viewOnly!,
-                        entity.current ?? {}
+                        isSaving!,
+                        viewOnly!,
+                        entityRef.current ?? {} as T
                     )
                 }
             </React.Fragment>;
         } else {
-            const controlHidden = typeof field.hidden === "function" ? field.hidden(entity.current ?? {}) : field.hidden;
+            const controlHidden = typeof field.hidden === "function" ? field.hidden(entityRef.current ?? {} as T) : field.hidden;
             if (controlHidden) {
                 return null;
             }
@@ -177,14 +200,14 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                         field.multiple ? [] :
                             null;
 
-            const controlValue = entity.current![field.property] ?? contolDefaultValue;
-            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity.current ?? {}) : field.disabled;
+            const controlValue = entityRef.current![field.property] ?? contolDefaultValue;
+            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entityRef.current ?? {} as T) : field.disabled;
 
             return <ItnControl
-                key={"fc-" + field.property}
+                key={"fc-" + prop}
                 type={field.type}
                 disableNewPasswordGenerate={field.disableNewPasswordGenerate}
-                variant={props.variant!}
+                variant={variant}
                 onChange={(value) => handleChange(field.property, value)}
                 value={controlValue}
                 allowNullInSelect={field.allowNullInSelect}
@@ -192,12 +215,12 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
                 passwordLength={field.passwordLength}
                 placeholder={field.placeholder}
-                disabled={controlDisabled || props.isSaving || props.viewOnly}
+                disabled={controlDisabled || isSaving || viewOnly}
                 display={field.display}
                 error={validation.find(_ => _.property === field.property) !== undefined}
                 errorText={validation.find(_ => _.property === field.property)?.message}
                 items={field.items}
-                label={typeof (field.label) === "function" ? field.label(entity.current || {}) : field.label}
+                label={typeof (field.label) === "function" ? field.label(entityRef.current || {} as T) : field.label}
                 max={field.max}
                 min={field.min}
                 allowDecimals={field.allowDecimals}
@@ -213,59 +236,57 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                 multiline={field.multiline}
                 lines={field.lines}
                 maxLines={field.maxLines}
-                onAutocompleteInputChange={field.searchAsType ? (value, event) => props.onAutocompleteInputChange!(field.property, value, event) : undefined}
-                autocompleteLoading={props.controlsLoading![field.property] === true}
+                onAutocompleteInputChange={field.searchAsType ? (value, event) => onAutocompleteInputChange!(field.property, value, event) : undefined}
+                autocompleteLoading={controlsLoading[prop] === true}
                 autocompleteCreatable={field.autocompleteCreatable}
                 onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
                 helperText={field.helperText}
                 multiple={field.multiple}
                 onEnter={field.onEnterKeyPress}
-                onWysiwygImageSave={field.onWysiwygImageSave}
-                wysiwygEditorProps={{
-                    availableFonts: field.availableFonts,
-                    buttonList: field.buttonList,
-                    minHeight: field.minHeight
-                }}
             />
         }
-    }, [props, validation, handleChange])
+    }, [validation, handleChange, onAutocompleteInputChange, controlsLoading])
 
     const renderFieldByName = useCallback((name: string) => {
         const field = fields.find(_ => _.property === name);
         if (!field) {
             return null;
         }
-        const controlHidden = typeof field.hidden === "function" ? field.hidden(entity.current ?? {}) : field.hidden;
+        const controlHidden = typeof field.hidden === "function" ? field.hidden(entityRef.current ?? {} as T) : field.hidden;
         if (controlHidden) {
             return <></>;
         }
         return renderField(field);
     }, [renderField, fields, entity])
 
+    const formContextValue = useMemo(() => {
+        return { getField: renderFieldByName };
+    }, [renderFieldByName]);
+
     return (
         <>
             <Paper
-                elevation={props.hidePaper ? 0 : undefined}
-                sx={props.hidePaper ? { backgroundColor: "transparent" } : { paddingX: 2, paddingY: 2 }}
+                elevation={hidePaper ? 0 : undefined}
+                sx={hidePaper ? { backgroundColor: "transparent" } : { paddingX: 2, paddingY: 2 }}
             >
                 {
-                    (props.header || props.onDelete) &&
+                    (header || onDelete) &&
                     <Box alignItems="center" display="flex" justifyContent="space-between" mb={2}>
                         {
-                            props.header ?
-                                <Typography variant="h6">{props.header}</Typography> :
+                            header ?
+                                <Typography variant="h6">{header}</Typography> :
                                 <div></div>
                         }
                         {
-                            props.onDelete ?
+                            onDelete ?
                                 <Button
                                     color="error"
                                     onClick={handleDeleteClick}
                                     startIcon={<Delete />}
-                                    disabled={props.isSaving}
+                                    disabled={isSaving}
                                     variant="contained"
                                 >
-                                    {props.deleteBtnText}
+                                    {deleteBtnText}
                                 </Button> :
                                 <div></div>
 
@@ -273,84 +294,62 @@ const ItnBaseForm = React.forwardRef<IFormRef, IBaseFormProps>((props, ref) => {
                     </Box>
                 }
                 {
-                    props.headerContent !== null &&
+                    headerContent !== null &&
                     <Box mb={2}>
-                        {props.headerContent}
+                        {headerContent}
                     </Box>
                 }
                 <Box display="flex" gap={2} flexDirection="column">
                     {
-                        props.errorLoading !== null ?
-                            <Typography variant="body2">{props.errorLoading}</Typography> :
-                                props.children === undefined ?
+                        errorLoading !== null ?
+                            <Typography variant="body2">{errorLoading}</Typography> :
+                                children === undefined ?
                                     fields.map(renderField) :
-                                        <FormContext.Provider value={{ getField: renderFieldByName }}>
-                                            {props.children}
+                                        <FormContext.Provider value={formContextValue}>
+                                            {children}
                                         </FormContext.Provider>
                     }
                 </Box>
                 {
-                    props.footerContent !== null &&
+                    footerContent !== null &&
                     <Box mt={2}>
-                        {props.footerContent}
+                        {footerContent}
                     </Box>
                 }
             </Paper>
             {
-                (props.onSave || props.onCancel) &&
+                (onSave || onCancel) &&
                 <Box display="flex" mt={2} justifyContent="space-between">
                     {
-                        props.onCancel ?
+                        onCancel ?
                             <Button
                                 startIcon={<Backspace />}
-                                disabled={props.isSaving}
+                                disabled={isSaving}
                                 variant="contained"
-                                onClick={props.onCancel}
+                                onClick={onCancel}
                             >
-                                {props.cancelBtnText}
+                                {cancelBtnText}
                             </Button> :
-                            <div></div>
+                            <Box />
                     }
                     {
-                        props.onSave ?
+                        onSave ?
                             <Button
                                 startIcon={<Save />}
-                                disabled={props.isSaving}
+                                disabled={isSaving}
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleSaveClick}
                             >
-                                {props.saveBtnText}
+                                {saveBtnText}
                             </Button> :
-                            <div></div>
+                            <Box />
                     }
                 </Box>
             }
         </>
     );
-});
+};
 
-ItnBaseForm.defaultProps = {
-    onChange: null,
-    noPadding: false,
-    onSave: null,
-    onDelete: null,
-    onCancel: null,
-    entity: null,
-    hidePaper: false,
-    header: null,
-    variant: "outlined",
-    isLoading: false,
-    isSaving: false,
-    errorLoading: null,
-    deleteBtnText: "Удалить",
-    saveBtnText: "Сохранить",
-    cancelBtnText: "Отмена",
-    viewOnly: false,
-    headerContent: null,
-    footerContent: null,
-    onAutocompleteInputChange: () => { },
-    controlsLoading: {}
-}
-
+const ItnBaseForm = forwardRef(ItnBaseFormInner);
 export default ItnBaseForm;

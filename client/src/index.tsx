@@ -1,8 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-import Test from './test';
+import Test from './test/test';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

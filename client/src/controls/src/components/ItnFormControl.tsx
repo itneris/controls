@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { Typography } from '@mui/material';
-import { FormContext } from './ItnBaseForm';
+import FormContext from '../context/FormContext';
 
 export interface IntFormControlProps {
     field: string;

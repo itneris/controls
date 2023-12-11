@@ -1,15 +1,14 @@
 ﻿import { LooseBoolObject } from "../base/LooseBoolObject";
-import { LooseObject } from "../base/LooseObject";
 import ICommonFormProps from "./ICommonFormProps";
 
-export default interface IBaseFormProps extends ICommonFormProps {
+export default interface IBaseFormProps<T> extends ICommonFormProps<T> {
     /**
      * Callback when "Save" button click 
      * Default: null
      * Function params:
      *      entity: LooseObject, Currently edit entity
      * */
-    onSave?: ((entity: LooseObject) => void) | null;
+    onSave?: ((entity: T) => void) | null;
     /**
      * Callback when "Delete" button click
      * Default: null
@@ -41,7 +40,7 @@ export default interface IBaseFormProps extends ICommonFormProps {
      * Callback when form autocomplete input changes
      * Default: () => {}
      * */
-    onAutocompleteInputChange?: (property: string, value: string, event: "reset" | "input" | "clear") => void;
+    onAutocompleteInputChange?: (property: keyof T, value: string, event: "reset" | "input" | "clear") => void;
     /**
      * Sets controls state to loading (autocomplete only)
      * Default: {}

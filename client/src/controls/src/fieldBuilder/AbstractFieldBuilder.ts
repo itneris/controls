@@ -1,37 +1,37 @@
+import { ItnSelectOption } from "..";
 import { FieldDescription } from "../base/FieldDescription";
-import { LooseObject } from "../base/LooseObject";
-import { ItnSelectOption } from "../props/IControlProps";
 import { FieldOptionsBuilder } from "./FieldOptionsBuilder";
 
-export default abstract class AbstractFieldBuilder<T extends LooseObject> {
-	private _fields: Array<FieldDescription> = [];
+export default abstract class AbstractFieldBuilder<T> {
+	private _fields: Array<FieldDescription<T>> = [];
 
 	public FieldFor(model: string | ((type: T) => any)): FieldOptionsBuilder<T> {
 		const key =
-			typeof model === "string" ? model :
-			model.toString().split(".")[1]
-				.replace("}", "")
-				.replace("\n", "")
-				.replace("\r", "")
-				.replace(";", "")
-				.replace(/\s/g, "");
-		const field = new FieldDescription(this._fields.length, key);
+			typeof model === "string" ?
+				model :
+				model.toString().split(".")[1]
+					.replace("}", "")
+					.replace("\n", "")
+					.replace("\r", "")
+					.replace(";", "")
+					.replace(/\s/g, "");
+		const field = new FieldDescription(this._fields.length, key as keyof T);
 		this._fields.push(field);
 		return new FieldOptionsBuilder<T>(field);
 	}  
 
-	public Build(): Array<FieldDescription> 
+	public Build(): Array<FieldDescription<T>> 
 	{
 		return this._fields;
 	}
 
-	public SetSelectOptions(property: string, options: ItnSelectOption[]): AbstractFieldBuilder<T> {
+	public SetSelectOptions(property: keyof T, options: ItnSelectOption[]): AbstractFieldBuilder<T> {
 		const newFields = this._fields.map(f => {
 			if (f.property === property) {
 				return {
 					...f,
 					items: options,
-				} as FieldDescription;
+				} as FieldDescription<T>;
 			}
 
 			return f;

@@ -7,14 +7,10 @@
     "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
   },
   "dependencies": {
-    "@types/katex": "^0.16.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "express-formidable": "^1.2.0",
-    "katex": "^0.16.4",
-    "suneditor": "^2.44.3",
-    "suneditor-react": "^3.4.1"
+    "express-formidable": "^1.2.0"
   },
   "devDependencies": {
     "concurrently": "^4.0.1",

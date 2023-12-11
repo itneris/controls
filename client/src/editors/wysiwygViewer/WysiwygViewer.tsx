@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+/*import React, { useMemo, useEffect } from 'react';
 import parse, { Element } from 'html-react-parser';
 import DOMPurify from 'dompurify';
 import { Box } from '@mui/material';
@@ -97,3 +97,4 @@ export default function WysiwygViewer(props: IWysiwygViewerProps) {
         {content}
     </Box>;
 }
+*/

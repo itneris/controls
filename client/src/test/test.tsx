@@ -1,12 +1,12 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "controls/src";
-import IDrawerRef from "./controls/src/props/IDrawerRef";
-import IModalRef from "./controls/src/props/IModalRef";
-import { IFormRef } from "./controls/src/base/IFormRef";
-import { IQueryFormRef } from "./controls/src/base/IQueryFormRef";
-import ContentEditor from "./MdEditor";
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "../controls/src";
+import IDrawerRef from "../controls/src/props/IDrawerRef";
+import IModalRef from "../controls/dist/props/IModalRef";
+import { IFormRef } from "../controls/src/base/IFormRef";
+import { IQueryFormRef } from "../controls/src/base/IQueryFormRef";
+import ItnFormFile from "../controls/src/props/ItnFormFile";
 //import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer } from "@itneris/controls";
 
 interface IUserDTO {
@@ -38,7 +38,7 @@ interface IUserDTO {
     blocked: boolean;
     middlename: string;
     password: string;
-    avatar: any;
+    avatar: ItnFormFile;
     note: string;
     calcValue: string;
 }
@@ -127,7 +127,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
-            .File({ maxSizeKb: 1000 * 10 })
+            .File({ withImagePreview: true, isAvatar: true, maxSizeKb: 1000 * 10 })
             //.Required();
 
         this.FieldFor(_ => _.role)
@@ -172,10 +172,6 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .SelectWithQuery("http://localhost:5000/api/dicts/roles")
             .Disable();
 
-        this.FieldFor(_ => _.wysiwyg)
-            .WithLabel("Wysiwyg описание")
-            .Wysiwyg();
-
         /*this.FieldFor(_ => _.note)
             .WithLabel("Примечание")
             .TextArea({ lines: 3 });
@@ -202,12 +198,13 @@ const fieldBuilder = new UsersFieldBuilder();
 
 const TestComnonent = () => {
     const drawerRef = useRef<IDrawerRef | null>(null);
-    const modalRef = useRef<IModalRef | null>(null);
-    const formRef = useRef<IFormRef | null>(null);
-    const createFormRef = useRef<IQueryFormRef>(null);
-    const editFormRef = useRef<IQueryFormRef>(null);
+    const formRef = useRef <IFormRef<IUserDTO> | null>(null);
+    const createFormRef = useRef<IQueryFormRef<IUserDTO>>(null);
+    const editFormRef = useRef<IQueryFormRef<IUserDTO>>(null);
 
-    const handleCreateChange = useCallback((prop: string, value: any) => {
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleCreateChange = useCallback((prop: keyof IUserDTO, value: any) => {
         if (prop === "name" || prop === "surname") {
             const values = createFormRef.current!.getCurrentValues();
             const loginNamePart = prop === "name" ?
@@ -227,7 +224,7 @@ const TestComnonent = () => {
 
         if (prop === "roleValueWithSearch") {
             const values = { ...createFormRef.current!.getCurrentValues() };
-            values.roleValueWithSearch = { id: 0, label: "" };
+            values.roleValueWithSearch = { id: "0", label: "" };
             createFormRef.current?.setEntity(values);
         }
     }, []);
@@ -250,7 +247,7 @@ const TestComnonent = () => {
             <PageTitle>Тестовый заголовок</PageTitle>
             <PageTitle onBack={() => alert('B button clicked')}>Тестовый заголовок с кнопкой назад</PageTitle>
             <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
-            <Button variant="contained" onClick={() => modalRef.current!.open()}>Открыть Modal</Button>
+            <Button variant="contained" onClick={() => setModalOpen(true)}>Открыть Modal</Button>
             <ItnControl
                 type="string"
                 value="qwe"
@@ -402,7 +399,8 @@ const TestComnonent = () => {
                 </TableContainer>
             </EditDrawer>
             <ItnModal
-                ref={modalRef}
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
                 yesBtnText="Да"
                 fullScreen
                 noBtnText="Нет"

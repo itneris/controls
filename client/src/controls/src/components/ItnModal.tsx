@@ -1,27 +1,21 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import React, {  useCallback } from 'react';
 import IModalProps from '../props/IModalProps';
-import IModalRef from '../props/IModalRef';
 
-const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: ForwardedRef<IModalRef>) => {
-    useImperativeHandle(ref, () => ({
-        open: () => setOpen(true),
-        close: () => setOpen(false)
-    }));
-
-    const [open, setOpen] = useState<boolean>(false);
+const ItnModal = (props: IModalProps) => {
+    const { onResult, onClose, open } = props;
 
     const handleResult = useCallback((result: boolean | null) => {
-        if (props.onResult) {
-            const shouldClose = props.onResult(result);
+        if (onResult) {
+            const shouldClose = onResult(result);
             if (shouldClose !== false) {
-                setOpen(false);
+                onClose();
             }
             return;
         }
 
-        setOpen(false);
-    }, [props.onResult, setOpen]);  // eslint-disable-line react-hooks/exhaustive-deps
+        onClose();
+    }, [onResult, onClose]);
 
     return (
         <Dialog
@@ -90,7 +84,7 @@ const ItnModal = forwardRef<IModalRef, IModalProps>((props: IModalProps, ref: Fo
             </DialogActions>
         </Dialog>
     );
-});
+};
 
 ItnModal.defaultProps = {
     title: null,
