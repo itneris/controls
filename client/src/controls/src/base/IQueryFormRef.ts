@@ -7,7 +7,7 @@ export interface IQueryFormRef<T> extends IFormRef<T> {
     /**
      * Starts form validation and saving flow
      * */
-    saveEntity: (urlParams: UrlParams) => void
+    saveEntity: (urlParams?: UrlParams) => void
     /**
      * Starts form delete flow
      * */

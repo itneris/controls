@@ -1,11 +1,10 @@
-import { Box, Divider, Drawer, Tooltip, Typography } from "@mui/material";
+import { Box, Divider, Drawer, Fab, Tooltip, Typography } from "@mui/material";
 import { Close, Delete, Save } from "@mui/icons-material";
-import Fab from '@mui/material/Fab';
-import IDrawerProps, { DrawerBtnProp } from '../props/IDrawerProps';
-import IDrawerRef from '../props/IDrawerRef';
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react";
+import IDrawerProps, { IDrawerBtnProp } from '../props/IDrawerProps';
+import React, {  useCallback, useEffect, useMemo, useState } from "react";
+import { DrawerActionType } from "../props/DrawerActionType";
 
-const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
+const EditDrawer = (props: IDrawerProps) => {
     const {
         title = null,
         onResult = null,
@@ -14,37 +13,34 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
         saveBtnText = null,
         cancelBtnText = null,
         deleteBtnText = null,
+        defaultTab = 0,
+        open: propsOpen,
         children,
         sx = {
+            zIndex: 1290,
             width: '40%',
             '& .MuiDrawer-paper': {
                 width: '40%',
                 overflow: 'visible',
-                boxSizing: 'border-box',
-                backgroundColor: "#eee"
+                boxSizing: 'border-box'
             },
         }
     } = props;
-    const [activeTab, setActiveTab] = useState<number>(0);
+
+    const [activeTab, setActiveTab] = useState<number>(defaultTab);
     const [open, setOpen] = useState<boolean>(false);
 
-    useImperativeHandle(ref, () => ({
-        setTab(tabIndex) {
-            setActiveTab(tabIndex);
-        },
-        open() {
-            setOpen(true);
-        }
-    }));
+    useEffect(() => {
+        setOpen(propsOpen);
+    }, [propsOpen])
 
-    const handleResult = useCallback((result: "delete" | "save" | "cancel" | "hide") => () => {
+    const handleResult = useCallback((result: DrawerActionType) => () => {
         setActiveTab(0);
         onResult && onResult(result);
-        setOpen(false);
     }, [onResult]);
 
     const buttonsRender: Array<React.ReactNode> = useMemo(() => {
-        let btns: Array<DrawerBtnProp> = [];
+        let btns: Array<IDrawerBtnProp> = [];
         if (cancelBtnText) {
             btns.push({
                 tooltip: 'Закрыть',
@@ -72,17 +68,19 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
         if (buttons) {
             btns = [...btns, ...buttons];
         }
-        return btns.map((btn, index) => (
-            <Tooltip
-                title={btn.tooltip ?? ""}
-                key={`db-${index}`}
-                placement="left"
-            >
-                <Fab color={btn.color} onClick={btn.onClick} size="small">
-                    {btn.icon}
-                </Fab>
-            </Tooltip>
-        ));
+        return btns.map((btn, index) => {
+            return (
+                <Tooltip
+                    title={btn.tooltip ?? ""}
+                    key={`db-${index}`}
+                    placement="left"
+                >
+                    <Fab color={btn.color} onClick={btn.onClick} size="small">
+                        {btn.icon}
+                    </Fab>
+                </Tooltip>
+            )
+        });
     }, [handleResult, buttons, cancelBtnText, deleteBtnText, saveBtnText]); 
 
     const handleTabChange = useCallback((index: number) => setActiveTab(index), [setActiveTab]);
@@ -98,7 +96,7 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                 {
                     (open && buttonsRender.length > 0) &&
                     <Box
-                        zIndex={1300}
+                        zIndex={1290}
                         position="absolute"
                         left="-56px"
                         width={56}
@@ -111,7 +109,8 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                             flexDirection="column"
                             justifyContent="top"
                             gap={2}
-                            bgcolor="rgba(255, 255, 255, 0.7)"
+                            bgcolor="rgba(255, 255, 255, 0.2)"
+                            sx={{ borderBottomLeftRadius: "10px" }}
                         >
                             {buttonsRender}
                         </Box>
@@ -174,12 +173,16 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
                     <Box paddingX={2}>
                         {
                             tabs.length > 0 &&
-                            tabs.map((tab, index) => <Box
-                                key={"tab-" + index}
-                                display={index === activeTab ? 'block' : 'none'}
-                            >
-                                {tab.component}
-                            </Box>)
+                            tabs.map((tab, index) => {
+                                return (
+                                    <Box
+                                        key={"tab-" + index}
+                                        display={index === activeTab ? 'block' : 'none'}
+                                    >
+                                        {tab.component}
+                                    </Box>
+                                );
+                            })
                         }
                         {children}
                     </Box>
@@ -187,6 +190,6 @@ const EditDrawer = forwardRef<IDrawerRef, IDrawerProps>((props, ref) => {
             </Drawer>
         </>
     );
-});
+};
 
 export default EditDrawer;

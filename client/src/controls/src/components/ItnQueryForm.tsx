@@ -62,7 +62,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             return baseFormRef.current!.validate(onErrors);
         },
         saveEntity(urlParams) {
-            handleSave(baseFormRef.current!.getCurrentValues(), urlParams);
+            handleSave(baseFormRef.current!.getCurrentValues(), urlParams ?? null);
         },
         deleteEntity(urlParams) {
             handleDelete(baseFormRef.current!.getCurrentValues()["id" as keyof T] as string, urlParams)
@@ -276,7 +276,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             viewOnly={formType === "view"}
             cancelBtnText={cancelBtnText}
             deleteBtnText={deleteBtnText}
-            entity={entity}
+            entity={formData}
             errorLoading={formDataQuery.isError ? `Ошибка загрузки данных: ${formDataQuery.error.message}` : undefined}
             header={header}
             hidePaper={hidePaper}

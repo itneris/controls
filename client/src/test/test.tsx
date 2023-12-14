@@ -1,9 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "../controls/src";
-import IDrawerRef from "../controls/src/props/IDrawerRef";
-import IModalRef from "../controls/dist/props/IModalRef";
 import { IFormRef } from "../controls/src/base/IFormRef";
 import { IQueryFormRef } from "../controls/src/base/IQueryFormRef";
 import ItnFormFile from "../controls/src/props/ItnFormFile";
@@ -197,12 +195,12 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 const fieldBuilder = new UsersFieldBuilder();
 
 const TestComnonent = () => {
-    const drawerRef = useRef<IDrawerRef | null>(null);
     const formRef = useRef <IFormRef<IUserDTO> | null>(null);
     const createFormRef = useRef<IQueryFormRef<IUserDTO>>(null);
     const editFormRef = useRef<IQueryFormRef<IUserDTO>>(null);
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
 
     const handleCreateChange = useCallback((prop: keyof IUserDTO, value: any) => {
         if (prop === "name" || prop === "surname") {
@@ -246,7 +244,7 @@ const TestComnonent = () => {
         <>
             <PageTitle>Тестовый заголовок</PageTitle>
             <PageTitle onBack={() => alert('B button clicked')}>Тестовый заголовок с кнопкой назад</PageTitle>
-            <Button variant="contained" onClick={() => drawerRef.current!.open()}>Открыть Drawer</Button>
+            <Button variant="contained" onClick={() => setEditOpen(true)}>Открыть Drawer</Button>
             <Button variant="contained" onClick={() => setModalOpen(true)}>Открыть Modal</Button>
             <ItnControl
                 type="string"
@@ -356,9 +354,10 @@ const TestComnonent = () => {
             }
 
             <EditDrawer
+                open={editOpen}
+                onClose={() => setEditOpen(false)}
                 title="Тестовый дровер"
-                cancelBtnText="Отмена"
-                ref={drawerRef}                
+                cancelBtnText="Отмена"     
                 sx={{
                     '& .MuiDrawer-paper': {
                         backgroundColor: "white"

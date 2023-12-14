@@ -78,19 +78,28 @@ function ItnControl(props: IControlProps) {
             return;
         }
 
+        const value = props.value as ItnFormFile;
+
         if (!props.isAvatar && !props.withImagePreview) {
             return;
         }
 
-        if (!props.value?.file) {
+        if (!value?.data && !value?.file) {
             props.withImagePreview && setPreview(null);
             return;
         }
 
-        const objectUrl = URL.createObjectURL(props.value.file as File);
+        if (value?.data) {
+            setPreview(value.data);
+            return;
+        }
+        
+        const objectUrl = URL.createObjectURL(value.file as File);
         setPreview(objectUrl);
 
-        return () => URL.revokeObjectURL(objectUrl);
+        return () => {
+            objectUrl && URL.revokeObjectURL(objectUrl);
+        }
     }, [props]);
 
     const handleUploadClick = useCallback(() => {
@@ -347,8 +356,7 @@ function ItnControl(props: IControlProps) {
                     />}
                 />;
             case 'date':
-                return <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
-                    <DatePicker
+                return <DatePicker
                         label={props.label ?? ""}
                         value={props.value ? new Date(props.value) : null}
                         onChange={val => {
@@ -387,11 +395,9 @@ function ItnControl(props: IControlProps) {
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
                         }*/
-                    />
-                </LocalizationProvider>;
+                    />;
             case 'time':
-                return <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
-                    <TimePicker
+                return <TimePicker
                         label={props.label ?? ""}
                         value={props.value ? new Date(props.value) : null}
                         onChange={val => {
@@ -429,11 +435,9 @@ function ItnControl(props: IControlProps) {
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
                         }*/
-                    />
-                </LocalizationProvider>;
+                    />;
             case 'datetime':
-                return <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
-                    <DateTimePicker
+                return <DateTimePicker
                         label={props.label ?? ""}
                         value={props.value ? new Date(props.value) : null}
                         onChange={val => {
@@ -471,8 +475,7 @@ function ItnControl(props: IControlProps) {
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
                         }*/
-                    />
-                </LocalizationProvider>;
+                    />;
             case 'password':
                 return <Box display="flex" width="100%">
                     <FormControl
@@ -482,6 +485,7 @@ function ItnControl(props: IControlProps) {
                         <TextField
                             variant={props.variant}
                             fullWidth
+                            autoComplete="off"
                             //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
                             value={props.value}
                             onChange={event => props.onChange && props.onChange(event.currentTarget.value)}
@@ -503,6 +507,7 @@ function ItnControl(props: IControlProps) {
                             }}
                             disabled={props.disabled}
                             onKeyUp={checkEnter}
+                            name={props.name}
                         />
                     </FormControl>
                     {
@@ -526,6 +531,7 @@ function ItnControl(props: IControlProps) {
                 />;*/
             case 'string':
                 return <TextField
+                    autoComplete="off"
                     onKeyUp={checkEnter}
                     variant={props.variant}
                     disabled={props.disabled}
@@ -540,10 +546,12 @@ function ItnControl(props: IControlProps) {
                     helperText={props.error ? props.errorText : (props.helperText ?? "")}
                     multiline={props.multiline}
                     rows={props.lines || undefined}
-                    maxRows={props.maxLines || undefined}                    
+                    maxRows={props.maxLines || undefined}
+                    name={props.name}
                 />;
             case 'number':
                 return <TextField
+                    autoComplete="off"
                     value={props.value}
                     onChange={event => props.onChange && props.onChange(event.currentTarget.value  === "" ? null : +event.currentTarget.value)}
                     //onBlur={event => props.onChange && props.onChange(event.currentTarget.value)}
@@ -557,6 +565,7 @@ function ItnControl(props: IControlProps) {
                     helperText={props.error ? props.errorText : (props.helperText ?? "")}
                     disabled={props.disabled}
                     size="small"
+                    name={props.name}
                 />;
             case 'file':
                 return (<FormControl>
@@ -569,7 +578,7 @@ function ItnControl(props: IControlProps) {
                         accept={props.accept}
                     />
                     {
-                        props.value === null || !props.value.file ?
+                        props.value === null || (!props.value.file && !props.value.data) ?
                             <>
                                 {
                                     props.isAvatar ?

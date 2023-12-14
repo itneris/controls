@@ -6,17 +6,20 @@ import ItnForm from "./components/ItnBaseForm";
 import ItnFormControl from "./components/ItnFormControl";
 import ItnQueryForm from "./components/ItnQueryForm";
 import { objectToFormData } from "./queries/dataQueries";
-import { DrawerBtnProp, DrawerTabProp } from "./props/IDrawerProps";
+import { IDrawerBtnProp, DrawerTabProp } from "./props/IDrawerProps";
 import { Validation } from "./base/Validation";
 import AbstractFieldBuilder from "./fieldBuilder/AbstractFieldBuilder";
 import "./fieldBuilder/DefaultOptionsExtensions";
 import { ItnSelectOption } from "./base/ItnSelectOption";
+import ItnFormFile from "./props/ItnFormFile";
+import { IFormRef } from "./base/IFormRef";
+import { IQueryFormRef } from "./base/IQueryFormRef";
+import { DrawerActionType } from "./props/DrawerActionType";
 
 export {
     PageTitle,
     ItnModal,
     EditDrawer,
-    DrawerBtnProp,
     DrawerTabProp,
     ItnForm,
     ItnQueryForm,
@@ -25,5 +28,8 @@ export {
     ItnControl,
     Validation,
     ItnFormControl,
-    objectToFormData
+    objectToFormData,
+    ItnFormFile
 };
+
+export type { IFormRef, IQueryFormRef, DrawerActionType, IDrawerBtnProp };

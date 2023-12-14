@@ -203,4 +203,9 @@ export default interface IControlProps {
      * Default: null
      * */
     onEnter?: () => void;
+    /**
+     * Name of the field
+     * Default: null
+     * */
+    name?: string;
 }

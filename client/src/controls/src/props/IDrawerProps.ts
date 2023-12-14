@@ -2,6 +2,15 @@ import { SxProps, Theme } from "@mui/material";
 
 export default interface IDrawerProps {
     /**
+     * Is drawer open
+     * */
+    open: boolean;
+    /**
+     * Current drawer tab
+     * Default: 0
+     * */
+    defaultTab?: number;
+    /**
      * Content in drawer
      * */
     children?: React.ReactNode;
@@ -25,7 +34,7 @@ export default interface IDrawerProps {
      * Additional FAB buttons for drawer
      * Default: []  
      * */
-    buttons?: Array<DrawerBtnProp>;
+    buttons?: Array<IDrawerBtnProp>;
     /**
      * Tabs that should be rendered instead of content
      * Default: []  
@@ -61,17 +70,17 @@ export default interface IDrawerProps {
     sx?: SxProps<Theme>;
 }
 
-export class DrawerBtnProp {
+export interface IDrawerBtnProp {
     /**
      * Button color based on MaterialUI theme colors
      * Default: "default"
      * */
-    color?: "inherit" | "default" | "primary" | "secondary" | "error" | "success" | "info" | "warning" = "default";
+    color?: "inherit" | "default" | "primary" | "secondary" | "error" | "success" | "info" | "warning";
     /**
      * Button tooltip text, if not set no tooltip will be rendered
      * Default: null
      * */
-    tooltip?: string | null = null;
+    tooltip?: string | null;
     /**
      * FAB button icon
      * */
@@ -79,7 +88,7 @@ export class DrawerBtnProp {
     /**
      * Callbacl when button clicked
      * */
-    onClick: () => void = () => { };
+    onClick: () => void;
 }
 
 export class DrawerTabProp {

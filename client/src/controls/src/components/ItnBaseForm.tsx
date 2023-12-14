@@ -243,6 +243,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                 helperText={field.helperText}
                 multiple={field.multiple}
                 onEnter={field.onEnterKeyPress}
+                name={field.property.toString()}
             />
         }
     }, [validation, handleChange, onAutocompleteInputChange, controlsLoading])
