@@ -2,7 +2,7 @@ import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, use
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { createEntity, deleteEntity, getDict, getEntity, updateEntity, getAutocompleteDict } from "../queries/dataQueries";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import IQueryFormProps from "../props/IQueryFormProps";
 import ItnBaseForm from "./ItnBaseForm";
 import { IQueryFormRef } from "../base/IQueryFormRef";
@@ -10,6 +10,8 @@ import { LooseBoolObject } from "../base/LooseBoolObject";
 import { AutoCompleteValue } from "../base/AutoCompleteValue";
 import { UrlParams } from "../base/UrlParams";
 import { LooseTimeoutObject } from "../base/LooseTimeoutObject";
+import { ItnSelectOption } from "../base/ItnSelectOption";
+import { FieldDescription } from "../base/FieldDescription";
 
 declare module "react" {
     function forwardRef<T, P = {}>(
@@ -50,7 +52,6 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
 
     const baseFormRef = useRef<IFormRef<T>>(null);
     const autoCompleteTimeouts = useRef<LooseTimeoutObject>({});
-    const controlsLoading = useRef<LooseBoolObject>({});
 
     const queryClient = useQueryClient();
 
@@ -75,6 +76,9 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         },
         refetch() {
             formDataQuery.refetch();
+        },
+        forceUpdate() {
+            baseFormRef.current!.forceUpdate();
         }
     }));
 
@@ -92,6 +96,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<AutoCompleteValue>({});
+    const [controlsLoading, setControlsLoading] = useState<LooseBoolObject>({});
     //const [queriesEnabled, setQueriesEnabled] = useState<string[]>([]);
 
     const formWithFiles = useMemo(() => {
@@ -113,46 +118,81 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
 
     useEffect(() => {
         queryClient.setQueryData<T>([apiUrl, id], () => entity ?? undefined);
-    }, [entity]);
+    }, [entity, queryClient, apiUrl, id]);
 
-    const autocompleteQueries = useQueries({ 
-        queries: fieldBuilder.Build()
+    const controlsForFetch = useMemo(() => {
+        return fieldBuilder.Build()
             .filter(_ =>
                 _.selectApiUrl !== null &&
                 (type !== "view" || _.type === "select") &&
                 (_.type === "autocomplete" || _.type === "select") &&
                 (typeof (_.hidden) === "function" ? !_.hidden(entity ?? {} as T) : !_.hidden) &&
                 (_.type === "select" || (typeof (_.disabled) === "function" ? !_.disabled(entity ?? {} as T) : !_.disabled))
-            )
-            .map(_ => ({
-                queryKey: [_.property, _.selectApiUrl, !_.searchAsType ? null : (autocompleteSearchValues[_.property as string] || "")],
-                queryFn: _.type === "autocomplete" ? getAutocompleteDict : getDict,
-                enabled: type !== "view",
-                onSuccess: (response: AxiosResponse) => {
-                    const options = response.data.length === 0 ?
-                        [] :
-                            _.searchAsType ? 
-                            [
-                                ...response.data,
-                                { id: null, label: "Вводите текст для поиска", disabled: true }
-                            ] :
-                            response.data;
+            );
+    }, [fieldBuilder, type, entity]);
 
-                    fieldBuilder.SetSelectOptions(_.property, options);
-                },
-                onSettled: () => {
-                    //setQueriesEnabled(oldState => [...oldState, _.property]);
-                    controlsLoading.current = {
-                        ...controlsLoading.current,
-                        [_.property]: false
-                    };
-                }
-            }))
+    const getAutoCompleteQueryKey = useCallback((field: FieldDescription<T>) => {
+        return [
+            field.property,
+            field.selectApiUrl,
+            !field.searchAsType ? null : (autocompleteSearchValues[field.property as string] || "")
+        ]
+    }, [autocompleteSearchValues]);
+
+    const autocompleteQueries = useQueries({ 
+        queries: controlsForFetch
+            .map(_ => {
+                return {
+                    queryKey: getAutoCompleteQueryKey(_),
+                    queryFn: _.type === "autocomplete" ? getAutocompleteDict : getDict
+                };
+            })
     });
+
+    const queryStatuses = autocompleteQueries.map(_ => _.status);
+
+    useEffect(() => {
+        controlsForFetch.forEach(_ => {
+            if (controlsLoading[_.property as string] === false) {
+                return;
+            }
+
+            const queryKey = getAutoCompleteQueryKey(_);
+            const state = queryClient.getQueryState(queryKey);
+
+            if (!state || state.status === "pending") {
+                return;
+            }
+
+            setControlsLoading(old => ({
+                ...old,
+                [_.property]: false
+            }));
+
+            if (state.status === "error") {
+                return;
+            }
+
+            const data = queryClient.getQueryData(queryKey) as ItnSelectOption[];
+            if (data) {
+                const options = data.length === 0 ?
+                    [] :
+                    _.searchAsType ?
+                        [
+                            ...data,
+                            { id: "empty", label: "Вводите текст для поиска", blocked: true } as ItnSelectOption
+                        ] :
+                        data;
+
+                fieldBuilder.SetSelectOptions(_.property, options);
+                baseFormRef.current!.forceUpdate();
+            }
+        });
+    }, [autocompleteQueries, controlsForFetch, queryClient, fieldBuilder, getAutoCompleteQueryKey, queryStatuses, controlsLoading])
 
     useEffect(() => {
         autocompleteQueries.forEach(_ => _.refetch());
-        if (Object.keys(controlsLoading.current).length === 0) {
+        if (Object.keys(controlsLoading).length === 0) {
             let loadingState: LooseBoolObject = {};
             fieldBuilder.Build()
                 .filter(f =>
@@ -163,7 +203,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
                 .forEach(f => loadingState[f.property as string] = true);
             
 
-            controlsLoading.current = loadingState;
+            setControlsLoading(loadingState);
         }
     }, [fieldBuilder, type]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -258,17 +298,14 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
 
             autoCompleteTimeouts.current[prop as string] = setTimeout(() => {
                 //autocompleteQueries.forEach(_ => _.refetch());
-                controlsLoading.current = {
-                    ...controlsLoading.current,
-                    [prop]: true
-                };
+                setControlsLoading(old => ({ ...old, [prop]: true }));
                 setAutocompleteSearchValues(oldValue => ({
                     ...oldValue,
                     [prop]: value
                 }));
             }, 300);
         }
-    }, [type, autocompleteSearchValues, fieldBuilder]);
+    }, [type, autocompleteSearchValues, fieldBuilder, entity]);
 
     return (
         <ItnBaseForm
@@ -292,7 +329,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             variant={variant}
             headerContent={headerContent}
             footerContent={footerContent}
-            controlsLoading={controlsLoading.current}
+            controlsLoading={controlsLoading}
             onAutocompleteInputChange={handleAutoCompleteInputChange}
         >
             {children}

@@ -34,7 +34,7 @@ export default abstract class AbstractFieldBuilder<T> {
 				} as FieldDescription<T>;
 			}
 
-			return f;
+			return f as FieldDescription<T>;
 		});
 		this._fields = newFields;
 		return this;

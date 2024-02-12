@@ -355,7 +355,7 @@ const TestComnonent = () => {
 
             <EditDrawer
                 open={editOpen}
-                onClose={() => setEditOpen(false)}
+                onResult={(res) => res === "hide" && setEditOpen(false)}
                 title="Тестовый дровер"
                 cancelBtnText="Отмена"     
                 sx={{

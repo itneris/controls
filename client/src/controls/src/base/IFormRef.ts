@@ -23,4 +23,8 @@ export interface IFormRef<T> {
      * Sets new entity
      * */
     setEntity: (entity: T) => void
+    /**
+     * Update form forcefully
+     * */
+    forceUpdate: () => void
 }

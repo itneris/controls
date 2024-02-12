@@ -40,9 +40,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         children
     } = props;
 
-    const fields = useMemo(() => {
-        return fieldBuilder.Build();
-    }, [fieldBuilder]);
+    const fields = fieldBuilder.Build();
 
     const entityRef = useRef<T | null>({} as T);
 
@@ -70,6 +68,9 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         setEntity(newEntity: T) {
             entityRef.current = newEntity;
             setValidation([]);
+        },
+        forceUpdate() {
+            forceUpdate({});
         }
     }));
 
@@ -77,7 +78,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         let newEntity = entity === null ? getDefaultValues() : { ...entity };
         entityRef.current = newEntity;
         forceUpdate({});
-    }, [entity]);
+    }, [entity, getDefaultValues]);
 
 
     const handleChange = useCallback((field: keyof T, value: any) => {
@@ -246,7 +247,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                 name={field.property.toString()}
             />
         }
-    }, [validation, handleChange, onAutocompleteInputChange, controlsLoading])
+    }, [validation, handleChange, onAutocompleteInputChange, controlsLoading, isLoading, isSaving, variant, viewOnly])
 
     const renderFieldByName = useCallback((name: string) => {
         const field = fields.find(_ => _.property === name);
@@ -258,7 +259,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
             return <></>;
         }
         return renderField(field);
-    }, [renderField, fields, entity])
+    }, [renderField, fields])
 
     const formContextValue = useMemo(() => {
         return { getField: renderFieldByName };
@@ -268,7 +269,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         <>
             <Paper
                 elevation={hidePaper ? 0 : undefined}
-                sx={hidePaper ? { backgroundColor: "transparent" } : { paddingX: 2, paddingY: 2 }}
+                sx={hidePaper ? { backgroundColor: "transparent" } : noPadding ? {} : { paddingX: 2, paddingY: 2 }}
             >
                 {
                     (header || onDelete) &&
