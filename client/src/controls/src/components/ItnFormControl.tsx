@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Typography } from '@mui/material';
 import FormContext from '../context/FormContext';
 
@@ -11,16 +11,16 @@ const ItnFormControl = (props: IntFormControlProps) => {
 
     const control = useMemo(() => {
         if (!formCtx) {
-            return <Typography variant="body2">This conponent cannot be renderen without form context</Typography>;
+            return <Typography variant="body2">This component cannot be rendered without form context</Typography>;
         }
+
         const formControl = formCtx.getField(props.field);
         if (formControl === null) {
             return <Typography variant="body2">Wrong field name {props.field}</Typography>;
         }
+        
         return formControl;
     }, [formCtx, props.field]);
-
-
 
     return <>
         {control}

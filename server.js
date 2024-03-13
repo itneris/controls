@@ -525,7 +525,7 @@ app.get('/api/file', (req, res) => {
 }); 
 
 app.get('/api/dicts/roles', async (req, res) => {
-    await snooze(3000);
+    await snooze(1000);
     res.send(rolesValues);
 });
 
@@ -535,7 +535,7 @@ app.get('/api/dicts/roles_auto_with_search', async (req, res) => {
 });
 
 app.get('/api/dicts/roles_auto', async (req, res) => {
-    await snooze(3000);
+    await snooze(1000);
     res.send([...rolesValues]);
 });
 

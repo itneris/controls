@@ -128,7 +128,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .File({ withImagePreview: true, isAvatar: true, maxSizeKb: 1000 * 10 })
             //.Required();
 
-        this.FieldFor(_ => _.role)
+        /*this.FieldFor(_ => _.role)
             .WithLabel(_ => "Роль" + _.role)
             .Select([
                 new ItnSelectOption("1", "Админ"),
@@ -148,22 +148,22 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Роль (multiselect)")
             .SelectWithQuery("http://localhost:5000/api/dicts/roles", true);*/
 
-        this.FieldFor(_ => _.roleValueWithSearch)
-            .WithLabel("Роль (autocomplete with search)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true)
-            .Disable();
+        // this.FieldFor(_ => _.roleValueWithSearch)
+        //     .WithLabel("Роль (autocomplete with search)")
+        //     .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true)
+        //     .Disable();
 
-        //this.FieldFor(_ => _.roleValue)
-        //    .WithLabel("Роль (autocomplete)")
-        //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", false, true);
+        this.FieldFor(_ => _.roleValue)
+           .WithLabel("Роль (autocomplete)")
+           .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true);
 
         //this.FieldFor(_ => _.roleValueArray)
         //    .WithLabel("Роли (autocomplete multiple)")
         //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
 
-        /*this.FieldFor(_ => _.roleValueArray)
+        this.FieldFor(_ => _.roleValueArray)
             .WithLabel("Роли (autocomplete multiple without search as type)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);*/
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);
 
         this.FieldFor(_ => _.role_api)
             .WithLabel("Роль (api)")

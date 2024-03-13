@@ -54,6 +54,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     const autoCompleteTimeouts = useRef<LooseTimeoutObject>({});
 
     const queryClient = useQueryClient();
+    const entityQueryKey = useMemo(() => [apiUrl, id], [apiUrl, id])
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
@@ -104,7 +105,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     }, [fieldBuilder]);
 
     const { data: formData, ...formDataQuery } = useQuery({
-        queryKey: [apiUrl, id],
+        queryKey: entityQueryKey,
         queryFn: getEntity<T>(apiUrl ?? "/", id ?? ""),
         enabled: formType !== "create" && entity == null && !!apiUrl,
         initialData: entity
@@ -117,8 +118,8 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     }, [formDataQuery.isFetchedAfterMount, onAfterLoad, formData]);
 
     useEffect(() => {
-        queryClient.setQueryData<T>([apiUrl, id], () => entity ?? undefined);
-    }, [entity, queryClient, apiUrl, id]);
+        queryClient.setQueryData<T>(entityQueryKey, () => entity ?? undefined);
+    }, [entity, queryClient, entityQueryKey]);
 
     const controlsForFetch = useMemo(() => {
         return fieldBuilder.Build()
@@ -292,6 +293,15 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
 
         if (event === "input" || event === "clear") {
+            queryClient.setQueryData<T>(entityQueryKey, (old) => {
+                if (!old) return old;
+
+                return {
+                    ...old,
+                    [prop]: null                    
+                };                
+            });
+
             if (autoCompleteTimeouts.current[prop as string] !== undefined) {
                 clearTimeout(autoCompleteTimeouts.current[prop as string]);
             }
@@ -305,7 +315,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
                 }));
             }, 300);
         }
-    }, [type, autocompleteSearchValues, fieldBuilder, entity]);
+    }, [type, autocompleteSearchValues, fieldBuilder, entity, queryClient, entityQueryKey]);
 
     return (
         <ItnBaseForm

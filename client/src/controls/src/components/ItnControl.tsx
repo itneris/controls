@@ -64,7 +64,7 @@ function ItnControl(props: IControlProps) {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const tmpId = useRef<number>(1);
 
-    const [acInputValue, setAcInputValue] = useState<string>("");
+    //const [acInputValue, setAcInputValue] = useState<string>("");
     const [fileError, setFileError] = useState<string | null>(null);
 
     const handlePasswordGenerate = useCallback(() => {
@@ -201,20 +201,24 @@ function ItnControl(props: IControlProps) {
         e.preventDefault();
     }, [props.onEnter, props.allowDecimals, props.allowNegative]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleAutoCompleteInputChange = useCallback((event: React.SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
+    const handleAutoCompleteInputChange = useCallback((_event: React.SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
         props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason);
         if (props.onAutocompleteInputChange && reason === "reset") {
             return;
         }
-        setAcInputValue(value);
-    }, [setAcInputValue, props.onAutocompleteInputChange]); // eslint-disable-line react-hooks/exhaustive-deps
+        //setAcInputValue(value);
+    }, [props.onAutocompleteInputChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
-        if (props.type === "autocomplete" && !props.multiple) {
-            setAcInputValue(props.value?.label ?? "");
-            props.onAutocompleteInputChange && props.onAutocompleteInputChange(props.value?.label ?? "", "input");
-        }
-    }, [props, setAcInputValue]);
+
+    /*useEffect(() => {
+        if (props.type !== "autocomplete") return;
+        if (props.multiple) return; 
+
+        const labelValue = props.value?.label ?? "";
+
+        setAcInputValue("");
+        props.onAutocompleteInputChange && props.onAutocompleteInputChange(props.value?.label ?? "", "input");        
+    }, [props]);*/
 
     const control = useMemo(() => {
         switch (props.type) {
@@ -257,7 +261,7 @@ function ItnControl(props: IControlProps) {
                 );
             case 'autocomplete':
                 return <Autocomplete
-                    inputValue={acInputValue}
+                    //inputValue={acInputValue ?? props.value?.label ?? ""}
                     onInputChange={handleAutoCompleteInputChange}
                     getOptionLabel={option => option.label}
                     isOptionEqualToValue={(option, value) => {
@@ -271,7 +275,7 @@ function ItnControl(props: IControlProps) {
                     noOptionsText={props.noOptionsText}
                     loadingText={props.autocompleteLoadingText}
                     loading={props.autocompleteLoading}
-                    onChange={(event, newValue) => {
+                    onChange={(_e, newValue) => {
                         if (!props.multiple && newValue !== null && newValue.inputValue) {
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
                             props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
@@ -289,11 +293,11 @@ function ItnControl(props: IControlProps) {
                             props.onChange && props.onChange(newValue);
                         }
 
-                        if (props.multiple) {
+                        /*if (props.multiple) {
                             setAcInputValue("");
                         } else {
                             setAcInputValue(newValue?.inputValue ?? newValue?.label ?? "");
-                        }
+                        }*/
                     }}
                     renderOption={(props, option) => (
                         <li {...props} key={"opt" + option.id} >{option.label}</li>
@@ -672,7 +676,7 @@ function ItnControl(props: IControlProps) {
         handleNumberKeyPress,
         preview,
         checkEnter,
-        acInputValue,
+        //acInputValue,
         handleAutoCompleteInputChange,
         fileError
     ]); 
