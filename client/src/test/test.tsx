@@ -41,6 +41,9 @@ interface IUserDTO {
     calcValue: string;
 }
 
+const onRoleAdd = (val: string) => {
+    console.log(val);
+}
 class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
     constructor() {
         super();
@@ -72,7 +75,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithHelperText("Не надо вводить сюда цифры")
             .Required()
             .WithTooltip("Ничего не значащая подсказка");
-
+            */
         this.FieldFor(_ => _.surname)
             .WithLabel("Фамилия")
             .WithDefaultValue("Каромаслов")
@@ -81,7 +84,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 console.log(entity);
                 return null;
             });
-
+            /*
         this.FieldFor(_ => _.calcValue)
             .WithLabel("Калькулируемое поле")
             .Hide((_) => _.surname === 'dr. Hide');
@@ -153,23 +156,26 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         //     .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_with_search", true, true)
         //     .Disable();
 
-        this.FieldFor(_ => _.roleValue)
-           .WithLabel("Роль (autocomplete)")
-           .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true);
+        //this.FieldFor(_ => _.roleValue)
+        //   .WithLabel("Роль (autocomplete)")
+        //   .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true);
 
         //this.FieldFor(_ => _.roleValueArray)
         //    .WithLabel("Роли (autocomplete multiple)")
         //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
 
-        this.FieldFor(_ => _.roleValueArray)
-            .WithLabel("Роли (autocomplete multiple without search as type)")
-            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);
+        //this.FieldFor(_ => _.roleValueArray)
+        //    .WithLabel("Роли (autocomplete multiple without search as type)")
+        //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);
 
-        this.FieldFor(_ => _.role_api)
-            .WithLabel("Роль (api)")
-            .SelectWithQuery("http://localhost:5000/api/dicts/roles")
-            .Disable();
+        //this.FieldFor(_ => _.role_api)
+        //    .WithLabel("Роль (api)")
+        //    .SelectWithQuery("http://localhost:5000/api/dicts/roles")
+        //    .Disable();
 
+        this.FieldFor(_ => _.roleValue)
+            .WithLabel("Роль (autocomplete with create)")
+            .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true, onRoleAdd);
         /*this.FieldFor(_ => _.note)
             .WithLabel("Примечание")
             .TextArea({ lines: 3 });
@@ -201,6 +207,8 @@ const TestComnonent = () => {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
+
+    const [formType, setFormType] = useState<"view" | "edit">("view");
 
     const handleCreateChange = useCallback((prop: keyof IUserDTO, value: any) => {
         if (prop === "name" || prop === "surname") {
@@ -246,6 +254,7 @@ const TestComnonent = () => {
             <PageTitle onBack={() => alert('B button clicked')}>Тестовый заголовок с кнопкой назад</PageTitle>
             <Button variant="contained" onClick={() => setEditOpen(true)}>Открыть Drawer</Button>
             <Button variant="contained" onClick={() => setModalOpen(true)}>Открыть Modal</Button>
+            <Button variant="contained" onClick={() => setFormType(old => old === "view" ? "edit" : "view")}>Просмотр\редактирование</Button>
             <ItnControl
                 type="string"
                 value="qwe"
@@ -253,8 +262,7 @@ const TestComnonent = () => {
             />
 
 
-            {
-                /*
+            {/*
                 <ItnQueryForm
                     ref={createFormRef}
                     header="Форма создания"
@@ -264,8 +272,7 @@ const TestComnonent = () => {
                     footerContent={<b>Пример контента после контролов</b>}
                     onChange={handleCreateChange}
                     onError={handleError}
-                />
-                */
+                />*/
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
 
@@ -274,14 +281,13 @@ const TestComnonent = () => {
                     apiUrl="http://localhost:5000/api/test"
                     fieldBuilder={fieldBuilder}
                     id="1"
-                    //type="view"
+                    type={formType}
                     onAfterLoad={(e) => console.log(e)}
                     urlParams={{ forGodsSake: "true", qweqwe: "qweqheuh" }}
                     onError={e => console.log(e)}
                     onChange={handleResetAc}
                     ref={editFormRef}
                 />
-                
             }
             {
                 /*

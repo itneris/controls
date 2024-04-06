@@ -40,7 +40,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         children
     } = props;
 
-    const fields = fieldBuilder.Build();
+    const fields = fieldBuilder.GetFields();
 
     const entityRef = useRef<T | null>({} as T);
 
@@ -51,6 +51,8 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         });
         return initEntity;
     }, [fields]);
+
+    const getDefaultValuesRef = useRef(getDefaultValues);
 
     const [validation, setValidation] = useState<Validation<T>[]>([]);
     const [, forceUpdate] = useState<any>({});
@@ -75,10 +77,10 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
     }));
 
     useEffect(() => {
-        let newEntity = entity === null ? getDefaultValues() : { ...entity };
+        let newEntity = entity === null ? getDefaultValuesRef.current() : { ...entity };
         entityRef.current = newEntity;
         forceUpdate({});
-    }, [entity, getDefaultValues]);
+    }, [entity]);
 
 
     const handleChange = useCallback((field: keyof T, value: any) => {

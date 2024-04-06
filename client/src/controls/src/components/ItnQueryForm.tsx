@@ -37,7 +37,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         deleteBtnText = "Удалить",
         saveBtnText = "Сохранить",
         cancelBtnText = "Отмена",
-        urlParams =null,
+        urlParams = null,
         onError = null,
         sendAsMultipartFormData = false,
         onSavingStateChange = () => { },
@@ -101,7 +101,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     //const [queriesEnabled, setQueriesEnabled] = useState<string[]>([]);
 
     const formWithFiles = useMemo(() => {
-        return fieldBuilder.Build().some(_ => _.type === "file");
+        return fieldBuilder.GetFields().some(_ => _.type === "file");
     }, [fieldBuilder]);
 
     const { data: formData, ...formDataQuery } = useQuery({
@@ -122,7 +122,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     }, [entity, queryClient, entityQueryKey]);
 
     const controlsForFetch = useMemo(() => {
-        return fieldBuilder.Build()
+        return fieldBuilder.GetFields()
             .filter(_ =>
                 _.selectApiUrl !== null &&
                 (type !== "view" || _.type === "select") &&
@@ -191,22 +191,31 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         });
     }, [autocompleteQueries, controlsForFetch, queryClient, fieldBuilder, getAutoCompleteQueryKey, queryStatuses, controlsLoading])
 
-    useEffect(() => {
-        autocompleteQueries.forEach(_ => _.refetch());
-        if (Object.keys(controlsLoading).length === 0) {
-            let loadingState: LooseBoolObject = {};
-            fieldBuilder.Build()
-                .filter(f =>
-                    f.selectApiUrl !== null &&
-                    (type !== "view" || f.type === "select") &&
-                    (f.type === "select" || (typeof (f.disabled) === "function" ? !f.disabled(entity ?? {} as T) : !f.disabled))
-                )
-                .forEach(f => loadingState[f.property as string] = true);
-            
+    const entityRef = useRef(entity);
+    useEffect(() => { entityRef.current = entity }, [entity]);
+    const autocompleteQueriesRef = useRef(autocompleteQueries);
+    useEffect(() => { autocompleteQueriesRef.current = autocompleteQueries }, [autocompleteQueries]);
 
-            setControlsLoading(loadingState);
-        }
-    }, [fieldBuilder, type]); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        setControlsLoading(prevLoadingState => {
+            autocompleteQueriesRef.current.forEach(_ => _.refetch());
+            if (Object.keys(prevLoadingState).length === 0) {
+                let loadingState: LooseBoolObject = {};
+                fieldBuilder.GetFields()
+                    .filter(f =>
+                        f.selectApiUrl !== null &&
+                        (type !== "view" || f.type === "select") &&
+                        (f.type === "select" || (typeof (f.disabled) === "function" ? !f.disabled(entityRef.current ?? {} as T) : !f.disabled))
+                    )
+                    .forEach(f => loadingState[f.property as string] = true);
+
+
+                return loadingState;
+            }
+
+            return prevLoadingState;
+        });
+    }, [fieldBuilder, type]);
 
     const createQuery = useMutation({
         mutationFn: createEntity<T>(apiUrl!, sendAsMultipartFormData!), 
@@ -250,39 +259,39 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
     });
 
-    const handleSave = useCallback((newEntity: T, urlParams: UrlParams | null = null) => {
+    const handleSave = (newEntity: T, addedUrlParams: UrlParams | null = null) => {
         let allParams: UrlParams | null = null;
         if (urlParams !== null) {
             allParams = { ...urlParams };
         }
-        if (urlParams !== null) {
-            allParams = { ...allParams, ...urlParams };
+        if (addedUrlParams !== null) {
+            allParams = { ...allParams, ...addedUrlParams };
         }
         if (formType === "create") {
             createQuery.mutate({ entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
         } else {
             updateQuery.mutate({ id: id ?? newEntity["id" as keyof T] as string, entity: newEntity, useFormData: formWithFiles, urlParams: allParams });
         }
-    }, [createQuery, updateQuery, formType, formWithFiles, urlParams, id]); // eslint-disable-line react-hooks/exhaustive-deps
+    };
 
-    const handleDelete = useCallback((id: string, urlParams: UrlParams | null = null) => {
+    const handleDelete = (id: string, addedUrlParams: UrlParams | null = null) => {
         let allParams: UrlParams | null = null;
         if (urlParams !== null) {
             allParams = { ...urlParams };
         }
-        if (urlParams !== null) {
-            allParams = { ...allParams, ...urlParams };
+        if (addedUrlParams !== null) {
+            allParams = { ...allParams, ...addedUrlParams };
         }
 
         deleteQuery.mutate({ id: id, urlParams: allParams });
-    }, [deleteQuery, urlParams]); // eslint-disable-line react-hooks/exhaustive-deps
+    }; 
 
     const handleAutoCompleteInputChange = useCallback((prop: keyof T, value: string, event: "input" | "clear" | "reset") => {
         if (type === "view") {
             return;
         }
 
-        const disabledProp = fieldBuilder.Build().find(_ => _.property === prop)?.disabled;
+        const disabledProp = fieldBuilder.GetFields().find(_ => _.property === prop)?.disabled;
         const isDisabled = typeof (disabledProp) === "function" ? disabledProp(entity ?? {} as T) : disabledProp;
         if (isDisabled) {
             return;

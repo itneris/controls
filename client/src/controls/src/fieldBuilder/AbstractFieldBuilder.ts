@@ -20,7 +20,7 @@ export default abstract class AbstractFieldBuilder<T> {
 		return new FieldOptionsBuilder<T>(field);
 	}  
 
-	public Build(): Array<FieldDescription<T>> 
+	public GetFields(): Array<FieldDescription<T>> 
 	{
 		return this._fields;
 	}
