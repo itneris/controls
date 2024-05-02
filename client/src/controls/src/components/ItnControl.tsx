@@ -31,9 +31,7 @@ import {
     VisibilityOff
 } from "@mui/icons-material";
 import IControlProps from "../props/IControlProps";
-import { DatePicker, DateTimePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { ru } from "date-fns/locale";
+import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { ItnSelectOption } from "..";
 import ItnFormFile from "../props/ItnFormFile";
 
@@ -41,8 +39,8 @@ const generatePassword = (length: number): string => {
     const small = "abcdefghijklmnopqrstuvwxyz";
     const nonAlpha = "!@#$%^&*()-+<>";
     const big = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    const nums = "1234567890"
-    const chars = small + nonAlpha + big + nums;
+    const numbers = "1234567890"
+    const chars = small + nonAlpha + big + numbers;
 
     let pass = "";
     for (let i = 0; i < (length || 8); i++) {
@@ -149,14 +147,14 @@ function ItnControl(props: IControlProps) {
                         canvas.width = props.cropImageToSize![0];
                         canvas.height = props.cropImageToSize![1];;
                         ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                        const dataurl = canvas.toDataURL(file.type);
+                        const dataUrl = canvas.toDataURL(file.type);
 
                         canvas.toBlob((blob) => {
                             const resFile = new File([blob!], file.name);
                             props.onChange && props.onChange(new ItnFormFile(resFile));
                         }, "image/jpeg", 1);
 
-                        setPreview(dataurl);
+                        setPreview(dataUrl);
                         canvas.remove();
                     }
                     image.src = e.target!.result as string;

@@ -1,6 +1,6 @@
 import { Validation } from "./Validation";
 /**
- * Intreface for calling ItnForm methods
+ * Interface for calling ItnForm methods
  * */
 export interface IFormRef<T> {
     /**
@@ -10,7 +10,7 @@ export interface IFormRef<T> {
      * */
     getCurrentValues: () => T,
     /**
-     * Start the form validation with hightlighting controls and returs the result of validation
+     * Start the form validation with highlighting controls and returns the result of validation
      * 
      * @returns {boolean} validation result
      * */
@@ -23,8 +23,4 @@ export interface IFormRef<T> {
      * Sets new entity
      * */
     setEntity: (entity: T) => void
-    /**
-     * Update form forcefully
-     * */
-    forceUpdate: () => void
 }

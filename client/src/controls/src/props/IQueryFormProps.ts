@@ -1,6 +1,5 @@
 ﻿import ICommonFormProps from "./ICommonFormProps";
 import { UrlParams } from "../base/UrlParams";
-import { QueryClient } from "@tanstack/react-query";
 
 export default interface IQueryFormProps<T> extends ICommonFormProps<T> {
     /**

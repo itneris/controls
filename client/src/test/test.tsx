@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "../controls/src";
 import { IFormRef } from "../controls/src/base/IFormRef";
@@ -34,7 +34,7 @@ interface IUserDTO {
         label: string
     };
     blocked: boolean;
-    middlename: string;
+    middleName: string;
     password: string;
     avatar: ItnFormFile;
     note: string;
@@ -160,18 +160,18 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         //   .WithLabel("Роль (autocomplete)")
         //   .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto", true, true);
 
-        //this.FieldFor(_ => _.roleValueArray)
-        //    .WithLabel("Роли (autocomplete multiple)")
-        //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
+        this.FieldFor(_ => _.roleValueArray)
+           .WithLabel("Роли (autocomplete multiple)")
+           .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
 
-        //this.FieldFor(_ => _.roleValueArray)
+        // this.FieldFor(_ => _.roleValueArray)
         //    .WithLabel("Роли (autocomplete multiple without search as type)")
         //    .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", false, false, null, true);
 
-        //this.FieldFor(_ => _.role_api)
-        //    .WithLabel("Роль (api)")
-        //    .SelectWithQuery("http://localhost:5000/api/dicts/roles")
-        //    .Disable();
+        this.FieldFor(_ => _.role_api)
+           .WithLabel("Роль (api)")
+           .SelectWithQuery("http://localhost:5000/api/dicts/roles")
+           //.Disable();
 
         this.FieldFor(_ => _.roleValue)
             .WithLabel("Роль (autocomplete with create)")
@@ -180,7 +180,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .WithLabel("Примечание")
             .TextArea({ lines: 3 });
 
-        this.FieldFor(_ => _.middlename)
+        this.FieldFor(_ => _.middleName)
             .WithCustomControl((val, onChange, isError, errorMessage) => {
                 return <div>
                     {val ?? "Нет значения"}
@@ -288,7 +288,7 @@ const TestComnonent = () => {
                     onChange={handleResetAc}
                     ref={editFormRef}
                 />
-            }
+        }
             {
                 /*
             <PageTitle>Тестовая форма без апи</PageTitle>
@@ -300,7 +300,7 @@ const TestComnonent = () => {
                     surname: "Surname",
                     role: "1",
                     blocked: true,
-                    middlename: "middlename",
+                    middleName: "middleName",
                     password: "password",
                     roleValue:
                     {
@@ -326,38 +326,33 @@ const TestComnonent = () => {
                 fieldBuilder={fieldBuilder}
                 
             />
-
-            <PageTitle>Форма с кастомным расположением</PageTitle>
-            <ItnForm
-                ref={formRef}
-                entity={{
-                    id: "2",
-                    name: "Name",
-                    surname: "Surname",
-                    role: "1",
-                    blocked: true,
-                    middlename: "middlename",
-                    password: "password",
-                } as IUserDTO}
-                onSave={(en) => console.log("qwe")}
-                fieldBuilder={fieldBuilder}
-                hidePaper
-            >
-                <Stack gap={4}>
-                    <Paper>
-                        <PageTitle>Первый блок</PageTitle>
-                        <ItnFormControl field="name" />
-                        <ItnFormControl field="surname" />
-                        <ItnFormControl field="calcValue" />
-                    </Paper>
-                    <Paper>
-                        <PageTitle>Второй блок</PageTitle>
-                        <ItnFormControl field="password" />
-                        <ItnFormControl field="role" />
-                    </Paper>
-                </Stack>
-            </ItnForm>*/
-            }
+            */}
+            {/*
+                <ItnQueryForm
+                    apiUrl="http://localhost:5000/api/test"
+                    fieldBuilder={fieldBuilder}
+                    id="1"
+                    hidePaper
+                >
+                    <Stack gap={4}>
+                        <Paper>
+                            <Stack gap={2}>
+                                <PageTitle>Первый блок</PageTitle>
+                                <ItnFormControl field="visitDate" />
+                                <ItnFormControl field="surname" />
+                                <ItnFormControl field="visitTime" />
+                            </Stack>
+                        </Paper>
+                        <Paper>
+                            <Stack gap={2}>
+                                <PageTitle>Второй блок</PageTitle>
+                                <ItnFormControl field="avatar" />
+                                <ItnFormControl field="roleValue" />
+                            </Stack>
+                        </Paper>
+                    </Stack>
+                </ItnQueryForm>
+            */}
 
             <EditDrawer
                 open={editOpen}

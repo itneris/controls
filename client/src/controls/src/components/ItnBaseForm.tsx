@@ -7,6 +7,7 @@ import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
 import { FieldDescription } from "../base/FieldDescription";
 import FormContext from "../context/FormContext";
+import { EMPTY_BOOL_OBJ, EMPTY_FUNC, getDefaultValues } from "../const/utils";
 
 declare module "react" {
     function forwardRef<T, P = {}>(
@@ -16,12 +17,12 @@ declare module "react" {
 
 function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<IFormRef<T>>) {
     const {
-        onChange = () => {},
+        onChange = EMPTY_FUNC,
         noPadding = false,
         onSave = null,
         onDelete = null,
         onCancel = null,
-        entity = null,
+        entity: initialEntity = null,
         hidePaper = false,
         header = null,
         variant = "outlined",
@@ -34,32 +35,22 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         viewOnly = false,
         headerContent = null,
         footerContent = null,
-        onAutocompleteInputChange = () => { },
-        controlsLoading = {},
+        onAutocompleteInputChange = EMPTY_FUNC,
+        controlsLoading = EMPTY_BOOL_OBJ,
         fieldBuilder,
         children
     } = props;
 
-    const fields = fieldBuilder.GetFields();
-
-    const entityRef = useRef<T | null>({} as T);
-
-    const getDefaultValues = useCallback(() => {
-        let initEntity: T = {} as T;
-        fields.forEach(f => {
-            initEntity[f.property] = f.defaultValue ?? null;
-        });
-        return initEntity;
-    }, [fields]);
-
-    const getDefaultValuesRef = useRef(getDefaultValues);
-
     const [validation, setValidation] = useState<Validation<T>[]>([]);
-    const [, forceUpdate] = useState<any>({});
+    const [entity, setEntity] = useState(initialEntity ?? getDefaultValues(fieldBuilder.GetFields()));
+
+    useEffect(() => {
+        setEntity(initialEntity ?? getDefaultValues(fieldBuilder.GetFields()));
+    }, [initialEntity, fieldBuilder]);
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
-            return entityRef.current!;
+            return entity;
         },
         validate(onErrors) {
             return validateControls(onErrors);
@@ -68,48 +59,34 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
             setValidation([...validation, { property: field, message: error }]);
         },
         setEntity(newEntity: T) {
-            entityRef.current = newEntity;
+            setEntity(newEntity);
             setValidation([]);
-        },
-        forceUpdate() {
-            forceUpdate({});
         }
     }));
 
-    useEffect(() => {
-        let newEntity = entity === null ? getDefaultValuesRef.current() : { ...entity };
-        entityRef.current = newEntity;
-        forceUpdate({});
-    }, [entity]);
-
-
     const handleChange = useCallback((field: keyof T, value: any) => {
-        const newEntity = {
-            ...entityRef.current,
-            [field]: value
-        } as T;
-        setValidation(validation.filter(_ => _.property !== field));
-        entityRef.current = newEntity;
-        onChange && onChange(field, value);
-    }, [onChange, validation]); 
+        setValidation(oldVal => oldVal.filter(_ => _.property !== field));
+        setEntity(oldEntity => ({ ...oldEntity, [field]: value }));
+        onChange && onChange(field, value);        
+    }, [onChange]); 
 
-    const validateControls = useCallback((onErrors?: (validationErrors: Validation<T>[]) => void) => {
+    const validateControls = (onErrors?: (validationErrors: Validation<T>[]) => void) => {
         let newValidation: Validation<T>[] = []; 
-        fields.forEach(field => {
-            const val = entityRef.current![field.property];
+        fieldBuilder.GetFields().forEach(field => {
+            const val = entity[field.property];
             const valIsNull =
                 val === undefined ||
                 val === null ||
                 (typeof val === "string" && val === "") ||
                 (Array.isArray(val) && val.length === 0);
 
-            const fieldRequired = typeof field.required === "function" ? field.required(entityRef.current ?? {} as T) : field.required;
+            const fieldRequired = typeof field.required === "function" ? field.required(entity) : field.required;
             if (fieldRequired && valIsNull) {
                 newValidation.push(new Validation(field.property, `Поле обязательно для заполнения`));
             }
 
             if (field.validation !== null && !valIsNull) {
-                const error = field.validation(val, entityRef.current ?? {} as T);
+                const error = field.validation(val,  entity);
                 if (error !== null) {
                     newValidation.push(new Validation(field.property, error))
                 }
@@ -159,17 +136,17 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
             onErrors && onErrors(newValidation);
         }
         return valid;
-    }, [fields]);
+    };
 
     const handleSaveClick = useCallback(() => {
         if (!validateControls()) {
             return;
         }
-        onSave && onSave(entityRef.current!);
+        onSave && onSave(entity);
     }, [validateControls, onSave]);
 
     const handleDeleteClick = useCallback(() => {
-        const id = entityRef.current!["id" as keyof T] as string;
+        const id = entity["id" as keyof T] as string;
         onDelete && onDelete(id);
     }, [onDelete]); 
 
@@ -181,87 +158,89 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
             return <React.Fragment key={"fc-" + prop}>
                 {
                     field.custom(
-                        entityRef.current![field.property],
+                        entity[field.property],
                         (value) => handleChange(field.property, value),
                         validation.find(_ => _.property === field.property) !== undefined,
                         validation.find(_ => _.property === field.property)?.message,
                         isSaving!,
                         viewOnly!,
-                        entityRef.current ?? {} as T
+                        entity
                     )
                 }
             </React.Fragment>;
         } else {
-            const controlHidden = typeof field.hidden === "function" ? field.hidden(entityRef.current ?? {} as T) : field.hidden;
+            const controlHidden = typeof field.hidden === "function" ? field.hidden(entity) : field.hidden;
             if (controlHidden) {
                 return null;
             }
 
-            const contolDefaultValue =
+            const controlDefaultValue =
                 (["file", "date", "time"]).includes(field.type) ? null :
                     field.type !== "select" && field.type !== "autocomplete" ? "" :
                         field.multiple ? [] :
                             null;
 
-            const controlValue = entityRef.current![field.property] ?? contolDefaultValue;
-            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entityRef.current ?? {} as T) : field.disabled;
+            const controlValue = entity[field.property] ?? controlDefaultValue;
+            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity) : field.disabled;
 
-            return <ItnControl
-                key={"fc-" + prop}
-                type={field.type}
-                disableNewPasswordGenerate={field.disableNewPasswordGenerate}
-                variant={variant}
-                onChange={(value) => handleChange(field.property, value)}
-                value={controlValue}
-                allowNullInSelect={field.allowNullInSelect}
-                selectNullLabel={field.selectNullLabel}
-                noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
-                passwordLength={field.passwordLength}
-                placeholder={field.placeholder}
-                disabled={controlDisabled || isSaving || viewOnly}
-                display={field.display}
-                error={validation.find(_ => _.property === field.property) !== undefined}
-                errorText={validation.find(_ => _.property === field.property)?.message}
-                items={field.items}
-                label={typeof (field.label) === "function" ? field.label(entityRef.current || {} as T) : field.label}
-                max={field.max}
-                min={field.min}
-                allowDecimals={field.allowDecimals}
-                allowNegative={field.allowNegative}
-                maxDate={field.maxDate}
-                minDate={field.minDate}
-                tooltip={field.tooltip}
-                accept={field.accept}
-                cropImageToSize={field.cropImageToSize}
-                isAvatar={field.isAvatar}
-                maxFileSize={field.maxFileSize}
-                withImagePreview={field.withImagePreview}
-                multiline={field.multiline}
-                lines={field.lines}
-                maxLines={field.maxLines}
-                onAutocompleteInputChange={field.searchAsType ? (value, event) => onAutocompleteInputChange!(field.property, value, event) : undefined}
-                autocompleteLoading={controlsLoading[prop] === true}
-                autocompleteCreatable={field.autocompleteCreatable}
-                onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
-                helperText={field.helperText}
-                multiple={field.multiple}
-                onEnter={field.onEnterKeyPress}
-                name={field.property.toString()}
-            />
+            return (
+                <ItnControl
+                    key={"fc-" + prop}
+                    type={field.type}
+                    disableNewPasswordGenerate={field.disableNewPasswordGenerate}
+                    variant={variant}
+                    onChange={(value) => handleChange(field.property, value)}
+                    value={controlValue}
+                    allowNullInSelect={field.allowNullInSelect}
+                    selectNullLabel={field.selectNullLabel}
+                    noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
+                    passwordLength={field.passwordLength}
+                    placeholder={field.placeholder}
+                    disabled={controlDisabled || isSaving || viewOnly}
+                    display={field.display}
+                    error={validation.find(_ => _.property === field.property) !== undefined}
+                    errorText={validation.find(_ => _.property === field.property)?.message}
+                    items={field.items}
+                    label={typeof (field.label) === "function" ? field.label(entity) : field.label}
+                    max={field.max}
+                    min={field.min}
+                    allowDecimals={field.allowDecimals}
+                    allowNegative={field.allowNegative}
+                    maxDate={field.maxDate}
+                    minDate={field.minDate}
+                    tooltip={field.tooltip}
+                    accept={field.accept}
+                    cropImageToSize={field.cropImageToSize}
+                    isAvatar={field.isAvatar}
+                    maxFileSize={field.maxFileSize}
+                    withImagePreview={field.withImagePreview}
+                    multiline={field.multiline}
+                    lines={field.lines}
+                    maxLines={field.maxLines}
+                    onAutocompleteInputChange={field.searchAsType ? (value, event) => onAutocompleteInputChange!(field.property, value, event) : undefined}
+                    autocompleteLoading={controlsLoading[prop] === true}
+                    autocompleteCreatable={field.autocompleteCreatable}
+                    onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
+                    helperText={field.helperText}
+                    multiple={field.multiple}
+                    onEnter={field.onEnterKeyPress}
+                    name={field.property.toString()}
+                />
+            );
         }
-    }, [validation, handleChange, onAutocompleteInputChange, controlsLoading, isLoading, isSaving, variant, viewOnly])
+    }, [validation, handleChange, onAutocompleteInputChange, controlsLoading, isLoading, isSaving, variant, viewOnly, entity])
 
     const renderFieldByName = useCallback((name: string) => {
-        const field = fields.find(_ => _.property === name);
+        const field = fieldBuilder.GetFields().find(_ => _.property === name);
         if (!field) {
             return null;
         }
-        const controlHidden = typeof field.hidden === "function" ? field.hidden(entityRef.current ?? {} as T) : field.hidden;
+        const controlHidden = typeof field.hidden === "function" ? field.hidden(entity) : field.hidden;
         if (controlHidden) {
             return <></>;
         }
         return renderField(field);
-    }, [renderField, fields])
+    }, [renderField, fieldBuilder])
 
     const formContextValue = useMemo(() => {
         return { getField: renderFieldByName };
@@ -308,7 +287,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                         errorLoading !== null ?
                             <Typography variant="body2">{errorLoading}</Typography> :
                                 children === undefined ?
-                                    fields.map(renderField) :
+                                fieldBuilder.GetFields().map(renderField) :
                                         <FormContext.Provider value={formContextValue}>
                                             {children}
                                         </FormContext.Provider>

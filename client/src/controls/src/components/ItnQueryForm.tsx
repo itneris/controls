@@ -12,6 +12,7 @@ import { UrlParams } from "../base/UrlParams";
 import { LooseTimeoutObject } from "../base/LooseTimeoutObject";
 import { ItnSelectOption } from "../base/ItnSelectOption";
 import { FieldDescription } from "../base/FieldDescription";
+import { EMPTY_FUNC } from "../const/utils";
 
 declare module "react" {
     function forwardRef<T, P = {}>(
@@ -40,8 +41,8 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         urlParams = null,
         onError = null,
         sendAsMultipartFormData = false,
-        onSavingStateChange = () => { },
-        onAfterLoad = () => { },
+        onSavingStateChange = EMPTY_FUNC,
+        onAfterLoad = EMPTY_FUNC,
         fieldBuilder,
         apiUrl,
         onAfterDelete = null,
@@ -54,7 +55,9 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     const autoCompleteTimeouts = useRef<LooseTimeoutObject>({});
 
     const queryClient = useQueryClient();
-    const entityQueryKey = useMemo(() => [apiUrl, id], [apiUrl, id])
+    const entityQueryKey = useMemo(() => [apiUrl, id], [apiUrl, id]);
+
+    //const [entity, setEntity] = useState(initialEntity);
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
@@ -77,9 +80,6 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         },
         refetch() {
             formDataQuery.refetch();
-        },
-        forceUpdate() {
-            baseFormRef.current!.forceUpdate();
         }
     }));
 
@@ -117,9 +117,9 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
     }, [formDataQuery.isFetchedAfterMount, onAfterLoad, formData]);
 
-    useEffect(() => {
-        queryClient.setQueryData<T>(entityQueryKey, () => entity ?? undefined);
-    }, [entity, queryClient, entityQueryKey]);
+    // useEffect(() => {
+    //     queryClient.setQueryData<T>(entityQueryKey, () => entity ?? undefined);
+    // }, [entity, queryClient, entityQueryKey]);
 
     const controlsForFetch = useMemo(() => {
         return fieldBuilder.GetFields()
@@ -127,10 +127,10 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
                 _.selectApiUrl !== null &&
                 (type !== "view" || _.type === "select") &&
                 (_.type === "autocomplete" || _.type === "select") &&
-                (typeof (_.hidden) === "function" ? !_.hidden(entity ?? {} as T) : !_.hidden) &&
-                (_.type === "select" || (typeof (_.disabled) === "function" ? !_.disabled(entity ?? {} as T) : !_.disabled))
+                (typeof (_.hidden) === "function" ? !_.hidden(formData ?? {} as T) : !_.hidden) &&
+                (_.type === "select" || (typeof (_.disabled) === "function" ? !_.disabled(formData ?? {} as T) : !_.disabled))
             );
-    }, [fieldBuilder, type, entity]);
+    }, [fieldBuilder, type, formData]);
 
     const getAutoCompleteQueryKey = useCallback((field: FieldDescription<T>) => {
         return [
@@ -186,13 +186,12 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
                         data;
 
                 fieldBuilder.SetSelectOptions(_.property, options);
-                baseFormRef.current!.forceUpdate();
             }
         });
     }, [autocompleteQueries, controlsForFetch, queryClient, fieldBuilder, getAutoCompleteQueryKey, queryStatuses, controlsLoading])
 
-    const entityRef = useRef(entity);
-    useEffect(() => { entityRef.current = entity }, [entity]);
+    const entityRef = useRef(formData);
+    useEffect(() => { entityRef.current = formData }, [formData]);
     const autocompleteQueriesRef = useRef(autocompleteQueries);
     useEffect(() => { autocompleteQueriesRef.current = autocompleteQueries }, [autocompleteQueries]);
 
@@ -292,7 +291,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
 
         const disabledProp = fieldBuilder.GetFields().find(_ => _.property === prop)?.disabled;
-        const isDisabled = typeof (disabledProp) === "function" ? disabledProp(entity ?? {} as T) : disabledProp;
+        const isDisabled = typeof (disabledProp) === "function" ? disabledProp(formData ?? {} as T) : disabledProp;
         if (isDisabled) {
             return;
         }
@@ -302,14 +301,14 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
 
         if (event === "input" || event === "clear") {
-            queryClient.setQueryData<T>(entityQueryKey, (old) => {
-                if (!old) return old;
+            // queryClient.setQueryData<T>(entityQueryKey, (old) => {
+            //     if (!old) return old;
 
-                return {
-                    ...old,
-                    [prop]: null                    
-                };                
-            });
+            //     return {
+            //         ...old,
+            //         [prop]: null                    
+            //     };                
+            // });
 
             if (autoCompleteTimeouts.current[prop as string] !== undefined) {
                 clearTimeout(autoCompleteTimeouts.current[prop as string]);
@@ -324,7 +323,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
                 }));
             }, 300);
         }
-    }, [type, autocompleteSearchValues, fieldBuilder, entity, queryClient, entityQueryKey]);
+    }, [type, autocompleteSearchValues, fieldBuilder, formData, queryClient, entityQueryKey]);
 
     return (
         <ItnBaseForm
