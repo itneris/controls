@@ -43,7 +43,7 @@ declare module "./FieldOptionsBuilder" {
 		/**
 		 * Changes control type to 'date'
 		 * */
-		DatePicker(): FieldOptionsBuilder<T>;
+		DatePicker(props?: { minDate?:  Date, maxDate?: Date }): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'time'
 		 * */
@@ -154,9 +154,17 @@ FieldOptionsBuilder.prototype.SelectWithQuery = function <T>(apiUrl: string, mul
 		.SetFieldProp("selectApiUrl", apiUrl) as FieldOptionsBuilder<T>;
 }
 
-FieldOptionsBuilder.prototype.DatePicker = function <T>() {
-	return this
-		.SetFieldProp("type", "date") as FieldOptionsBuilder<T>;
+FieldOptionsBuilder.prototype.DatePicker = function <T>(props?: { minDate?: Date, maxDate?: Date }) {
+	let controlProps = this;
+    if (props?.minDate) {
+        controlProps = controlProps.SetFieldProp("minDate", props.minDate);
+    }
+
+    if (props?.maxDate) {
+        controlProps = controlProps.SetFieldProp("maxDate", props.maxDate);
+    }
+
+    return controlProps.SetFieldProp("type", "date") as FieldOptionsBuilder<T>;
 }
 
 FieldOptionsBuilder.prototype.TimePicker = function <T>() {
