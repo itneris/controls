@@ -366,6 +366,8 @@ function ItnControl(props: IControlProps) {
                                 props.onChange(val?.toISOString())
                             }
                         }}
+                        minDate={props.minDate ?? undefined}
+                        maxDate={props.maxDate ?? undefined}
                         disabled={props.disabled}
                         slotProps={{
                             textField: {
@@ -447,6 +449,8 @@ function ItnControl(props: IControlProps) {
                                 props.onChange(val?.toISOString())
                             }
                         }}
+                        minDate={props.minDate ?? undefined}
+                        maxDate={props.maxDate ?? undefined}
                         disabled={props.disabled}
                         slotProps={{
                             textField: {
