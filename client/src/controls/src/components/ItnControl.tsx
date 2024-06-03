@@ -615,7 +615,7 @@ function ItnControl(props: IControlProps) {
                             !props.withImagePreview ?
                                 <Box display="flex" alignItems="center" width="100%">
                                     <AttachFile />
-                                    <Typography style={{ flex: 1 }}>{(props.value as File).name}</Typography>
+                                    <Typography style={{ flex: 1 }}>{(props.value as ItnFormFile)?.fileName ?? ""}</Typography>
                                     <Tooltip placement="right-start" title="Заменить">
                                         <IconButton color="secondary" onClick={handleUploadClick} disabled={props.disabled}>
                                             <Refresh />

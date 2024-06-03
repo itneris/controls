@@ -16,7 +16,7 @@ const ItnFormControl = (props: IntFormControlProps) => {
 
         const formControl = formCtx.getField(props.field);
         if (formControl === null) {
-            return <Typography variant="body2">Wrong field name {props.field}</Typography>;
+            return <Typography variant="body2">Wrong field name "{props.field}"</Typography>;
         }
         
         return formControl;

@@ -112,7 +112,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     });
 
     useEffect(() => {
-        if (formDataQuery.isFetchedAfterMount) {
+        if (formDataQuery.isFetchedAfterMount && !!formData) {
             onAfterLoad && onAfterLoad(formData);
         }
     }, [formDataQuery.isFetchedAfterMount, onAfterLoad, formData]);

@@ -8,7 +8,7 @@ export default interface IQueryFormProps<T> extends ICommonFormProps<T> {
     apiUrl?: string | null;
     onAfterSave?: ((id: string) => void) | null;
     onAfterDelete?: ((id: string) => void) | null;
-    onAfterLoad?: ((entity: any) => void) | null;
+    onAfterLoad?: ((entity: T) => void) | null;
     onError?: ((response: any) => void) | null;
     type?: "view" | "create" | "edit" | "auto" | null;
     id?: string | null;
