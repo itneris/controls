@@ -126,10 +126,24 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
             .Bool()
             .Hide((e) => e.role === "1");
 
+        // this.FieldFor(_ => _.avatar)
+        //     .WithLabel("Аватар")
+        //     .File({ maxSizeKb: 1000 * 10 })
+            //.Required();
+
         this.FieldFor(_ => _.avatar)
             .WithLabel("Аватар")
-            .File({ withImagePreview: true, isAvatar: true, maxSizeKb: 1000 * 10 })
-            //.Required();
+            .File({ 
+                maxSizeKb: 15 * 1000, 
+                image: { 
+                    compressToKb: 1 * 1000,
+                    crop: { 
+                        height: 260,
+                         width: 400, 
+                         dynamic: true 
+                    } 
+                },
+            });
 
         /*this.FieldFor(_ => _.role)
             .WithLabel(_ => "Роль" + _.role)
@@ -162,7 +176,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
         this.FieldFor(_ => _.roleValueArray)
            .WithLabel("Роли (autocomplete multiple)")
-           .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, null, true);
+           .AutocompleteWithQuery("http://localhost:5000/api/dicts/roles_auto_create", true, true, onRoleAdd, true);
 
         // this.FieldFor(_ => _.roleValueArray)
         //    .WithLabel("Роли (autocomplete multiple without search as type)")
@@ -208,7 +222,7 @@ const TestComnonent = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
 
-    const [formType, setFormType] = useState<"view" | "edit">("view");
+    const [formType, setFormType] = useState<"view" | "edit">("edit");
 
     const handleCreateChange = useCallback((prop: keyof IUserDTO, value: any) => {
         if (prop === "name" || prop === "surname") {

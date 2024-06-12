@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { ItnSelectOption } from "..";
+import { FileImageProperties } from "../props/IFileControlProps";
 
 export class FieldDescription<T> {
     property: keyof T;
@@ -31,10 +32,8 @@ export class FieldDescription<T> {
     validation: ((value: any, entity: T) => string | null) | null = null;
     required: boolean | ((entity: T) => boolean) = false;
     accept: string = "*";
+    imageProps: FileImageProperties | null = null;
     maxFileSize: number = 4096 * 1000;
-    withImagePreview: boolean = false;
-    isAvatar: boolean = false;
-    cropImageToSize: [number, number] | null = null;
     lines: number | null = null;
     maxLines: number | null = null;
     multiline: boolean = false;

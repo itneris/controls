@@ -15,6 +15,7 @@ import ItnFormFile from "./props/ItnFormFile";
 import { IFormRef } from "./base/IFormRef";
 import { IQueryFormRef } from "./base/IQueryFormRef";
 import { DrawerActionType } from "./props/DrawerActionType";
+import { FileImageProperties } from "./props/IFileControlProps";
 
 export {
     PageTitle,
@@ -32,4 +33,4 @@ export {
     ItnFormFile
 };
 
-export type { IFormRef, IQueryFormRef, DrawerActionType, IDrawerBtnProp };
+export type { IFormRef, IQueryFormRef, DrawerActionType, IDrawerBtnProp, FileImageProperties };

@@ -210,10 +210,8 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                     minDate={field.minDate}
                     tooltip={field.tooltip}
                     accept={field.accept}
-                    cropImageToSize={field.cropImageToSize}
-                    isAvatar={field.isAvatar}
                     maxFileSize={field.maxFileSize}
-                    withImagePreview={field.withImagePreview}
+                    imageProperties={field.imageProps ?? undefined}
                     multiline={field.multiline}
                     lines={field.lines}
                     maxLines={field.maxLines}

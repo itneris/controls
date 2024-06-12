@@ -13,12 +13,12 @@ declare module "./FieldOptionsBuilder" {
 		WithLabel(label: string | ((entity: T) => string)): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'select' and defines options
-		 * @param {ItnSelectOption[]} options Array of opitons to render in select
+		 * @param {ItnSelectOption[]} options Array of options to render in select
 		 * */
 		Select(options: ItnSelectOption[], multiple?: boolean, props?: ISelectControlProps): FieldOptionsBuilder<T>;
 		/**
 		 * Changes control type to 'autocomplete' and defines options
-		 * @param {ItnSelectOption[]} options Array of opitons to render in autocomplete
+		 * @param {ItnSelectOption[]} options Array of options to render in autocomplete
 		 * @param {boolean} creatable can user add new options, default false
 		 * @param {(value: string) => void | null} onOptionAdded callback when option added
 		 * */
@@ -91,7 +91,7 @@ declare module "./FieldOptionsBuilder" {
 		WithValidation(validate: (value: any, entity: T) => string | null): FieldOptionsBuilder<T>;
 		 /**
 		 * Renders custom control
-		 * @param {(value: any, onChange: (value: any) => void) => React.ReactNode, isError, errorMessage, isSaving, viewOnly, entity} control Function that receives as paramteres entity current value, onChange function. Also current state as isSaving and viewOnly
+		 * @param {(value: any, onChange: (value: any) => void) => React.ReactNode, isError, errorMessage, isSaving, viewOnly, entity} control Function that receives as parameters entity current value, onChange function. Also current state as isSaving and viewOnly
 		 * */
 		WithCustomControl(control: (value: any, onChange: (value: any) => void, isError: boolean, errorMessage: string | undefined, isSaving: boolean, viewOnly: boolean, entity: T) => React.ReactNode): FieldOptionsBuilder<T>;
 		/** 
@@ -100,13 +100,13 @@ declare module "./FieldOptionsBuilder" {
 		* */
 		File(fileOptions: IFileControlProps): FieldOptionsBuilder<T>;
 		/**
-		* Change input type to multiline texfield with options
+		* Change input type to multiline textfield with options
 		* @param {{ lines: number, maxLines: number} | undefined} textAreaOptions Initial and maximum lines count for textArea. All nullables
 		* */
 		TextArea(textAreaOptions?: ITextAreaControlProps): FieldOptionsBuilder<T>;
 		/**
 		* Sets the default value for control
-		 * @param {any} value value that will be in intial entity for create form
+		 * @param {any} value value that will be in initial entity for create form
 		* */
 		WithDefaultValue(value: any): FieldOptionsBuilder<T>;
 		/**
@@ -157,11 +157,11 @@ FieldOptionsBuilder.prototype.SelectWithQuery = function <T>(apiUrl: string, mul
 FieldOptionsBuilder.prototype.DatePicker = function <T>(props?: { minDate?: Date, maxDate?: Date }) {
 	let controlProps = this;
     if (props?.minDate) {
-        controlProps = controlProps.SetFieldProp("minDate", props.minDate);
+        controlProps = controlProps.SetFieldProp("minDate", props.minDate) as FieldOptionsBuilder<T>;
     }
 
     if (props?.maxDate) {
-        controlProps = controlProps.SetFieldProp("maxDate", props.maxDate);
+        controlProps = controlProps.SetFieldProp("maxDate", props.maxDate) as FieldOptionsBuilder<T>;
     }
 
     return controlProps.SetFieldProp("type", "date") as FieldOptionsBuilder<T>;
@@ -237,20 +237,16 @@ FieldOptionsBuilder.prototype.Number = function <T>(
 FieldOptionsBuilder.prototype.File = function <T>({
 	accept = "*",
 	maxSizeKb = 4096,
-	withImagePreview = false,
-	isAvatar = false,
-	cropImageToSize = null
+	image
 }: IFileControlProps) 
 {
 	let fieldBuilder = this
 		.SetFieldProp("type", "file")
-		.SetFieldProp("accept", withImagePreview && accept === "*" ? "image/*" : accept)
-		.SetFieldProp("maxFileSize", maxSizeKb * 1000)
-		.SetFieldProp("withImagePreview", isAvatar ? true : withImagePreview)
-		.SetFieldProp("isAvatar", isAvatar) as FieldOptionsBuilder<T>;
+		.SetFieldProp("accept", image && accept === "*" ? "image/*" : accept)
+		.SetFieldProp("maxFileSize", maxSizeKb * 1000) as FieldOptionsBuilder<T>;
 
-	if (cropImageToSize !== null) {
-		fieldBuilder = fieldBuilder.SetFieldProp("cropImageToSize", cropImageToSize) as FieldOptionsBuilder<T>;
+	if (!!image) {
+		fieldBuilder = fieldBuilder.SetFieldProp("imageProps", image) as FieldOptionsBuilder<T>;
 	}
 
 	return fieldBuilder as FieldOptionsBuilder<T>;

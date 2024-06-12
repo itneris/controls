@@ -34,6 +34,7 @@ import IControlProps from "../props/IControlProps";
 import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { ItnSelectOption } from "..";
 import ItnFormFile from "../props/ItnFormFile";
+import ItnFileControl from "./controls/ItnFileControl";
 
 const generatePassword = (length: number): string => {
     const small = "abcdefghijklmnopqrstuvwxyz";
@@ -58,118 +59,14 @@ const generatePassword = (length: number): string => {
 const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const { multiple, onAutocompleteInputChange } = props;
+    
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const tmpId = useRef<number>(1);
-
-    //const [acInputValue, setAcInputValue] = useState<string>("");
-    const [fileError, setFileError] = useState<string | null>(null);
 
     const handlePasswordGenerate = useCallback(() => {
         props.onChange && props.onChange(generatePassword(props.passwordLength!));
     }, [props.onChange, props.passwordLength]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const [preview, setPreview] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (props.type !== "file") {
-            return;
-        }
-
-        const value = props.value as ItnFormFile;
-
-        if (!props.isAvatar && !props.withImagePreview) {
-            return;
-        }
-
-        if (!value?.data && !value?.file) {
-            props.withImagePreview && setPreview(null);
-            return;
-        }
-
-        if (value?.data) {
-            setPreview(value.data);
-            return;
-        }
-        
-        const objectUrl = URL.createObjectURL(value.file as File);
-        setPreview(objectUrl);
-
-        return () => {
-            objectUrl && URL.revokeObjectURL(objectUrl);
-        }
-    }, [props]);
-
-    const handleUploadClick = useCallback(() => {
-        //e.preventDefault();
-        setFileError(null);
-        fileInputRef.current!.click();
-    }, []);
-
-    const handleDeleteFile = useCallback(() => {
-        props.onChange && props.onChange(new ItnFormFile(null));
-    }, [props.onChange]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const uploadFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || !e.target.files.length) {
-            props.onChange && props.onChange(null);
-            return;
-        }
-
-        let file = e.target.files![0];
-        if (props.maxFileSize && (file.size > props.maxFileSize)) {
-            let size = props.maxFileSize;
-            let unit = "Б";
-            if (size > 1024) {
-                size = Math.round(size / 10) / 100;
-                unit = "Кб"
-            }
-            if (size > 1024) {
-                size = Math.round(size / 10) / 100;
-                unit = "Мб"
-            }
-            if (size > 1024) {
-                size = Math.round(size / 10) / 100;
-                unit = "Гб"
-            }
-            setFileError(`Размер файла не должен превышать ${size}${unit}`);
-            return;
-        }
-
-        if (props.cropImageToSize) {
-            try {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const image = new Image();
-                    image.onload = function () {
-                        const canvas = document.createElement("canvas");
-                        const ctx = canvas.getContext("2d")!;
-                        canvas.width = props.cropImageToSize![0];
-                        canvas.height = props.cropImageToSize![1];;
-                        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                        const dataUrl = canvas.toDataURL(file.type);
-
-                        canvas.toBlob((blob) => {
-                            const resFile = new File([blob!], file.name);
-                            props.onChange && props.onChange(new ItnFormFile(resFile));
-                        }, "image/jpeg", 1);
-
-                        setPreview(dataUrl);
-                        canvas.remove();
-                    }
-                    image.src = e.target!.result as string;
-                }
-                reader.readAsDataURL(e.target.files![0]);
-                e.target.value = "";
-            } catch (e) {
-                setFileError(`Мы не смогли пожать файл, попробуйте загрузить что-то другое`);
-                console.log(e);
-            }
-        } else {
-            props.onChange && props.onChange(new ItnFormFile(e.target.files![0]));
-            e.target.value = "";
-        }
-    }, [props.onChange, props.maxFileSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const checkEnter = useCallback((e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
@@ -200,30 +97,19 @@ function ItnControl(props: IControlProps) {
     }, [props.onEnter, props.allowDecimals, props.allowNegative]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAutoCompleteInputChange = useCallback((_event: React.SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
-        props.onAutocompleteInputChange && props.onAutocompleteInputChange(value, reason);
-        if (props.onAutocompleteInputChange && reason === "reset") {
+        if (!onAutocompleteInputChange) {
             return;
         }
-        //setAcInputValue(value);
-    }, [props.onAutocompleteInputChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-    /*useEffect(() => {
-        if (props.type !== "autocomplete") return;
-        if (props.multiple) return; 
-
-        const labelValue = props.value?.label ?? "";
-
-        setAcInputValue("");
-        props.onAutocompleteInputChange && props.onAutocompleteInputChange(props.value?.label ?? "", "input");        
-    }, [props]);*/
+        onAutocompleteInputChange(value, reason);
+    }, [onAutocompleteInputChange]);
 
     const control = useMemo(() => {
         switch (props.type) {
             case 'select':
                 const currentValue = props.autocompleteLoading ?
-                    (props.multiple ? ["null"] : "null") :
-                    (props.value ?? (props.multiple ? [] : ""));
+                    (multiple ? ["null"] : "null") :
+                    (props.value ?? (multiple ? [] : ""));
 
                 return (
                     <FormControl size="small" fullWidth>
@@ -238,7 +124,7 @@ function ItnControl(props: IControlProps) {
                             disabled={props.disabled}
                             value={currentValue}
                             onChange={event => props.onChange && props.onChange(event.target.value)}
-                            multiple={props.multiple}                            
+                            multiple={multiple}                            
                         >
                             <MenuItem disabled={props.allowNullInSelect ? false : true} value={props.autocompleteLoading ? "null" : ""}>
                                 {
@@ -274,10 +160,10 @@ function ItnControl(props: IControlProps) {
                     loadingText={props.autocompleteLoadingText}
                     loading={props.autocompleteLoading}
                     onChange={(_e, newValue) => {
-                        if (!props.multiple && newValue !== null && newValue.inputValue) {
+                        if (!multiple && newValue !== null && newValue.inputValue) {
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
                             props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
-                        } else if (props.multiple && newValue.find((val: any) => !!val.inputValue)) {
+                        } else if (multiple && newValue.find((val: any) => !!val.inputValue)) {
                             const newVal = newValue.find((val: any) => !!val.inputValue);
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newVal.inputValue);
                             props.onAutocompleteInputChange && props.onAutocompleteInputChange("", "input");
@@ -290,12 +176,6 @@ function ItnControl(props: IControlProps) {
                         } else {
                             props.onChange && props.onChange(newValue);
                         }
-
-                        /*if (props.multiple) {
-                            setAcInputValue("");
-                        } else {
-                            setAcInputValue(newValue?.inputValue ?? newValue?.label ?? "");
-                        }*/
                     }}
                     renderOption={(props, option) => (
                         <li {...props} key={"opt" + option.id} >{option.label}</li>
@@ -345,7 +225,7 @@ function ItnControl(props: IControlProps) {
                             }}
                         />
                     )}
-                    multiple={props.multiple}
+                    multiple={multiple}
                 />
             case 'checkbox':
                 return <FormControlLabel
@@ -525,16 +405,6 @@ function ItnControl(props: IControlProps) {
                         </IconButton>
                     }
                 </Box>;
-            //TODO проверить чип инпут
-            /*
-            case 'chip-input':
-                return <ChipInput
-                    fullWidth
-                    defaultValue={controlValue}
-                    placeholder={placeholder}
-                    error={error}
-                    onChange={(chips) => {onChange(name, chips.join(","))}}
-                />;*/
             case 'string':
                 return <TextField
                     autoComplete="off"
@@ -574,115 +444,17 @@ function ItnControl(props: IControlProps) {
                     name={props.name}
                 />;
             case 'file':
-                return (<FormControl>
-                    <input
-                        disabled={props.disabled}
-                        ref={fileInputRef}
-                        type="file"
-                        hidden
-                        onChange={uploadFile}
-                        accept={props.accept}
-                    />
-                    {
-                        props.value === null || (!props.value.file && !props.value.data) ?
-                            <>
-                                {
-                                    props.isAvatar ?
-                                        <Box
-                                            borderRadius="50%"
-                                            height={70}
-                                            width={70}
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                            mr={3}
-                                            onClick={handleUploadClick}
-                                            sx={theme => ({
-                                                cursor: "pointer",
-                                                backgroundColor: theme.palette.primary.main
-                                            })}
-                                        >
-                                            <CloudUpload color="inherit" />
-                                        </Box> :
-                                        <Button
-                                            disabled={props.disabled}
-                                            variant="contained"
-                                            color="secondary"
-                                            startIcon={<CloudUpload />}
-                                            onClick={handleUploadClick}
-                                            style={{ alignSelf: "start" }}
-                                        >
-                                            {props.label}
-                                        </Button>
-                                }
-                            </> :
-                            !props.withImagePreview ?
-                                <Box display="flex" alignItems="center" width="100%">
-                                    <AttachFile />
-                                    <Typography style={{ flex: 1 }}>
-                                        {(props.value as ItnFormFile)?.fileName ?? (props.value as ItnFormFile)?.file?.name ?? ""}
-                                    </Typography>
-                                    <Tooltip placement="right-start" title="Заменить">
-                                        <IconButton color="secondary" onClick={handleUploadClick} disabled={props.disabled}>
-                                            <Refresh />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip placement="right-start" title="Удалить">
-                                        <IconButton color="error" onClick={handleDeleteFile} disabled={props.disabled}>
-                                            <Delete />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box> :
-                                <Box display="flex" alignItems="stretch" width="100%">
-                                    {
-                                        props.isAvatar ?
-                                            <Avatar src={preview!} style={{ height: 80, width: 80 }} /> :
-                                            <Box
-                                                borderRadius={1}
-                                                height={80}
-                                                width={140}
-                                                sx={{
-                                                    background: `url("${preview}")`,
-                                                    backgroundPosition: "center",
-                                                    backgroundSize: "cover"
-                                                }}
-                                            />
-                                    }
-                                    <Box display="flex" flexDirection="column" ml={2} justifyContent="space-between">
-                                        <Tooltip placement="right-start" title="Заменить">
-                                            <IconButton color="secondary" onClick={handleUploadClick} disabled={props.disabled}>
-                                                <Refresh />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip placement="right-start" title="Удалить">
-                                            <IconButton color="error" onClick={handleDeleteFile} disabled={props.disabled}>
-                                                <Delete />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                </Box> 
-                    }
-                    <FormHelperText error={props.error}>{props.error ? props.errorText : (props.helperText ?? "")}</FormHelperText>
-                    {
-                        fileError &&
-                        <FormHelperText error>{fileError}</FormHelperText>
-                    }
-                </FormControl>);
+                return <ItnFileControl {...props}/>;
             default: throw new Error();
         }
     }, [
         props,
         showPassword,
         handlePasswordGenerate,
-        uploadFile,
-        handleUploadClick,
-        handleDeleteFile,
         handleNumberKeyPress,
-        preview,
         checkEnter,
         //acInputValue,
-        handleAutoCompleteInputChange,
-        fileError
+        handleAutoCompleteInputChange
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {
