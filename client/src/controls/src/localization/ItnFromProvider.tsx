@@ -9,7 +9,7 @@ export const ItnFormGlobalContext = createContext({
     locale: localeRu
 });
 
-const ItnFormProvider = (props: { children: ReactNode[], locale?: FormLocaleType }) => {
+const ItnFormProvider = (props: { children: ReactNode, locale?: FormLocaleType }) => {
     const { children, locale } = props;
 
     const localeDict = useMemo(() => {
