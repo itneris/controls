@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useMemo, useRef, useState } from "react";
 import {
     TextField,
     Box,
@@ -9,32 +9,25 @@ import {
     FormHelperText,
     InputAdornment,
     IconButton,
-    Typography,
     Autocomplete,
     Tooltip,
     FormControlLabel,
     InputLabel,
-    Button,
-    Avatar,
     CircularProgress,
     createFilterOptions,
     AutocompleteInputChangeReason
 } from "@mui/material";
 import {
-    AttachFile,
-    CloudUpload,
-    Delete,
     HelpOutline,
     Loop,
-    Refresh,
     Visibility,
     VisibilityOff
 } from "@mui/icons-material";
 import IControlProps from "../props/IControlProps";
 import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { ItnSelectOption } from "..";
-import ItnFormFile from "../props/ItnFormFile";
 import ItnFileControl from "./controls/ItnFileControl";
+import { ItnFormGlobalContext } from "../localization/ItnFromProvider";
 
 const generatePassword = (length: number): string => {
     const small = "abcdefghijklmnopqrstuvwxyz";
@@ -60,6 +53,8 @@ const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
     const { multiple, onAutocompleteInputChange } = props;
+
+    const { locale } = useContext(ItnFormGlobalContext);
     
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const tmpId = useRef<number>(1);
@@ -128,8 +123,11 @@ function ItnControl(props: IControlProps) {
                         >
                             <MenuItem disabled={props.allowNullInSelect ? false : true} value={props.autocompleteLoading ? "null" : ""}>
                                 {
-                                    props.autocompleteLoading ? "Загрузка..." :
-                                        (props.selectNullLabel || `Выберите ${props.label}`)
+                                    props.autocompleteLoading ? locale.autocompleteControl.loadingText :
+                                        (
+                                            props.selectNullLabel || 
+                                            locale.autocompleteControl.chooseText.replace("{0}", (props.label ?? locale.autocompleteControl.defaultLabelText))
+                                        )
                                 }
                             </MenuItem>
                             {
@@ -199,7 +197,7 @@ function ItnControl(props: IControlProps) {
                         if (inputValue !== '' && !isExisting) {
                             filtered = [{
                                 id: "new",
-                                label: `Добавить "${inputValue}"`,
+                                label: locale.autocompleteControl.addText.replace("{0}", inputValue),
                                 inputValue,
                                 blocked: false
                             }, ...filtered];
@@ -251,7 +249,7 @@ function ItnControl(props: IControlProps) {
                         disabled={props.disabled}
                         slotProps={{
                             textField: {
-                                placeholder: "ДД.ММ.ГГГГ",
+                                placeholder: locale.dateControl.datePlaceHolder,
                                 size: "small",
                                 fullWidth: true,
                                 error: props.error,
@@ -259,12 +257,12 @@ function ItnControl(props: IControlProps) {
                             }
                         }}
                         localeText={{
-                            fieldDayPlaceholder: () => "ДД",
-                            fieldHoursPlaceholder: () => "ЧЧ",
-                            fieldMinutesPlaceholder: () => "ММ",
-                            fieldMonthPlaceholder: () => "ММ",
-                            fieldSecondsPlaceholder: () => "CC",
-                            fieldYearPlaceholder: () => "ГГГГ"
+                            fieldDayPlaceholder: () => locale.dateControl.dayPlaceholder,
+                            fieldHoursPlaceholder: () => locale.dateControl.hourPlaceholder,
+                            fieldMinutesPlaceholder: () => locale.dateControl.minutePlaceholder,
+                            fieldMonthPlaceholder: () => locale.dateControl.monthPlaceholder,
+                            fieldSecondsPlaceholder: () => locale.dateControl.secondPlaceholder,
+                            fieldYearPlaceholder: () => locale.dateControl.yearPlaceholder
                         }}
                         /*renderInput={(params) =>
                             <TextField
@@ -292,7 +290,7 @@ function ItnControl(props: IControlProps) {
                         disabled={props.disabled}
                         slotProps={{
                             textField: {
-                                placeholder: "ЧЧ:ММ",
+                                placeholder: locale.dateControl.timePlaceHolder,
                                 size: "small",
                                 fullWidth: true,
                                 error: props.error,
@@ -300,12 +298,12 @@ function ItnControl(props: IControlProps) {
                             }
                         }}
                         localeText={{
-                            fieldDayPlaceholder: () => "ДД",
-                            fieldHoursPlaceholder: () => "ЧЧ",
-                            fieldMinutesPlaceholder: () => "ММ",
-                            fieldMonthPlaceholder: () => "ММ",
-                            fieldSecondsPlaceholder: () => "CC",
-                            fieldYearPlaceholder: () => "ГГГГ"
+                            fieldDayPlaceholder: () => locale.dateControl.dayPlaceholder,
+                            fieldHoursPlaceholder: () => locale.dateControl.hourPlaceholder,
+                            fieldMinutesPlaceholder: () => locale.dateControl.minutePlaceholder,
+                            fieldMonthPlaceholder: () => locale.dateControl.monthPlaceholder,
+                            fieldSecondsPlaceholder: () => locale.dateControl.secondPlaceholder,
+                            fieldYearPlaceholder: () => locale.dateControl.yearPlaceholder
                         }}
                         /*renderInput={(params) =>
                             <TextField
@@ -334,7 +332,7 @@ function ItnControl(props: IControlProps) {
                         disabled={props.disabled}
                         slotProps={{
                             textField: {
-                                placeholder: "ДД.ММ.ГГГГ ЧЧ:ММ",
+                                placeholder: locale.dateControl.dateTimePlaceHolder,
                                 size: "small",
                                 fullWidth: true,
                                 error: props.error,
@@ -342,12 +340,12 @@ function ItnControl(props: IControlProps) {
                             }
                         }}
                         localeText={{
-                            fieldDayPlaceholder: () => "ДД",
-                            fieldHoursPlaceholder: () => "ЧЧ",
-                            fieldMinutesPlaceholder: () => "ММ",
-                            fieldMonthPlaceholder: () => "ММ",
-                            fieldSecondsPlaceholder: () => "CC",
-                            fieldYearPlaceholder: () => "ГГГГ"
+                            fieldDayPlaceholder: () => locale.dateControl.dayPlaceholder,
+                            fieldHoursPlaceholder: () => locale.dateControl.hourPlaceholder,
+                            fieldMinutesPlaceholder: () => locale.dateControl.minutePlaceholder,
+                            fieldMonthPlaceholder: () => locale.dateControl.monthPlaceholder,
+                            fieldSecondsPlaceholder: () => locale.dateControl.secondPlaceholder,
+                            fieldYearPlaceholder: () => locale.dateControl.yearPlaceholder
                         }}
                         /*renderInput={(params) =>
                             <TextField
@@ -383,12 +381,13 @@ function ItnControl(props: IControlProps) {
                             InputProps={{
                                 type: showPassword ? 'text' : 'password',
                                 endAdornment: <InputAdornment position="end" >
-                                    <IconButton
-                                        aria-label="Видимость пароля"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                                    </IconButton>
+                                    <Tooltip title={locale.passwordControl.visibilityToggleText}>
+                                        <IconButton
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </Tooltip>
                                 </InputAdornment>
                             }}
                             disabled={props.disabled}
@@ -399,7 +398,7 @@ function ItnControl(props: IControlProps) {
                     {
                         !props.disableNewPasswordGenerate &&
                         <IconButton onClick={handlePasswordGenerate}>
-                            <Tooltip title="Сгенерировать пароль">
+                            <Tooltip title={locale.passwordControl.generateButtonText}>
                                 <Loop />
                             </Tooltip>
                         </IconButton>
@@ -444,7 +443,20 @@ function ItnControl(props: IControlProps) {
                     name={props.name}
                 />;
             case 'file':
-                return <ItnFileControl {...props}/>;
+                return (
+                    <ItnFileControl
+                        value={props.value}
+                        onChange={(val) => props.onChange && props.onChange(val)}
+                        accept={props.accept}
+                        disabled={props.disabled}
+                        error={props.error}
+                        errorText={props.errorText ?? undefined}
+                        helperText={props.helperText ?? undefined}
+                        label={props.label ?? undefined}
+                        maxFileSize={props.maxFileSize}
+                        imageProperties={props.imageProperties}
+                    />
+                );
             default: throw new Error();
         }
     }, [
@@ -454,7 +466,8 @@ function ItnControl(props: IControlProps) {
         handleNumberKeyPress,
         checkEnter,
         //acInputValue,
-        handleAutoCompleteInputChange
+        handleAutoCompleteInputChange,
+        locale
     ]); 
 
     if (typeof props.display == "boolean" && !props.display) {

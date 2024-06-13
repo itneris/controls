@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
     Box,
     FormControl,
@@ -16,10 +16,11 @@ import {
     Delete,
     Refresh,
 } from "@mui/icons-material";
-import IControlProps from "../../props/IControlProps";
 import ItnFormFile from "../../props/ItnFormFile";
 import ItnModal from "../../components/ItnModal";
 import Cropper, { Area, Point } from "react-easy-crop";
+import { ItnFormGlobalContext } from "../../localization/ItnFromProvider";
+import { FileImageProperties } from "../../props/IFileControlProps";
 
 function compressImageToSize(sizeKb: number, canvas: HTMLCanvasElement) {
     let quality = 1.0; // Start with maximum quality
@@ -43,7 +44,18 @@ function compressImageToSize(sizeKb: number, canvas: HTMLCanvasElement) {
     return dataUrl;
 }
 
-function ItnFileControl(props: IControlProps) {
+function ItnFileControl(props: {
+    value: ItnFormFile | null,
+    onChange?: (value: ItnFormFile | null) => void,
+    imageProperties?: FileImageProperties,
+    maxFileSize?: number,
+    accept?: string,
+    disabled?: boolean,
+    label?: string,
+    error?: boolean,
+    errorText?: string,
+    helperText?: string
+}) {
     const {
         imageProperties,
         onChange,
@@ -55,6 +67,8 @@ function ItnFileControl(props: IControlProps) {
         errorText,
         helperText        
     } = props;
+
+    const { locale } = useContext(ItnFormGlobalContext);
 
     const value = props.value as (ItnFormFile | null);
 
@@ -134,7 +148,7 @@ function ItnFileControl(props: IControlProps) {
                 size = Math.round(size / 10) / 100;
                 unit = "Гб"
             }
-            setFileError(`Размер файла не должен превышать ${size}${unit}`);
+            setFileError(locale.fileControl.fileSizeError.replace("{0}", `${size}${unit}`));
             return;
         }
 
@@ -173,7 +187,7 @@ function ItnFileControl(props: IControlProps) {
                 reader.readAsDataURL(e.target.files![0]);
                 e.target.value = "";
             } catch (e) {
-                setFileError(`Мы не смогли пожать файл, попробуйте загрузить что-то другое`);
+                setFileError(locale.fileControl.compressError);
                 console.log(e);
             }
             return;
@@ -294,12 +308,12 @@ function ItnFileControl(props: IControlProps) {
                                 <Typography style={{ flex: 1 }}>
                                     {value?.fileName ?? value?.file?.name ?? ""}
                                 </Typography>
-                                <Tooltip placement="right-start" title="Заменить">
+                                <Tooltip placement="right-start" title={locale.fileControl.replaceButtonText}>
                                     <IconButton color="secondary" onClick={handleUploadClick} disabled={disabled}>
                                         <Refresh />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip placement="right-start" title="Удалить">
+                                <Tooltip placement="right-start" title={locale.common.removeButtonText}>
                                     <IconButton color="error" onClick={handleDeleteFile} disabled={disabled}>
                                         <Delete />
                                     </IconButton>
@@ -327,12 +341,12 @@ function ItnFileControl(props: IControlProps) {
                                         />
                                 }
                                 <Box display="flex" flexDirection="column" ml={2} justifyContent="space-between">
-                                    <Tooltip placement="right-start" title="Заменить">
+                                    <Tooltip placement="right-start" title={locale.fileControl.replaceButtonText}>
                                         <IconButton color="secondary" onClick={handleUploadClick} disabled={disabled}>
                                             <Refresh />
                                         </IconButton>
                                     </Tooltip>
-                                    <Tooltip placement="right-start" title="Удалить">
+                                    <Tooltip placement="right-start" title={locale.common.removeButtonText}>
                                         <IconButton color="error" onClick={handleDeleteFile} disabled={disabled}>
                                             <Delete />
                                         </IconButton>
@@ -352,10 +366,10 @@ function ItnFileControl(props: IControlProps) {
                     open={cropModalOpen}
                     onClose={closeCropModal}
                     onResult={handleCropModalResult}
-                    title="Обрезать изображение"
+                    title={locale.fileControl.cropImageModalTitle}
                     size="lg"
-                    yesBtnText="Обрезать"
-                    noBtnText="Отмена"
+                    yesBtnText={locale.fileControl.cropButtonText}
+                    noBtnText={locale.common.cancelButtonText}
                     yesButtonDisabled={imgProcessing}
                 >                
                     <Box height={4}>

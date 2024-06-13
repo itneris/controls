@@ -1,4 +1,4 @@
-import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, useEffect, forwardRef } from "react";
+import React, { useCallback, useImperativeHandle, useState, useRef, useMemo, useEffect, forwardRef, useContext } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IFormRef } from "../base/IFormRef";
 import { createEntity, deleteEntity, getDict, getEntity, updateEntity, getAutocompleteDict } from "../queries/dataQueries";
@@ -13,6 +13,7 @@ import { LooseTimeoutObject } from "../base/LooseTimeoutObject";
 import { ItnSelectOption } from "../base/ItnSelectOption";
 import { FieldDescription } from "../base/FieldDescription";
 import { EMPTY_FUNC } from "../const/utils";
+import { ItnFormGlobalContext } from "../localization/ItnFromProvider";
 
 declare module "react" {
     function forwardRef<T, P = {}>(
@@ -35,9 +36,9 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         variant = "outlined",
         disableSave = false,
         disableDelete = false,
-        deleteBtnText = "Удалить",
-        saveBtnText = "Сохранить",
-        cancelBtnText = "Отмена",
+        deleteBtnText,
+        saveBtnText,
+        cancelBtnText,
         urlParams = null,
         onError = null,
         sendAsMultipartFormData = false,
@@ -50,6 +51,8 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         headerContent,
         footerContent
     } = props;
+
+    const { locale } = useContext(ItnFormGlobalContext);
 
     const baseFormRef = useRef<IFormRef<T>>(null);
     const autoCompleteTimeouts = useRef<LooseTimeoutObject>({});
@@ -181,7 +184,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
                     _.searchAsType ?
                         [
                             ...data,
-                            { id: "empty", label: "Вводите текст для поиска", blocked: true } as ItnSelectOption
+                            { id: "empty", label: locale.autocompleteControl.helperText, blocked: true } as ItnSelectOption
                         ] :
                         data;
 
@@ -329,10 +332,10 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         <ItnBaseForm
             fieldBuilder={fieldBuilder}
             viewOnly={formType === "view"}
-            cancelBtnText={cancelBtnText}
-            deleteBtnText={deleteBtnText}
+            cancelBtnText={cancelBtnText ?? locale.common.cancelButtonText}
+            deleteBtnText={deleteBtnText ?? locale.common.removeButtonText}
             entity={formData}
-            errorLoading={formDataQuery.isError ? `Ошибка загрузки данных: ${formDataQuery.error.message}` : undefined}
+            errorLoading={formDataQuery.isError ? locale.form.loadError.replace("{0}", formDataQuery.error.message) : undefined}
             header={header}
             hidePaper={hidePaper}
             isLoading={formDataQuery.isFetching}
@@ -343,7 +346,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             onDelete={disableDelete ? undefined : handleDelete}
             onSave={disableSave ? undefined : handleSave}
             ref={baseFormRef}
-            saveBtnText={saveBtnText}
+            saveBtnText={saveBtnText ?? locale.common.saveButtonText}
             variant={variant}
             headerContent={headerContent}
             footerContent={footerContent}

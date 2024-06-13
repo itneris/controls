@@ -1,8 +1,9 @@
 import { Box, Divider, Drawer, Fab, Tooltip, Typography } from "@mui/material";
 import { Close, Delete, Save } from "@mui/icons-material";
 import IDrawerProps, { IDrawerBtnProp } from '../props/IDrawerProps';
-import React, {  useCallback, useEffect, useMemo, useState } from "react";
+import React, {  useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { DrawerActionType } from "../props/DrawerActionType";
+import { ItnFormGlobalContext } from "../localization/ItnFromProvider";
 
 const EditDrawer = (props: IDrawerProps) => {
     const {
@@ -27,6 +28,8 @@ const EditDrawer = (props: IDrawerProps) => {
         }
     } = props;
 
+    const { locale } = useContext(ItnFormGlobalContext);
+
     const [activeTab, setActiveTab] = useState<number>(defaultTab);
     const [open, setOpen] = useState<boolean>(false);
 
@@ -40,35 +43,35 @@ const EditDrawer = (props: IDrawerProps) => {
     }, [onResult]);
 
     const buttonsRender: Array<React.ReactNode> = useMemo(() => {
-        let btns: Array<IDrawerBtnProp> = [];
+        let buttons: Array<IDrawerBtnProp> = [];
         if (cancelBtnText) {
-            btns.push({
-                tooltip: 'Закрыть',
+            buttons.push({
+                tooltip: locale.common.closeButtonText,
                 icon: <Close />,
                 onClick: handleResult('cancel'),
                 color: "default"
             });
         }
         if (saveBtnText) {
-            btns.push({
+            buttons.push({
                 color: 'secondary',
-                tooltip: 'Сохранить',
+                tooltip: locale.common.saveButtonText,
                 icon: <Save />,
                 onClick: handleResult("save")
             });
         }
         if (deleteBtnText) {
-            btns.push({
+            buttons.push({
                 color: 'error',
-                tooltip: 'Удалить',
+                tooltip: locale.common.removeButtonText,
                 icon: <Delete />,
                 onClick: handleResult("delete")
             });
         }
         if (buttons) {
-            btns = [...btns, ...buttons];
+            buttons = [...buttons, ...buttons];
         }
-        return btns.map((btn, index) => {
+        return buttons.map((btn, index) => {
             return (
                 <Tooltip
                     title={btn.tooltip ?? ""}

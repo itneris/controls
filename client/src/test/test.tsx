@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
-import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl } from "../controls/src";
+import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer, ItnModal, ItnControl, ItnFormControl, ItnFormProvider } from "../controls/src";
 import { IFormRef } from "../controls/src/base/IFormRef";
 import { IQueryFormRef } from "../controls/src/base/IQueryFormRef";
 import ItnFormFile from "../controls/src/props/ItnFormFile";
@@ -139,8 +139,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                     compressToKb: 1 * 1000,
                     crop: { 
                         height: 260,
-                         width: 400, 
-                         dynamic: true 
+                        width: 500, 
+                        dynamic: true 
                     } 
                 },
             });
@@ -214,7 +214,7 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
 
 const fieldBuilder = new UsersFieldBuilder();
 
-const TestComnonent = () => {
+const TestComponent = () => {
     const formRef = useRef <IFormRef<IUserDTO> | null>(null);
     const createFormRef = useRef<IQueryFormRef<IUserDTO>>(null);
     const editFormRef = useRef<IQueryFormRef<IUserDTO>>(null);
@@ -263,7 +263,7 @@ const TestComnonent = () => {
     }, []);
 
     return (
-        <>
+        <ItnFormProvider locale={"en"}>
             <PageTitle>Тестовый заголовок</PageTitle>
             <PageTitle onBack={() => alert('B button clicked')}>Тестовый заголовок с кнопкой назад</PageTitle>
             <Button variant="contained" onClick={() => setEditOpen(true)}>Открыть Drawer</Button>
@@ -434,8 +434,8 @@ const TestComnonent = () => {
             >
                 Контент
             </ItnModal>
-        </>
+        </ItnFormProvider>
     );
 }
 
-export default TestComnonent;
+export default TestComponent;

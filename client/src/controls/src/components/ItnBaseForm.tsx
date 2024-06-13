@@ -1,4 +1,4 @@
-import React, { useCallback, useImperativeHandle, useState, useEffect, useRef, useMemo, forwardRef } from "react";
+import React, { useCallback, useImperativeHandle, useState, useEffect, useRef, useMemo, forwardRef, useContext } from "react";
 import ItnControl from "./ItnControl";
 import { IFormRef } from "../base/IFormRef";
 import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
@@ -8,6 +8,7 @@ import IBaseFormProps from "../props/IBaseFormProps";
 import { FieldDescription } from "../base/FieldDescription";
 import FormContext from "../context/FormContext";
 import { EMPTY_BOOL_OBJ, EMPTY_FUNC, getDefaultValues } from "../const/utils";
+import { ItnFormGlobalContext } from "../localization/ItnFromProvider";
 
 declare module "react" {
     function forwardRef<T, P = {}>(
@@ -29,9 +30,9 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         isLoading = false,
         isSaving = false,
         errorLoading = null,
-        deleteBtnText = "Удалить",
-        saveBtnText = "Сохранить",
-        cancelBtnText = "Отмена",
+        deleteBtnText,
+        saveBtnText,
+        cancelBtnText,
         viewOnly = false,
         headerContent = null,
         footerContent = null,
@@ -40,6 +41,8 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         fieldBuilder,
         children
     } = props;
+
+    const { locale } = useContext(ItnFormGlobalContext);
 
     const [validation, setValidation] = useState<Validation<T>[]>([]);
     const [entity, setEntity] = useState(initialEntity ?? getDefaultValues(fieldBuilder.GetFields()));
@@ -82,7 +85,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
 
             const fieldRequired = typeof field.required === "function" ? field.required(entity) : field.required;
             if (fieldRequired && valIsNull) {
-                newValidation.push(new Validation(field.property, `Поле обязательно для заполнения`));
+                newValidation.push(new Validation(field.property, locale.form.fieldRequired));
             }
 
             if (field.validation !== null && !valIsNull) {
@@ -94,9 +97,11 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
 
             if (field.type === "date" && val !== null) {
                 if (field.maxDate !== null && new Date(val as Date) > field.maxDate) {
-                    newValidation.push(new Validation(field.property, `Значение не может быть больше ${field.maxDate.toLocaleDateString("ru-RU")}`))
+                    const error = locale.form.maxValueError.replace("{0}", locale.formatters.date(field.maxDate));
+                    newValidation.push(new Validation(field.property, error));
                 } else if (field.minDate !== null && new Date(val as Date) < field.minDate) {
-                    newValidation.push(new Validation(field.property, `Значение не может быть меньше ${field.minDate.toLocaleDateString("ru-RU")}`))
+                    const error = locale.form.minValueError.replace("{0}", locale.formatters.date(field.minDate));
+                    newValidation.push(new Validation(field.property, error));
                 }
             }
 
@@ -111,21 +116,24 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                     !/[А-Я]/.test(pwd);
 
                 if (!legitPwd) {
-                    newValidation.push(new Validation(field.property, `Пароль должен состоять из ${field.passwordLength} символов, включать цифру, нижний и верхний регистры латинского алфавита и непрописной символ (!@#$%^&*()-+<>)`))
+                    const error = locale.form.passwordError.replace("{0}", field.passwordLength.toString());
+                    newValidation.push(new Validation(field.property, error));
                 }
             }
 
             if (field.type === "number" && val !== null && val !== undefined) {
                 if (isNaN(+val)) {
-                    newValidation.push(new Validation(field.property, `Некорректное числовое значение`))
+                    newValidation.push(new Validation(field.property, locale.form.incorrectNumber))
                 } else if (!field.allowNegative && +val < 0) {
-                    newValidation.push(new Validation(field.property, `Значение должно быть больше 0`))
+                    newValidation.push(new Validation(field.property, locale.form.onlyPositiveNumber))
                 } else if (!field.allowDecimals && !Number.isInteger(+val)) {
-                    newValidation.push(new Validation(field.property, `Значение должно быть целым числом`))
+                    newValidation.push(new Validation(field.property, locale.form.onlyIntegerNumber))
                 } else  if (field.max !== null && +val > field.max) {
-                    newValidation.push(new Validation(field.property, `Значение не может быть больше ${field.max}`))
+                    const error = locale.form.maxValueError.replace("{0}", locale.formatters.number(field.max));
+                    newValidation.push(new Validation(field.property, error))
                 } else if (field.min !== null && +val < field.min) {
-                    newValidation.push(new Validation(field.property, `Значение не может быть меньше ${field.min}`))
+                    const error = locale.form.minValueError.replace("{0}", locale.formatters.number(field.min));
+                    newValidation.push(new Validation(field.property, error))
                 }
             }
         });
@@ -193,7 +201,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                     value={controlValue}
                     allowNullInSelect={field.allowNullInSelect}
                     selectNullLabel={field.selectNullLabel}
-                    noOptionsText={field.noOptionsText ?? "Ничего не найдено"}
+                    noOptionsText={field.noOptionsText ?? locale.autocompleteControl.noOptionsText}
                     passwordLength={field.passwordLength}
                     placeholder={field.placeholder}
                     disabled={controlDisabled || isSaving || viewOnly}
@@ -267,7 +275,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                                     disabled={isSaving}
                                     variant="contained"
                                 >
-                                    {deleteBtnText}
+                                    {deleteBtnText ?? locale.common.removeButtonText}
                                 </Button> :
                                 <div></div>
 
@@ -309,7 +317,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                                 variant="contained"
                                 onClick={onCancel}
                             >
-                                {cancelBtnText}
+                                {cancelBtnText ?? locale.common.cancelButtonText}
                             </Button> :
                             <Box />
                     }
@@ -322,7 +330,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                                 color="secondary"
                                 onClick={handleSaveClick}
                             >
-                                {saveBtnText}
+                                {saveBtnText ?? locale.common.saveButtonText}
                             </Button> :
                             <Box />
                     }
