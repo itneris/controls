@@ -49,6 +49,10 @@ const generatePassword = (length: number): string => {
     }
 }
 
+const getOptionDisabled = (option: ItnSelectOption) => {
+    return option.blocked === true;
+}
+
 const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
@@ -158,16 +162,17 @@ function ItnControl(props: IControlProps) {
                     loadingText={props.autocompleteLoadingText}
                     loading={props.autocompleteLoading}
                     onChange={(_e, newValue) => {
-                        if (!multiple && newValue !== null && newValue.inputValue) {
-                            props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newValue.inputValue);
-                            props.onChange && props.onChange(new ItnSelectOption("new", newValue.inputValue));
-                        } else if (multiple && newValue.find((val: any) => !!val.inputValue)) {
-                            const newVal = newValue.find((val: any) => !!val.inputValue);
+                        const newInputValue = (newValue as any).inputValue as string;
+                        if (!multiple && newValue !== null && newInputValue) {
+                            props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newInputValue);
+                            props.onChange && props.onChange(new ItnSelectOption("new", newInputValue));
+                        } else if (multiple && (newValue as any[]).find((val: any) => !!val.inputValue)) {
+                            const newVal = (newValue as any[]).find((val: any) => !!val.inputValue);
                             props.onAutocompleteOptionAdded && props.onAutocompleteOptionAdded(newVal.inputValue);
                             props.onAutocompleteInputChange && props.onAutocompleteInputChange("", "input");
                             props.onChange && props.onChange(
                                 [
-                                    ...newValue.filter((val: any) => val.id !== "new"),
+                                    ...(newValue as ItnSelectOption[]).filter((val: any) => val.id !== "new"),
                                     new ItnSelectOption(`new-${tmpId.current++}`, newVal.inputValue)
                                 ]
                             );                                
@@ -178,7 +183,7 @@ function ItnControl(props: IControlProps) {
                     renderOption={(props, option) => (
                         <li {...props} key={"opt" + option.id} >{option.label}</li>
                     )}
-                    getOptionDisabled={opt => opt.disabled === true}
+                    getOptionDisabled={getOptionDisabled}
                     filterOptions={(options, params) => {
                         let filtered: ItnSelectOption[];
                         if (props.onAutocompleteInputChange !== null) {
@@ -192,7 +197,7 @@ function ItnControl(props: IControlProps) {
                         }
 
                         const { inputValue } = params;
-                        const isExisting = options.some((option) => inputValue === option.title);
+                        const isExisting = options.some((option: ItnSelectOption) => inputValue === option.label);
 
                         if (inputValue !== '' && !isExisting) {
                             filtered = [{
