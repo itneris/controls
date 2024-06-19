@@ -5,6 +5,7 @@ import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm
 import { IFormRef } from "../controls/src/base/IFormRef";
 import { IQueryFormRef } from "../controls/src/base/IQueryFormRef";
 import ItnFormFile from "../controls/src/props/ItnFormFile";
+import WysiwygEditor from "editors/wysiwygEditor/WysiwygEditor";
 //import { AbstractFieldBuilder, ItnForm, ItnSelectOption, PageTitle, ItnQueryForm, EditDrawer } from "@itneris/controls";
 
 interface IUserDTO {
@@ -83,6 +84,13 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
                 console.log(val);
                 console.log(entity);
                 return null;
+            });
+
+        this.FieldFor(_ => _.wysiwyg)
+            .WithCustomControl((val, onChange) => {
+                return <Stack gap={1}>
+                    <WysiwygEditor value={val} onChange={onChange} />
+                </Stack>
             });
             /*
         this.FieldFor(_ => _.calcValue)
@@ -277,16 +285,16 @@ const TestComponent = () => {
 
 
             {
-                // <ItnQueryForm
-                //     ref={createFormRef}
-                //     header="Форма создания"
-                //     headerContent={<b>Пример контента после заголовка</b>}
-                //     apiUrl="http://localhost:5000/api/test"
-                //     fieldBuilder={fieldBuilder}
-                //     footerContent={<b>Пример контента после контролов</b>}
-                //     onChange={handleCreateChange}
-                //     onError={handleError}
-                // />
+                <ItnQueryForm
+                    ref={createFormRef}
+                    header="Форма создания"
+                    headerContent={<b>Пример контента после заголовка</b>}
+                    apiUrl="http://localhost:5000/api/test"
+                    fieldBuilder={fieldBuilder}
+                    footerContent={<b>Пример контента после контролов</b>}
+                    onChange={handleCreateChange}
+                    onError={handleError}
+                />
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
 

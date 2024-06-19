@@ -46,10 +46,18 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
 
     const [validation, setValidation] = useState<Validation<T>[]>([]);
     const [entity, setEntity] = useState(initialEntity ?? getDefaultValues(fieldBuilder.GetFields()));
+    const [isEntityLoaded, setIsEntityLoaded] = useState(true);
 
     useEffect(() => {
+        if (isLoading) {
+            setIsEntityLoaded(false);
+            return;
+        }
+        
         setEntity(initialEntity ?? getDefaultValues(fieldBuilder.GetFields()));
-    }, [initialEntity, fieldBuilder]);
+        setIsEntityLoaded(true);
+    }, [initialEntity, fieldBuilder, isLoading]);
+
 
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
@@ -160,7 +168,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
 
     const renderField = useCallback((field: FieldDescription<T>) => {
         const prop = field.property as string;
-        if (isLoading) {
+        if (isLoading || !isEntityLoaded) {
             return <Skeleton key={"fc-" + prop} height="32px" />
         } else if (field.custom) {
             return <React.Fragment key={"fc-" + prop}>
@@ -234,7 +242,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                 />
             );
         }
-    }, [validation, handleChange, onAutocompleteInputChange, controlsLoading, isLoading, isSaving, variant, viewOnly, entity])
+    }, [entity, validation, handleChange, onAutocompleteInputChange, controlsLoading, isLoading, isSaving, variant, viewOnly])
 
     const renderFieldByName = useCallback((name: string) => {
         const field = fieldBuilder.GetFields().find(_ => _.property === name);

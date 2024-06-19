@@ -333,6 +333,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         if (formType === "create" || entity != null || !apiUrl) {
             return true;
         }
+        
         return !formDataQuery.isFetching && formData != null;
     }, [formDataQuery.isFetching, formData, formType, entity, apiUrl]);
 

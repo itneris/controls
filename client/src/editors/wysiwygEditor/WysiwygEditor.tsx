@@ -162,7 +162,7 @@ function WysiwygEditor(props: IWysiwygEditorProps) {
             <SunEditor
                 getSunEditorInstance={getSunEditorInstance}
                 lang="ru"
-                setContents={props.value ?? ""}
+                defaultValue={props.value ?? ""}
                 autoFocus={false}
                 onChange={updateText}
                 onPaste={onPaste}
