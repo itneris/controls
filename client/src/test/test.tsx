@@ -276,17 +276,17 @@ const TestComponent = () => {
             />
 
 
-            {/*
-                <ItnQueryForm
-                    ref={createFormRef}
-                    header="Форма создания"
-                    headerContent={<b>Пример контента после заголовка</b>}
-                    apiUrl="http://localhost:5000/api/test"
-                    fieldBuilder={fieldBuilder}
-                    footerContent={<b>Пример контента после контролов</b>}
-                    onChange={handleCreateChange}
-                    onError={handleError}
-                />*/
+            {
+                // <ItnQueryForm
+                //     ref={createFormRef}
+                //     header="Форма создания"
+                //     headerContent={<b>Пример контента после заголовка</b>}
+                //     apiUrl="http://localhost:5000/api/test"
+                //     fieldBuilder={fieldBuilder}
+                //     footerContent={<b>Пример контента после контролов</b>}
+                //     onChange={handleCreateChange}
+                //     onError={handleError}
+                // />
             }
             <PageTitle tooltip="Представленные в таблице ниже пользователи включают в себя как доменных, так и недоменных пользователей внутреннего и внешнего контуров систем. Для запуска принудительной синхронизации с доменом нажмите на кнопку «Обновить из домена»">Тестовая форма редактирования</PageTitle>
 

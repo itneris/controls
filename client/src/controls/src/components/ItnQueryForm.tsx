@@ -328,6 +328,14 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
     }, [type, autocompleteSearchValues, fieldBuilder, formData, queryClient, entityQueryKey]);
 
+    
+    const isFormLoaded = useMemo(() => {
+        if (formType === "create" || entity != null || !apiUrl) {
+            return true;
+        }
+        return !formDataQuery.isFetching && formData != null;
+    }, [formDataQuery.isFetching, formData, formType, entity, apiUrl]);
+
     return (
         <ItnBaseForm
             fieldBuilder={fieldBuilder}
@@ -338,7 +346,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             errorLoading={formDataQuery.isError ? locale.form.loadError.replace("{0}", formDataQuery.error.message) : undefined}
             header={header}
             hidePaper={hidePaper}
-            isLoading={formDataQuery.isFetching}
+            isLoading={!isFormLoaded}
             isSaving={isSaving}
             noPadding={noPadding}
             onCancel={onCancel}
