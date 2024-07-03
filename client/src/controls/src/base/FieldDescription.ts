@@ -2,6 +2,9 @@ import { ReactNode } from "react";
 import { ItnSelectOption } from "..";
 import { FileImageProperties } from "../props/IFileControlProps";
 
+export type CustomControlFunction<T> = ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean, entity: T) => ReactNode) | null;
+export type ValidationFunction<T> = ((value: any, entity: T) => string | null) | null;
+
 export class FieldDescription<T> {
     property: keyof T;
     order: number;
@@ -16,7 +19,7 @@ export class FieldDescription<T> {
     variant: "outlined" | "standard" | "filled" = "outlined";
     tooltip: string | null = null;
     helperText: string | null = null;
-    custom: ((value: any, onChange: ((value: any) => void), isError: boolean, errorText: string | undefined, isSaving: boolean, isView: boolean, entity: T) => ReactNode) | null = null;
+    custom: CustomControlFunction<T> = null;
     items: ItnSelectOption[] = [];
     min: number | null = null;
     max: number | null = null;
@@ -29,7 +32,7 @@ export class FieldDescription<T> {
     selectNullLabel: string | null = null;
     noOptionsText: string | null = null;
     display: boolean | (() => boolean) = true;
-    validation: ((value: any, entity: T) => string | null) | null = null;
+    validation: ValidationFunction<T> = null;
     required: boolean | ((entity: T) => boolean) = false;
     accept: string = "*";
     imageProps: FileImageProperties | null = null;

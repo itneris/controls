@@ -1,14 +1,13 @@
-import React, { useCallback, useImperativeHandle, useState, useEffect, useRef, useMemo, forwardRef, useContext } from "react";
-import ItnControl from "./ItnControl";
+import React, { useCallback, useImperativeHandle, useState, useEffect, useMemo, forwardRef, useContext } from "react";
 import { IFormRef } from "../base/IFormRef";
-import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Backspace, Delete, Save } from "@mui/icons-material";
 import { Validation } from "../base/Validation";
 import IBaseFormProps from "../props/IBaseFormProps";
-import { FieldDescription } from "../base/FieldDescription";
 import FormContext from "../context/FormContext";
 import { EMPTY_BOOL_OBJ, EMPTY_FUNC, getDefaultValues } from "../const/utils";
 import { ItnFormGlobalContext } from "../localization/ItnFromProvider";
+import ItnFormField from "./ItnFormField";
 
 declare module "react" {
     function forwardRef<T, P = {}>(
@@ -166,84 +165,6 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         onDelete && onDelete(id);
     }, [onDelete]); 
 
-    const renderField = useCallback((field: FieldDescription<T>) => {
-        const prop = field.property as string;
-        if (isLoading || !isEntityLoaded) {
-            return <Skeleton key={"fc-" + prop} height="32px" />
-        } else if (field.custom) {
-            return <React.Fragment key={"fc-" + prop}>
-                {
-                    field.custom(
-                        entity[field.property],
-                        (value) => handleChange(field.property, value),
-                        validation.find(_ => _.property === field.property) !== undefined,
-                        validation.find(_ => _.property === field.property)?.message,
-                        isSaving!,
-                        viewOnly!,
-                        entity
-                    )
-                }
-            </React.Fragment>;
-        } else {
-            const controlHidden = typeof field.hidden === "function" ? field.hidden(entity) : field.hidden;
-            if (controlHidden) {
-                return null;
-            }
-
-            const controlDefaultValue =
-                (["file", "date", "time"]).includes(field.type) ? null :
-                    field.type !== "select" && field.type !== "autocomplete" ? "" :
-                        field.multiple ? [] :
-                            null;
-
-            const controlValue = entity[field.property] ?? controlDefaultValue;
-            const controlDisabled = typeof field.disabled === "function" ? field.disabled(entity) : field.disabled;
-
-            return (
-                <ItnControl
-                    key={"fc-" + prop}
-                    type={field.type}
-                    disableNewPasswordGenerate={field.disableNewPasswordGenerate}
-                    variant={variant}
-                    onChange={(value) => handleChange(field.property, value)}
-                    value={controlValue}
-                    allowNullInSelect={field.allowNullInSelect}
-                    selectNullLabel={field.selectNullLabel}
-                    noOptionsText={field.noOptionsText ?? locale.autocompleteControl.noOptionsText}
-                    passwordLength={field.passwordLength}
-                    placeholder={field.placeholder}
-                    disabled={controlDisabled || isSaving || viewOnly}
-                    display={field.display}
-                    error={validation.find(_ => _.property === field.property) !== undefined}
-                    errorText={validation.find(_ => _.property === field.property)?.message}
-                    items={field.items}
-                    label={typeof (field.label) === "function" ? field.label(entity) : field.label}
-                    max={field.max}
-                    min={field.min}
-                    allowDecimals={field.allowDecimals}
-                    allowNegative={field.allowNegative}
-                    maxDate={field.maxDate}
-                    minDate={field.minDate}
-                    tooltip={field.tooltip}
-                    accept={field.accept}
-                    maxFileSize={field.maxFileSize}
-                    imageProperties={field.imageProps ?? undefined}
-                    multiline={field.multiline}
-                    lines={field.lines}
-                    maxLines={field.maxLines}
-                    onAutocompleteInputChange={field.searchAsType ? (value, event) => onAutocompleteInputChange!(field.property, value, event) : undefined}
-                    autocompleteLoading={controlsLoading[prop] === true}
-                    autocompleteCreatable={field.autocompleteCreatable}
-                    onAutocompleteOptionAdded={field.onAutocompleteOptionAdded}
-                    helperText={field.helperText}
-                    multiple={field.multiple}
-                    onEnter={field.onEnterKeyPress}
-                    name={field.property.toString()}
-                />
-            );
-        }
-    }, [entity, validation, handleChange, onAutocompleteInputChange, controlsLoading, isLoading, isSaving, variant, viewOnly])
-
     const renderFieldByName = useCallback((name: string) => {
         const field = fieldBuilder.GetFields().find(_ => _.property === name);
         if (!field) {
@@ -253,8 +174,35 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         if (controlHidden) {
             return <></>;
         }
-        return renderField(field);
-    }, [renderField, fieldBuilder])
+        return (            
+            <ItnFormField
+                entity={entity}
+                isSaving={isSaving}
+                viewOnly={viewOnly}
+                field={field}
+                acLoading={controlsLoading[field.property.toString()]}
+                onAcInput={onAutocompleteInputChange}
+                variant={variant}
+                customControl={field.custom}
+                isLoading={isLoading || !isEntityLoaded}
+                onChange={handleChange}
+                validation={validation}
+                property={field.property}
+            />
+        );
+    }, [
+        entity, 
+        isSaving,
+        viewOnly, 
+        controlsLoading, 
+        onAutocompleteInputChange, 
+        variant, 
+        isLoading, 
+        isEntityLoaded, 
+        handleChange, 
+        validation, 
+        fieldBuilder
+    ])
 
     const formContextValue = useMemo(() => {
         return { getField: renderFieldByName };
@@ -301,10 +249,28 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                         errorLoading !== null ?
                             <Typography variant="body2">{errorLoading}</Typography> :
                                 children === undefined ?
-                                fieldBuilder.GetFields().map(renderField) :
-                                        <FormContext.Provider value={formContextValue}>
-                                            {children}
-                                        </FormContext.Provider>
+                                    fieldBuilder.GetFields().map(f => {
+                                        return (
+                                            <ItnFormField
+                                                key={"fc-" + f.property.toString()}
+                                                entity={entity}
+                                                isSaving={isSaving}
+                                                viewOnly={viewOnly}
+                                                field={f}
+                                                acLoading={controlsLoading[f.property.toString()]}
+                                                onAcInput={onAutocompleteInputChange}
+                                                variant={variant}
+                                                customControl={f.custom}
+                                                isLoading={isLoading || !isEntityLoaded}
+                                                onChange={handleChange}
+                                                validation={validation}
+                                                property={f.property}
+                                            />
+                                        )
+                                    }) :
+                                    <FormContext.Provider value={formContextValue}>
+                                        {children}
+                                    </FormContext.Provider>
                     }
                 </Box>
                 {
