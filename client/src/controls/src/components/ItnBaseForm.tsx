@@ -68,8 +68,8 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         addError(field, error) {
             setValidation([...validation, { property: field, message: error }]);
         },
-        setEntity(newEntity: T) {
-            setEntity(newEntity);
+        setEntity(newEntity) {
+            setEntity(newEntity ?? getDefaultValues(fieldBuilder.GetFields()));
             setValidation([]);
         }
     }));
