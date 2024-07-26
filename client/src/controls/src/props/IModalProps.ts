@@ -76,4 +76,9 @@ export default interface IModalProps {
      * Default: null
      * */
     contentStyle?: SxProps;
+    /**
+     * Transition duration in ms
+     * Default: null
+     * */
+    transitionDuration?: number;
 }

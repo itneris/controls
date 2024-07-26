@@ -24,6 +24,7 @@ const ItnModal = (props: IModalProps) => {
             maxWidth={props.size}
             fullWidth
             fullScreen={props.fullScreen}
+            transitionDuration={props.transitionDuration}     
         >
             {
                 (props.title !== null || props.titleComponent !== null) &&

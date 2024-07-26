@@ -28,7 +28,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         noPadding = false,
         onAfterSave = null,
         onCancel = null,
-        entity = null,
+        entity: initialEntity = null,
         id = null,
         type = "auto",
         hidePaper = false,
@@ -60,8 +60,6 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     const queryClient = useQueryClient();
     const entityQueryKey = useMemo(() => [apiUrl, id], [apiUrl, id]);
 
-    //const [entity, setEntity] = useState(initialEntity);
-
     useImperativeHandle(ref, () => ({
         getCurrentValues() {
             return baseFormRef.current!.getCurrentValues();
@@ -91,12 +89,12 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             return type;
         }
 
-        if (id === null && entity === null) {
+        if (id === null && initialEntity === null) {
             return "create";
         } else {
             return "edit";
         }
-    }, [entity, id, type]);
+    }, [initialEntity, id, type]);
     
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [autocompleteSearchValues, setAutocompleteSearchValues] = useState<AutoCompleteValue>({});
@@ -110,8 +108,8 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
     const { data: formData, ...formDataQuery } = useQuery({
         queryKey: entityQueryKey,
         queryFn: getEntity<T>(apiUrl ?? "/", id ?? ""),
-        enabled: formType !== "create" && entity == null && !!apiUrl,
-        initialData: entity
+        enabled: formType !== "create" && initialEntity == null && !!apiUrl,
+        initialData: initialEntity
     });
 
     useEffect(() => {
@@ -119,10 +117,6 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
             onAfterLoad && onAfterLoad(formData);
         }
     }, [formDataQuery.isFetchedAfterMount, onAfterLoad, formData]);
-
-    // useEffect(() => {
-    //     queryClient.setQueryData<T>(entityQueryKey, () => entity ?? undefined);
-    // }, [entity, queryClient, entityQueryKey]);
 
     const controlsForFetch = useMemo(() => {
         return fieldBuilder.GetFields()
@@ -304,15 +298,6 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         }
 
         if (event === "input" || event === "clear") {
-            // queryClient.setQueryData<T>(entityQueryKey, (old) => {
-            //     if (!old) return old;
-
-            //     return {
-            //         ...old,
-            //         [prop]: null                    
-            //     };                
-            // });
-
             if (autoCompleteTimeouts.current[prop as string] !== undefined) {
                 clearTimeout(autoCompleteTimeouts.current[prop as string]);
             }
@@ -330,12 +315,12 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
 
     
     const isFormLoaded = useMemo(() => {
-        if (formType === "create" || entity != null || !apiUrl) {
+        if (formType === "create" || initialEntity != null || !apiUrl) {
             return true;
         }
         
         return !formDataQuery.isFetching && formData != null;
-    }, [formDataQuery.isFetching, formData, formType, entity, apiUrl]);
+    }, [formDataQuery.isFetching, formData, formType, initialEntity, apiUrl]);
 
     return (
         <ItnBaseForm
