@@ -1,0 +1,36 @@
+{
+  "name": "@itneris/controls-react",
+  "version": "4.0.0",
+  "private": false,
+  "description": "Custom ItNeris organization web-form and controls based on MaterialUI",
+  "main": "index.js",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "keywords": [],
+  "author": "itneris",
+  "license": "ISC",
+  "peerDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.0",
+    "@mui/material": "^6.4.0",
+    "@mui/x-date-pickers": "^7.23.6",
+    "date-fns": "^4.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-easy-crop": "^5.2.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itneris/table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/itneris/table/issues"
+  },
+  "homepage": ".https://github.com/itneris/table#readme"
+}
