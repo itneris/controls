@@ -7,12 +7,14 @@ import { ItnFormGlobalContext } from '../localization/ItnFromProvider';
 const PageTitle = (props: IPageTitleProps) => {
     const { locale } = useContext(ItnFormGlobalContext);
     
+    const {testId = "page-title" } = props;
     return (
         <Box
             justifyContent='space-between'
             alignItems='center'
             display='flex'
             mb={2}
+            data-testid={testId}
         >
             <Box display='flex' gap={2} alignItems='center'>
                 {
@@ -51,6 +53,7 @@ const PageTitle = (props: IPageTitleProps) => {
                         variant={props.btnVariant}
                         startIcon={<Add />}
                         onClick={props.onAdd}
+                        data-testid={`${testId}-create-button`}
                     >
                         {locale.pageTitle.createButtonText}
                     </Button>

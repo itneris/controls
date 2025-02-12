@@ -2,6 +2,7 @@
 import React from "react";
 
 export default interface IModalProps {
+    testId?: string;
     /**
      * Is modal open
      * */

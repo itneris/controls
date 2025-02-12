@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface IPageTitleProps {
+    testId?: string;
     /**
      * Content of page title <Typography />, string in most cases
      * */

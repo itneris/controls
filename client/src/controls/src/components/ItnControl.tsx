@@ -56,7 +56,7 @@ const getOptionDisabled = (option: ItnSelectOption) => {
 const filter = createFilterOptions<ItnSelectOption>();
 
 function ItnControl(props: IControlProps) {
-    const { multiple, onAutocompleteInputChange } = props;
+    const { multiple, onAutocompleteInputChange, testId } = props;
 
     const { locale } = useContext(ItnFormGlobalContext);
     
@@ -231,24 +231,27 @@ function ItnControl(props: IControlProps) {
                     multiple={multiple}
                 />
             case 'checkbox':
-                return <FormControlLabel
-                    label={props.label}
-                    control={<Checkbox
-                        disabled={props.disabled}
-                        checked={!!props.value}
-                        color="secondary"
-                        onChange={() => props.onChange && props.onChange(!props.value)}
-                    />}
-                />;
+                return (
+                    <FormControlLabel
+                        label={props.label}                        
+                        control={<Checkbox
+                            disabled={props.disabled}
+                            checked={!!props.value}
+                            color="secondary"
+                            onChange={() => props.onChange && props.onChange(!props.value)}
+                        />}
+                    />
+                );
             case 'date':
-                return <DatePicker
+                return (
+                    <DatePicker
                         label={props.label ?? ""}
                         value={props.value ? new Date(props.value) : null}
                         onChange={val => {
                             if ((val === null || val.toString() !== "Invalid Date") && props.onChange) {
                                 props.onChange(val?.toISOString())
                             }
-                        }}
+                        }}                    
                         minDate={props.minDate ?? undefined}
                         maxDate={props.maxDate ?? undefined}
                         disabled={props.disabled}
@@ -282,9 +285,11 @@ function ItnControl(props: IControlProps) {
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
                         }*/
-                    />;
+                    />
+                );
             case 'time':
-                return <TimePicker
+                return (
+                    <TimePicker
                         label={props.label ?? ""}
                         value={props.value ? new Date(props.value) : null}
                         onChange={val => {
@@ -322,9 +327,11 @@ function ItnControl(props: IControlProps) {
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
                         }*/
-                    />;
+                    />
+                );
             case 'datetime':
-                return <DateTimePicker
+                return (
+                    <DateTimePicker
                         label={props.label ?? ""}
                         value={props.value ? new Date(props.value) : null}
                         onChange={val => {
@@ -364,7 +371,8 @@ function ItnControl(props: IControlProps) {
                                 helperText={props.error ? props.errorText : (props.helperText ?? "")}
                             />
                         }*/
-                    />;
+                    />
+                );
             case 'password':
                 return <Box display="flex" width="100%">
                     <FormControl
@@ -450,6 +458,7 @@ function ItnControl(props: IControlProps) {
             case 'file':
                 return (
                     <ItnFileControl
+                        testId={testId}
                         value={props.value}
                         onChange={(val) => props.onChange && props.onChange(val)}
                         accept={props.accept}
@@ -484,7 +493,7 @@ function ItnControl(props: IControlProps) {
     }
 
     return (
-        <Box display="flex" alignItems="flex-start" minHeight="32px" gap={2}>
+        <Box display="flex" alignItems="flex-start" minHeight="32px" gap={2} data-testid={testId}>
             {control}
             {
                 props.tooltip !== null &&

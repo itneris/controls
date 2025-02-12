@@ -18,6 +18,7 @@ function ItnFormField<T>(props: {
     onAcInput?: (property: keyof T, value: string, event: "reset" | "input" | "clear") => void;
     acLoading: boolean;
     variant: "outlined" | "standard" | "filled";
+    testId?: string;
 }) {
     const { 
         isLoading, 
@@ -31,7 +32,8 @@ function ItnFormField<T>(props: {
         field,
         onAcInput,
         acLoading,
-        variant
+        variant,
+        testId
     } = props;
 
     const prop = property.toString();
@@ -71,6 +73,7 @@ function ItnFormField<T>(props: {
 
         return (
             <ItnControl
+                testId={testId}
                 key={"fc-" + prop}
                 type={field.type}
                 disableNewPasswordGenerate={field.disableNewPasswordGenerate}

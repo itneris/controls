@@ -49,7 +49,8 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
         onAfterDelete = null,
         children,
         headerContent,
-        footerContent
+        footerContent,
+        testId = "form"
     } = props;
 
     const { locale } = useContext(ItnFormGlobalContext);
@@ -324,6 +325,7 @@ function ItnQueryFormInner<T>(props: IQueryFormProps<T>, ref: React.ForwardedRef
 
     return (
         <ItnBaseForm
+            testId={testId}
             fieldBuilder={fieldBuilder}
             viewOnly={formType === "view"}
             cancelBtnText={cancelBtnText ?? locale.common.cancelButtonText}

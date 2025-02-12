@@ -132,7 +132,8 @@ class UsersFieldBuilder extends AbstractFieldBuilder<IUserDTO> {
         this.FieldFor(_ => _.blocked)
             .WithLabel("Заблокирован")
             .Bool()
-            .Hide((e) => e.role === "1");
+            .Hide((e) => e.role === "1")
+            .WithTooltip("Пользователь заблокирован");
 
         // this.FieldFor(_ => _.avatar)
         //     .WithLabel("Аватар")

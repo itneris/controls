@@ -38,7 +38,8 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         onAutocompleteInputChange = EMPTY_FUNC,
         controlsLoading = EMPTY_BOOL_OBJ,
         fieldBuilder,
-        children
+        children,
+        testId="form"
     } = props;
 
     const { locale } = useContext(ItnFormGlobalContext);
@@ -176,6 +177,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
         }
         return (            
             <ItnFormField
+                testId={`${testId}-field-${name}`}
                 entity={entity}
                 isSaving={isSaving}
                 viewOnly={viewOnly}
@@ -213,6 +215,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
             <Paper
                 elevation={hidePaper ? 0 : undefined}
                 sx={hidePaper ? { backgroundColor: "transparent" } : noPadding ? {} : { paddingX: 2, paddingY: 2 }}
+                data-testid={testId}
             >
                 {
                     (header || onDelete) &&
@@ -252,6 +255,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                                     fieldBuilder.GetFields().map(f => {
                                         return (
                                             <ItnFormField
+                                                testId={`${testId}-field-${f.property.toString()}`}
                                                 key={"fc-" + f.property.toString()}
                                                 entity={entity}
                                                 isSaving={isSaving}

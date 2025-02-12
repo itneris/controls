@@ -54,7 +54,8 @@ function ItnFileControl(props: {
     label?: string,
     error?: boolean,
     errorText?: string,
-    helperText?: string
+    helperText?: string,
+    testId?: string
 }) {
     const {
         imageProperties,
@@ -65,7 +66,8 @@ function ItnFileControl(props: {
         label,
         error,
         errorText,
-        helperText        
+        helperText,
+        testId 
     } = props;
 
     const { locale } = useContext(ItnFormGlobalContext);
@@ -266,7 +268,8 @@ function ItnFileControl(props: {
                 type="file"
                 hidden
                 onChange={uploadFile}
-                accept={accept}
+                accept={accept}                
+                data-testid={`${testId}-file-input`}
             />
             <FormControl>
                 {
@@ -275,6 +278,7 @@ function ItnFileControl(props: {
                             {
                                 imageProperties?.isAvatar ?
                                     <Box
+                                        data-testid={`${testId}-upload-button`}
                                         borderRadius="50%"
                                         height={70}
                                         width={70}
@@ -309,12 +313,22 @@ function ItnFileControl(props: {
                                     {value?.fileName ?? value?.file?.name ?? ""}
                                 </Typography>
                                 <Tooltip placement="right-start" title={locale.fileControl.replaceButtonText}>
-                                    <IconButton color="secondary" onClick={handleUploadClick} disabled={disabled}>
+                                    <IconButton 
+                                        data-testid={`${testId}-replace-button`}
+                                        color="secondary" 
+                                        onClick={handleUploadClick} 
+                                        disabled={disabled}
+                                    >
                                         <Refresh />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip placement="right-start" title={locale.common.removeButtonText}>
-                                    <IconButton color="error" onClick={handleDeleteFile} disabled={disabled}>
+                                    <IconButton 
+                                        data-testid={`${testId}-delete-button`}
+                                        color="error" 
+                                        onClick={handleDeleteFile} 
+                                        disabled={disabled}
+                                    >
                                         <Delete />
                                     </IconButton>
                                 </Tooltip>
@@ -342,12 +356,22 @@ function ItnFileControl(props: {
                                 }
                                 <Box display="flex" flexDirection="column" ml={2} justifyContent="space-between">
                                     <Tooltip placement="right-start" title={locale.fileControl.replaceButtonText}>
-                                        <IconButton color="secondary" onClick={handleUploadClick} disabled={disabled}>
+                                        <IconButton 
+                                            color="secondary" 
+                                            onClick={handleUploadClick} 
+                                            disabled={disabled}
+                                            data-testid={`${testId}-replace-button`}
+                                        >
                                             <Refresh />
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip placement="right-start" title={locale.common.removeButtonText}>
-                                        <IconButton color="error" onClick={handleDeleteFile} disabled={disabled}>
+                                        <IconButton 
+                                            color="error" 
+                                            onClick={handleDeleteFile} 
+                                            disabled={disabled}
+                                            data-testid={`${testId}-delete-button`}
+                                        >
                                             <Delete />
                                         </IconButton>
                                     </Tooltip>
@@ -371,6 +395,7 @@ function ItnFileControl(props: {
                     yesBtnText={locale.fileControl.cropButtonText}
                     noBtnText={locale.common.cancelButtonText}
                     yesButtonDisabled={imgProcessing}
+                    testId={`${testId}-crop-modal`}
                 >                
                     <Box height={4}>
                         <LinearProgress color="secondary" sx={{ display: imgProcessing ? "block" : "none" }} />

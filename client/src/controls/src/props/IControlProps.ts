@@ -2,6 +2,7 @@ import { ItnSelectOption } from "../base/ItnSelectOption";
 import { FileImageProperties } from "./IFileControlProps";
 
 export default interface IControlProps {
+    testId?: string;
     /**
      * Type of rendered control
      * */

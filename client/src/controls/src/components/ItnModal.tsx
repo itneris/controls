@@ -3,7 +3,7 @@ import React, {  useCallback } from 'react';
 import IModalProps from '../props/IModalProps';
 
 const ItnModal = (props: IModalProps) => {
-    const { onResult, onClose, open } = props;
+    const { onResult, onClose, open, testId = "itn-modal" } = props;
 
     const handleResult = useCallback((result: boolean | null) => {
         if (onResult) {
@@ -24,7 +24,8 @@ const ItnModal = (props: IModalProps) => {
             maxWidth={props.size}
             fullWidth
             fullScreen={props.fullScreen}
-            transitionDuration={props.transitionDuration}     
+            transitionDuration={props.transitionDuration} 
+            data-testid={testId}
         >
             {
                 (props.title !== null || props.titleComponent !== null) &&
@@ -53,6 +54,7 @@ const ItnModal = (props: IModalProps) => {
                             <Button
                                 variant="text"
                                 onClick={() => handleResult(null)}
+                                data-testid={`${testId}-cancel-button`}
                             >
                                 {props.cancelBtnText}
                             </Button>
@@ -65,6 +67,7 @@ const ItnModal = (props: IModalProps) => {
                                 variant="text"
                                 onClick={() => handleResult(false)}
                                 color="secondary"
+                                data-testid={`${testId}-no-button`}
                             >
                                 {props.noBtnText}
                             </Button>
@@ -76,6 +79,7 @@ const ItnModal = (props: IModalProps) => {
                                 onClick={() => handleResult(true)}
                                 color="secondary"
                                 disabled={props.yesButtonDisabled}
+                                data-testid={`${testId}-yes-button`}
                             >
                                 {props.yesBtnText}
                             </Button>

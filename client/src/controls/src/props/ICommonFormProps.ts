@@ -1,6 +1,7 @@
 ﻿import AbstractFieldBuilder from "../fieldBuilder/AbstractFieldBuilder";
 
 export default interface ICommonFormProps<T> {
+    testId?: string;
     /**
      * Class with fields rules and descriptions
      * */
