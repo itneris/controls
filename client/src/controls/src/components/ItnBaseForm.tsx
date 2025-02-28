@@ -294,6 +294,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                                 disabled={isSaving}
                                 variant="contained"
                                 onClick={onCancel}
+                                data-testid={`${testId}-cancel-button`}
                             >
                                 {cancelBtnText ?? locale.common.cancelButtonText}
                             </Button> :
@@ -307,6 +308,7 @@ function ItnBaseFormInner<T>(props: IBaseFormProps<T>, ref: React.ForwardedRef<I
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleSaveClick}
+                                data-testid={`${testId}-save-button`}
                             >
                                 {saveBtnText ?? locale.common.saveButtonText}
                             </Button> :
